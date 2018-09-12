@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-public class SignUpActivity extends AppCompatActivity {
+public class userInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_user_info);
 
 
         Spinner orgSpinner = (Spinner) findViewById(R.id.organizations_spinner);

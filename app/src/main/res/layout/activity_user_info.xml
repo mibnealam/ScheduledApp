@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignUpActivity">
+    tools:context=".userInfoActivity">
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:layout_marginBottom="20dp">
                 <ImageView
@@ -26,7 +28,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/signup_text"
+                    android:text="@string/walkthrough_text"
                     android:layout_margin="16dp"/>
             </LinearLayout>
 
@@ -48,19 +50,6 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapCharacters"
-                    android:hint="@string/prompt_name"
-                    android:layout_gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:singleLine="true"/>
-            </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="250dp"
@@ -95,18 +84,6 @@
                     android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="@string/prompt_email"
-                    android:layout_gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:singleLine="true"/>
-            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -118,39 +95,14 @@
                     android:hint="@string/prompt_phone"
                     android:layout_gravity="center_horizontal"
                     android:maxLines="1"
-                    android:singleLine="true"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_password"
-                    android:inputType="textPassword"
-                    android:layout_gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:singleLine="true"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_confirm_password"
-                    android:inputType="textPassword"
-                    android:layout_gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:singleLine="true"/>
+                    android:singleLine="true"
+                    android:layout_marginBottom="16dp"/>
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="@string/action_sign_up"
+                android:text="@string/action_next"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/colorAccent"
                 android:textColor="@color/common_google_signin_btn_text_dark_default"
