@@ -5,4 +5,24 @@
     <color name="colorAccent">#1fc0fd</color>
     <color name="gray">#b0b0b0</color>
     <color name="blue">#0076cf</color>
+
+    <!-- Text color for the course name in the list item -->
+    <color name="textColorCourseName">#818181</color>
+    <!-- Text color for the course name in the list item -->
+    <color name="textColorCourseCode">#3c3c3c</color>
+
+    <!-- Color for a course credit 0.75 -->
+    <color name="credit1">#4A7BA7</color>
+
+    <!-- Color for a course credit 1.5 -->
+    <color name="credit2">#04B4B3</color>
+
+    <!-- Color for a course credit 2.0 -->
+    <color name="credit3">#F5A623</color>
+
+    <!-- Color for a course credit 3.0 -->
+    <color name="credit4">#E75F40</color>
+
+    <!-- Color for a course credit 3.5 -->
+    <color name="credit5">#C03823</color>
 </resources>

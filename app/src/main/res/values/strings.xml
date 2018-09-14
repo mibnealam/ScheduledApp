@@ -3,15 +3,17 @@
 
     <!-- Strings for Login and Sign up page -->
     <string name="welcome_text">Welcome to Scheduled App!</string>
-    <string name="signup_text">Sign up and never miss your schedule!</string>
+    <string name="walkthrough_text">Just few more info!</string>
     <string name="prompt_ID">ID</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_name">Name</string>
+    <string name="prompt_user_name">Username</string>
     <string name="prompt_phone">Phone</string>
     <string name="prompt_portrait">Portrait</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_confirm_password">Confirm password</string>
     <string name="action_sign_up">Sign up</string>
+    <string name="action_next">Next</string>
     <string name="action_log_in">Log in</string>
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -25,17 +27,7 @@
     <string name="action_settings">Settings</string>
     <string name="prompt_organization">Your organization</string>
     <string name="prompt_department">Your department</string>
+    <string name="prompt_empty_field">Please fill all the fields!</string>
 
     <string name="user_id_pattern">UG02-37-14-007</string>
-
-    <string-array name="organizations_array">
-        <item>SUB</item>
-        <item>DIU</item>
-        <item>NSU</item>
-    </string-array>
-    <string-array name="departments_array">
-        <item>CSE</item>
-        <item>EEE</item>
-        <item>Pharmacy</item>
-    </string-array>
 </resources>
