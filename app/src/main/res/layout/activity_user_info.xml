@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userInfoActivity">
+    tools:context=".UserInfoActivity">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
+                    android:id="@+id/user_id"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:inputType="text"
@@ -89,6 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
+                    android:id="@+id/user_phone_no"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
@@ -100,6 +102,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
+                android:id="@+id/next_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="@string/action_next"
@@ -107,7 +110,13 @@
                 android:background="@color/colorAccent"
                 android:textColor="@color/common_google_signin_btn_text_dark_default"
                 android:layout_margin="16dp"/>
-
         </LinearLayout>
     </ScrollView>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 </LinearLayout>
