@@ -9,37 +9,48 @@ public class Course {
     private String mCourseCode;
 
     /* Credit hours of the course */
-    private double mCredit;
+    private String mCourseCredit;
+
+    public Course(){
+    }
 
     /**Constructs a new {@link Course} object.
      *
-     * @param credit is the credit hours of the course
+     * @param courseCredit is the credit hours of the course
      * @param courseCode is the course code of the curse
      * @param courseName is the course name of the course
      */
-    public Course (double credit, String courseCode, String courseName){
-
-        mCredit = credit;
-        mCourseCode = courseCode;
-        mCourseName = courseName;
+    public Course (String courseCredit, String courseCode, String courseName){
+        this.mCourseCredit = courseCredit;
+        this.mCourseCode = courseCode;
+        this.mCourseName = courseName;
     }
-
     /**
-     * Returns the credit hours of the course.
+     * Returns the course credit of the course.
      */
-    public double getCredit (){
-        return mCredit;
+    public String getCourseCredit (){
+        return mCourseCredit;
     }
+    public void setCourseCredit (String courseCredit){
+        this.mCourseCredit = courseCredit;
+    }
+
     /**
      * Returns the course code of the course.
      */
     public String getCourseCode (){
         return mCourseCode;
     }
+    public void setCourseCode (String courseCode){
+        this.mCourseCode = courseCode;
+    }
     /**
      * Returns the name of the course.
      */
     public String getCourseName (){
         return mCourseName;
+    }
+    public void setCourseName (String courseName){
+        this.mCourseName = courseName;
     }
 }

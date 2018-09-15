@@ -1,10 +1,7 @@
 package com.example.mibne.scheduledapp;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -68,7 +65,7 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
 
         // Initialize references to views
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mUsernameEditText = (EditText) findViewById(R.id.user_id);
         mUserPhoneNoEditText = (EditText) findViewById(R.id.user_phone_no);
         mNextButton = (Button) findViewById(R.id.next_button);
@@ -94,8 +91,8 @@ public class UserInfoActivity extends AppCompatActivity  {
         }
 
         //Get organizations
-        String[] organizationsArray = {"SUB", "DIU"};
-        String[] departmentsArray = {"CSE", "MCT"};
+        String[] organizationsArray = {"SUB"};
+        String[] departmentsArray = {"CSE"};
 
 
         Spinner organizationSpinner = (Spinner) findViewById(R.id.organizations_spinner);
@@ -168,33 +165,6 @@ public class UserInfoActivity extends AppCompatActivity  {
             }
         });
     }
-    /**
-     * User data change listener
-     */
-    private void addUserChangeListener() {
-        // User data change listener
-        mUsersDatabaseReference.child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-
-                if (user == null) {
-                    Log.e(TAG, "User data is null!");
-                    return;
-                }
-                updateUI();
-                Log.e(TAG, "User data is changed!");
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "Please Try Again!", Toast.LENGTH_SHORT).show();
-                // Failed to read value
-                Log.e(TAG, "Failed to read user", error.toException());
-            }
-        });
-    }
 
     /**
      * Creating new user node under 'users'
@@ -250,5 +220,32 @@ public class UserInfoActivity extends AppCompatActivity  {
             Log.v("Dashboard intent :", "not working");
             Intent intent = new Intent(this, RegistrationActivity.class);
             startActivity(intent);
+    }
+    /**
+     * User data change listener
+     */
+    private void addUserChangeListener() {
+        // User data change listener
+        mUsersDatabaseReference.child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+
+                if (user == null) {
+                    Log.e(TAG, "User data is null!");
+                    return;
+                }
+                updateUI();
+                Log.e(TAG, "User data is changed!");
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "Please Try Again!", Toast.LENGTH_SHORT).show();
+                // Failed to read value
+                Log.e(TAG, "Failed to read user", error.toException());
+            }
+        });
     }
 }
