@@ -28,6 +28,7 @@
     <string name="prompt_organization">Your organization</string>
     <string name="prompt_department">Your department</string>
     <string name="prompt_empty_field">Please fill all the fields!</string>
+    <string name="prompt_no_data">Ops! No data available.</string>
 
     <string name="user_id_pattern">UG02-37-14-007</string>
 </resources>

@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -50,6 +51,7 @@ public class UserInfoActivity extends AppCompatActivity  {
 
     private String mUsername;
 
+
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
@@ -69,6 +71,21 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsernameEditText = (EditText) findViewById(R.id.user_id);
         mUserPhoneNoEditText = (EditText) findViewById(R.id.user_phone_no);
         mNextButton = (Button) findViewById(R.id.next_button);
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                    updateUI();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mUsersDatabaseReference.child("username" + "phone").addListenerForSingleValueEvent(eventListener);
 
         /**
          * Get Users info
@@ -146,6 +163,8 @@ public class UserInfoActivity extends AppCompatActivity  {
             }
         });
 
+        //Checks if user data exists and updates to the next UI
+        //addUserChangeListener();
         // Next button creates a user profile and clears the EditText
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +185,7 @@ public class UserInfoActivity extends AppCompatActivity  {
         });
     }
 
-    /**
+     /**
      * Creating new user node under 'users'
      */
     private void createUser(String department, String email, String name,
@@ -187,11 +206,13 @@ public class UserInfoActivity extends AppCompatActivity  {
     private void updateUser(String department, String email, String name,
                             String organization, String phone, String photoUrl, String role, String username) {
         // updating the user via child nodes
-        if (!TextUtils.isEmpty(username))
+        if (!TextUtils.isEmpty(username)){
             mUsersDatabaseReference.child(userId).child("username").setValue(username);
+        }
 
-        if (!TextUtils.isEmpty(phone))
+        if (!TextUtils.isEmpty(phone)){
             mUsersDatabaseReference.child(userId).child("phone").setValue(phone);
+        }
     }
 
     //TextWatcher for enabling next Button
