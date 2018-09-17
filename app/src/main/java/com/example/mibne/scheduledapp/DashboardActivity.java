@@ -140,15 +140,19 @@ public class DashboardActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_dashboard) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_notice) {
-
+            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_routine) {
-
+            Intent intent = new Intent(getApplicationContext(), RoutineActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_assignment) {
-
+            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_settings) {
-
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_log_out) {
             FirebaseAuth.getInstance().signOut();
         }

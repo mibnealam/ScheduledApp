@@ -1,0 +1,70 @@
+package com.example.mibne.scheduledapp;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+public class NoticeAdapter extends ArrayAdapter<Notice> {
+
+    /**
+     * Default Constructor for NoticeAdapter
+     * @param context
+     * @param notices
+     */
+    public NoticeAdapter(Context context, int resource, List<Notice> notices) {
+        super(context,resource, notices);
+    }
+
+    /**
+     * Provides a view for an AdapterView (ListView, GridView, etc.)
+     *
+     * @param position The position in the list of data that should be displayed in the
+     *                 list item view.
+     * @param convertView The recycled view to populate.
+     * @param parent The parent ViewGroup that is used for inflation.
+     * @return The View for the position in the AdapterView.
+     */
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Check if there is an existing list item view (called convertView) that we can reuse,
+        // otherwise, if convertView is null, then inflate a new list item layout.
+        if (convertView == null) {
+            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.list_item_notice, parent, false);
+        }
+
+        TextView noticeTitleTextView = (TextView) convertView.findViewById(R.id.notice_title);
+        TextView noticeTimeTextView = (TextView) convertView.findViewById(R.id.notice_time);
+        //TextView noticeDeadlineTextView = (TextView) convertView.findViewById(R.id.notice_deadline);
+
+        Notice notice = getItem(position);
+
+        noticeTitleTextView.setText(notice.getNoticeTitle());
+
+        // Format the date string (i.e. "Mar 3, 1984")
+        String formattedDateOfCreation = formatDate(notice.getNoticeDate());
+        //String formattedDateOfDeadline = formatDate(notice.getNoticeDate());
+        // Display the creation date of the notice in that TextView
+        noticeTimeTextView.setText(formattedDateOfCreation);
+        // Display the applied date of the notice in that TextView
+        //noticeDeadlineTextView.setText(formattedDateOfDeadline);
+
+        // Return the list item view that is now showing the appropriate data
+        return convertView;
+    }
+
+    /**
+     * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
+     */
+    private String formatDate(Long dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        return dateFormat.format(dateObject);
+    }
+}

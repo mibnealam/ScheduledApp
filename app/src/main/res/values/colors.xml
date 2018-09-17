@@ -25,4 +25,10 @@
 
     <!-- Color for a course credit 3.5 -->
     <color name="credit5">#C03823</color>
+
+    <!-- Color for indicate importance -->
+    <color name="priority_1">#ffc107</color>
+    <color name="priority_2">#03a9f4</color>
+    <color name="priority_3">#3f51b5</color>
+    <color name="priority_default">#00acc1</color>
 </resources>

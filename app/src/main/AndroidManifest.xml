@@ -4,18 +4,17 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_logo"
+        android:icon="@mipmap/ic_logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_logo"
+        android:roundIcon="@mipmap/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DashboardActivity"
-            android:label="@string/title_activity_dashboard"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,9 +25,20 @@
         <activity
             android:name=".UserInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".RegistrationActivity"
-            android:parentActivityName="com.example.mibne.scheduledapp.DashboardActivity">
-        </activity>
+        <activity
+            android:name=".RegistrationActivity"
+            android:parentActivityName=".DashboardActivity" />
+        <activity
+            android:name=".RoutineActivity"
+            android:label="@string/title_activity_routine"
+            android:parentActivityName=".DashboardActivity" />
+        <activity
+            android:name=".NoticeActivity"
+            android:label="@string/title_activity_notice"
+            android:parentActivityName=".DashboardActivity" />
+        <activity android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".DashboardActivity"></activity>
     </application>
 
 </manifest>

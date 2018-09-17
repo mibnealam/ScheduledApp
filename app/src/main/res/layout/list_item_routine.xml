@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingEnd="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/class_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="roboto"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textColor="@color/textColorCourseCode"
+            android:textSize="18sp"
+            tools:text="9.30-11.00" />
+
+        <TextView
+            android:id="@+id/class_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="roboto"
+            android:maxLines="1"
+            android:textColor="@color/textColorCourseName"
+            android:textSize="14sp"
+            tools:text="Computing Lab" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/course_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="roboto"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textColor="@color/textColorCourseCode"
+            android:textSize="18sp"
+            tools:text="CSE-0101" />
+    </LinearLayout>
+</LinearLayout>

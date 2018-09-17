@@ -4,20 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".RegistrationActivity" >
 
     <ListView
-        android:id="@+id/course_list_view"
+        android:id="@+id/notice_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:stackFromBottom="false"
         android:divider="@android:color/transparent"
+        android:dividerHeight="16dp"
+        android:paddingTop="16dp"
         android:transcriptMode="alwaysScroll"
-        tools:listitem="@layout/list_item_course"/>
+        tools:listitem="@layout/list_item_notice"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"

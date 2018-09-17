@@ -4,16 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class CourseAdapter extends ArrayAdapter<Course> {
@@ -40,7 +35,7 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         // Check if there is an existing list item view (called convertView) that we can reuse,
         // otherwise, if convertView is null, then inflate a new list item layout.
         if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.course_list_item, parent, false);
+            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.list_item_course, parent, false);
         }
 
         TextView creditTextView = (TextView) convertView.findViewById(R.id.course_credit);

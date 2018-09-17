@@ -15,39 +15,34 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegistrationActivity extends AppCompatActivity {
-    private ListView mCourseListView;
-    private CourseAdapter mCourseAdapter;
+public class NoticeActivity extends AppCompatActivity {
+    private ListView mNoticeListView;
+    private NoticeAdapter mNoticeAdapter;
     private ProgressBar mProgressBar;
     private String mUsername;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mCourseDatabaseReferance;
+    private DatabaseReference mNoticeDatabaseReferance;
     private ChildEventListener mChildEventListener;
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
-
-        getSupportActionBar().setTitle("Registration");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.activity_notice);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mCourseDatabaseReferance = mFirebaseDatabase.getReference().child("courses");
+        mNoticeDatabaseReferance = mFirebaseDatabase.getReference().child("notices");
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mCourseListView = (ListView) findViewById(R.id.course_list_view);
+        mNoticeListView = (ListView) findViewById(R.id.notice_list_view);
 
-        // Initialize course ListView and its adapter
-        List<Course> courses = new ArrayList<>();
-        mCourseAdapter = new CourseAdapter(this, R.layout.list_item_course, courses);
-        mCourseListView.setAdapter(mCourseAdapter);
+        // Initialize notice ListView and its adapter
+        List<Notice> notices = new ArrayList<>();
+        mNoticeAdapter = new NoticeAdapter(this, R.layout.list_item_notice, notices);
+        mNoticeListView.setAdapter(mNoticeAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -60,8 +55,8 @@ public class RegistrationActivity extends AppCompatActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Course course = dataSnapshot.getValue(Course.class);
-                    mCourseAdapter.add(course);
+                    Notice notice = dataSnapshot.getValue(Notice.class);
+                    mNoticeAdapter.add(notice);
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
@@ -69,12 +64,12 @@ public class RegistrationActivity extends AppCompatActivity {
                 public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
                 public void onCancelled(DatabaseError databaseError) {}
             };
-            mCourseDatabaseReferance.addChildEventListener(mChildEventListener);
+            mNoticeDatabaseReferance.addChildEventListener(mChildEventListener);
         }
     }
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
-            mCourseDatabaseReferance.removeEventListener(mChildEventListener);
+            mNoticeDatabaseReferance.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
     }
