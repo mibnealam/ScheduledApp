@@ -1,6 +1,5 @@
 package com.example.mibne.scheduledapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -172,7 +172,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void updateUI(@Nullable FirebaseUser account) {
         if (account != null) {
             Log.v("Dashboard intent :", "not working");
-            Intent intent = new Intent(this, UserInfoActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
             Log.v("update UI :", "account is null");

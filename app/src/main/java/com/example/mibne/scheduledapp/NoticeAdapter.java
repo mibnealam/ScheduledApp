@@ -2,18 +2,21 @@ package com.example.mibne.scheduledapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class NoticeAdapter extends ArrayAdapter<Notice> {
-
     /**
      * Default Constructor for NoticeAdapter
      * @param context
@@ -40,31 +43,71 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.list_item_notice, parent, false);
         }
 
-        TextView noticeTitleTextView = (TextView) convertView.findViewById(R.id.notice_title);
-        TextView noticeTimeTextView = (TextView) convertView.findViewById(R.id.notice_time);
-        //TextView noticeDeadlineTextView = (TextView) convertView.findViewById(R.id.notice_deadline);
+        //TextView noticeTitleTextView = (TextView) convertView.findViewById(R.id.notice_title);
+        //TextView noticeTimeTextView = (TextView) convertView.findViewById(R.id.notice_time);
+        TextView noticeDescriptionTextView = (TextView) convertView.findViewById(R.id.notice_description);
+        TextView noticeNoticeOwnerTextView = (TextView) convertView.findViewById(R.id.notice_heading);
+        TextView noticeDeadlineTextView = (TextView) convertView.findViewById(R.id.notice_deadline);
+
+        LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.list_item_notice);
 
         Notice notice = getItem(position);
 
-        noticeTitleTextView.setText(notice.getNoticeTitle());
+        Log.v("Color", notice.getNoticePriority());
+
+        linearLayout.setBackgroundColor(getPriorityColor(notice.getNoticePriority()));
+
+        //noticeTitleTextView.setText(notice.getNoticeTitle());
 
         // Format the date string (i.e. "Mar 3, 1984")
-        String formattedDateOfCreation = formatDate(notice.getNoticeDate());
-        //String formattedDateOfDeadline = formatDate(notice.getNoticeDate());
+        String formattedDateOfCreation = formatTime(notice.getNoticeDate());
+        String formattedDateOfDeadline = formatDate(notice.getNoticeDate());
         // Display the creation date of the notice in that TextView
-        noticeTimeTextView.setText(formattedDateOfCreation);
+        //noticeTimeTextView.setText(formattedDateOfCreation);
         // Display the applied date of the notice in that TextView
-        //noticeDeadlineTextView.setText(formattedDateOfDeadline);
+        noticeDeadlineTextView.setText(formattedDateOfDeadline);
+        noticeDescriptionTextView.setText(notice.getNoticeDescription());
+        noticeNoticeOwnerTextView.setText(notice.getNoticeOwner());
+
 
         // Return the list item view that is now showing the appropriate data
         return convertView;
     }
 
     /**
+     * Return the credit color according to the value
+     * @param priority
+     * @return
+     */
+    private int getPriorityColor(String priority) {
+        int creditColorResourceId;
+
+        if (priority == "high"){
+            creditColorResourceId = R.color.priority_1;
+        }else if (priority == "medium"){
+            creditColorResourceId = R.color.priority_2;
+        }else if (priority == "low"){
+            creditColorResourceId = R.color.priority_3;
+        }else {
+            creditColorResourceId = R.color.priority_default;
+        }
+
+        return ContextCompat.getColor(getContext(), creditColorResourceId);
+    }
+
+    /**
      * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
      */
     private String formatDate(Long dateObject) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd");
         return dateFormat.format(dateObject);
+    }
+
+    /**
+     * Return the formatted date string (i.e. "4:30 PM") from a Date object.
+     */
+    private String formatTime(Long dateObject) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        return timeFormat.format(dateObject);
     }
 }

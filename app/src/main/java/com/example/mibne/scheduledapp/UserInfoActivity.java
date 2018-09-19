@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -51,6 +52,9 @@ public class UserInfoActivity extends AppCompatActivity  {
 
     private String mUsername;
 
+    private boolean usernameUpdaed = false;
+    private boolean phoheUpdated = false;
+
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -71,21 +75,6 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsernameEditText = (EditText) findViewById(R.id.user_id);
         mUserPhoneNoEditText = (EditText) findViewById(R.id.user_phone_no);
         mNextButton = (Button) findViewById(R.id.next_button);
-
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    updateUI();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        mUsersDatabaseReference.child("username" + "phone").addListenerForSingleValueEvent(eventListener);
 
         /**
          * Get Users info
@@ -183,6 +172,10 @@ public class UserInfoActivity extends AppCompatActivity  {
                 mUserPhoneNoEditText.setText("");
             }
         });
+
+        if(usernameUpdaed && phoheUpdated){
+            updateUI();
+        }
     }
 
      /**
@@ -207,11 +200,21 @@ public class UserInfoActivity extends AppCompatActivity  {
                             String organization, String phone, String photoUrl, String role, String username) {
         // updating the user via child nodes
         if (!TextUtils.isEmpty(username)){
-            mUsersDatabaseReference.child(userId).child("username").setValue(username);
+            mUsersDatabaseReference.child(userId).child("username").setValue(username).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    usernameUpdaed = true;
+                }
+            });
         }
 
         if (!TextUtils.isEmpty(phone)){
-            mUsersDatabaseReference.child(userId).child("phone").setValue(phone);
+            mUsersDatabaseReference.child(userId).child("phone").setValue(phone).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    phoheUpdated = true;
+                }
+            });
         }
     }
 
