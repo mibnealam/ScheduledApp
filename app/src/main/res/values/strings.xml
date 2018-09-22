@@ -41,5 +41,7 @@
     <string name="nav_header_subtitle">Stete University of Bangladesh</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    <string name="no_internet_connection">Opps! No internet connection.</string>
+
     <string name="pattern_user_id">UG02-37-14-007</string>
 </resources>

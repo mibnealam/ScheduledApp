@@ -1,0 +1,81 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="32dp"
+        android:orientation="vertical"
+        android:layout_marginTop="48dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="48dp">
+            <TextView
+                android:id="@+id/notice_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:textSize="16sp"
+                android:textColor="@color/textColorCourseCode"
+                android:text="Notice Title"/>
+            <TextView
+                android:id="@+id/notice_deadline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="14sp"
+                android:textAlignment="viewEnd"
+                android:text="Sept 27"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:id="@+id/notice_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text="Notice Description goes here."/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/notice_owner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="14sp"
+                android:textColor="@color/textColorCourseCode"
+                android:text="Notice Owner"
+                android:textAlignment="viewEnd"/>
+            <TextView
+                android:id="@+id/notice_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textAlignment="viewEnd"
+                android:text="Sept 5"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Empty view is only visible when the list has no items. -->
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textAppearance="?android:textAppearanceMedium"/>
+
+</RelativeLayout>
