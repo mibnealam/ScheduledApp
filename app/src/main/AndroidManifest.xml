@@ -43,9 +43,13 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".SingleNoticeActivity"
-            android:parentActivityName=".NoticeActivity"
-            android:label="Details"></activity>
+        <activity
+            android:name=".SingleNoticeActivity"
+            android:label="Details"
+            android:parentActivityName=".NoticeActivity" />
+        <activity android:name=".TodayActivity" />
+        <activity android:name=".TomorrowActivity" />
+        <activity android:name=".ThisWeekActivity"></activity>
     </application>
 
 </manifest>

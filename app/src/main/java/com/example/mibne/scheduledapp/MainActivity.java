@@ -3,6 +3,9 @@ package com.example.mibne.scheduledapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -68,12 +71,18 @@ public class MainActivity extends AppCompatActivity
         //TextView userIdTextView = (TextView) findViewById(R.id.user_id_text_view);
         //ImageView userPortraitImageView = (ImageView) findViewById(R.id.user_portrait_image_view);
 
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        navUserName = (TextView) headerView.findViewById(R.id.user_name_text_view);
-        navUseId = (TextView) headerView.findViewById(R.id.user_id_text_view);
-        navUserPortrait = (ImageView) headerView.findViewById(R.id.user_portrait_image_view);
+        // Create an adapter that knows which fragment should be shown on each page
+        SimpleFragmentPagerAdapter adapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
+
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(adapter);
+
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -90,9 +99,9 @@ public class MainActivity extends AppCompatActivity
                     onSignedOutCleanup();
                     //Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     //startActivity(intent);
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    MainActivity.this.startActivity(intent );
+                    startActivity(intent);
                     finish();
                 }
             }
@@ -112,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
         //mCourseAdapter.clear();
-        //detachDatabaseReadListener();
+        detachDatabaseReadListener();
     }
     long back_pressed;
     @Override
@@ -120,7 +129,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (back_pressed + 1000 > System.currentTimeMillis()){
+        } else if (back_pressed + 2000 > System.currentTimeMillis()){
             super.onBackPressed();
             finish();
         } else{
@@ -138,23 +147,22 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut();
-            return true;
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -188,10 +196,10 @@ public class MainActivity extends AppCompatActivity
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.v("test", dataSnapshot.child("username").toString());
-                navUseId.setText(dataSnapshot.child("username").getValue().toString());
-                navUserName.setText(dataSnapshot.child("name").getValue().toString());
-                Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
+                //Log.v("test", dataSnapshot.child("username").toString());
+                //navUseId.setText(dataSnapshot.child("username").getValue().toString());
+                //navUserName.setText(dataSnapshot.child("name").getValue().toString());
+                //Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
                 // Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 if(dataSnapshot.child("username").exists() && dataSnapshot.child("phone").exists()){
