@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +13,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,6 +44,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        View loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
 
         userIdEditText = findViewById(R.id.user_id);
 
@@ -110,12 +117,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     // [START logIn]
     private void logIn() {
-
     }
     // [END logIn]
 
     // [START signIn]
     private void signIn() {
+        Log.v("test", "User Starts sign in!");
+        //ScrollView scrollView = findViewById(R.id.login_form);
+        //scrollView.setVisibility(View.GONE);
+        //View loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
+        //loadingIndicator.setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -161,8 +172,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Snackbar.make(findViewById(R.id.snackbar), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
@@ -171,7 +180,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // [START updateUI]
     private void updateUI(@Nullable FirebaseUser account) {
         if (account != null) {
-            Log.v("Dashboard intent :", "not working");
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -53,10 +54,6 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
 
         Notice notice = getItem(position);
 
-        Log.v("Color", notice.getNoticePriority());
-
-        linearLayout.setBackgroundColor(getPriorityColor(notice.getNoticePriority()));
-
         //noticeTitleTextView.setText(notice.getNoticeTitle());
 
         // Format the date string (i.e. "Mar 3, 1984")
@@ -68,6 +65,8 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
         noticeDeadlineTextView.setText(formattedDateOfDeadline);
         noticeDescriptionTextView.setText(notice.getNoticeDescription());
         noticeNoticeOwnerTextView.setText(notice.getNoticeOwner());
+        linearLayout.setBackgroundColor(getPriorityColor(notice.getNoticePriority()));
+        Log.v("Color", String.valueOf(getPriorityColor(notice.getNoticePriority())));
 
 
         // Return the list item view that is now showing the appropriate data
@@ -81,15 +80,15 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
      */
     private int getPriorityColor(String priority) {
         int creditColorResourceId;
-
-        if (priority == "high"){
-            creditColorResourceId = R.color.priority_1;
-        }else if (priority == "medium"){
-            creditColorResourceId = R.color.priority_2;
-        }else if (priority == "low"){
-            creditColorResourceId = R.color.priority_3;
-        }else {
-            creditColorResourceId = R.color.priority_default;
+        switch (priority) {
+            case "high" : creditColorResourceId = R.color.priority_1;
+                break;
+            case "medium" : creditColorResourceId = R.color.priority_2;
+                break;
+            case "low" : creditColorResourceId = R.color.priority_3;
+                break;
+            default: creditColorResourceId = R.color.priority_default;
+                break;
         }
 
         return ContextCompat.getColor(getContext(), creditColorResourceId);

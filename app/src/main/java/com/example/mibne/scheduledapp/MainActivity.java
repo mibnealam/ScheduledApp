@@ -33,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    TextView navUseId;
+    TextView navUserId;
     TextView navUserName;
     ImageView navUserPortrait;
 
@@ -66,6 +66,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView =  navigationView.getHeaderView(0);
+        navUserId = (TextView)headerView.findViewById(R.id.user_id_text_view);
+        navUserName = (TextView)headerView.findViewById(R.id.user_name_text_view);
+        navUserPortrait = (ImageView) headerView.findViewById(R.id.user_portrait_image_view);
+
 
         //TextView userNameTextView = (TextView) findViewById(R.id.user_name_text_view);
         //TextView userIdTextView = (TextView) findViewById(R.id.user_id_text_view);
@@ -197,10 +203,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Log.v("test", dataSnapshot.child("username").toString());
-                //navUseId.setText(dataSnapshot.child("username").getValue().toString());
+                //navUserId.setText(dataSnapshot.child("username").getValue().toString());
                 //navUserName.setText(dataSnapshot.child("name").getValue().toString());
                 //Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
-                // Get Post object and use the values to update the UI
+                //Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 if(dataSnapshot.child("username").exists() && dataSnapshot.child("phone").exists()){
                     if(!dataSnapshot.child("courses").exists()){

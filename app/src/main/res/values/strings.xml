@@ -38,15 +38,13 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="nav_header_title">Scheduled App</string>
-    <string name="nav_header_subtitle">Stete University of Bangladesh</string>
+    <string name="nav_header_subtitle">State University of Bangladesh</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="no_internet_connection">Opps! No internet connection.</string>
 
     <string name="pattern_user_id">UG02-37-14-007</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="category_today">Today</string>
     <string name="category_tomorrow">Tomorrow</string>
     <string name="category_this_week">This Week</string>
