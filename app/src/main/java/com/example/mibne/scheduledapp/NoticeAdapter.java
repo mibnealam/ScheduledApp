@@ -79,19 +79,19 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
      * @return
      */
     private int getPriorityColor(String priority) {
-        int creditColorResourceId;
+        int priorityColorResourceId;
         switch (priority) {
-            case "high" : creditColorResourceId = R.color.priority_1;
+            case "high" : priorityColorResourceId = R.color.priority_1;
                 break;
-            case "medium" : creditColorResourceId = R.color.priority_2;
+            case "medium" : priorityColorResourceId = R.color.priority_2;
                 break;
-            case "low" : creditColorResourceId = R.color.priority_3;
+            case "low" : priorityColorResourceId = R.color.priority_3;
                 break;
-            default: creditColorResourceId = R.color.priority_default;
+            default: priorityColorResourceId = R.color.priority_default;
                 break;
         }
 
-        return ContextCompat.getColor(getContext(), creditColorResourceId);
+        return ContextCompat.getColor(getContext(), priorityColorResourceId);
     }
 
     /**

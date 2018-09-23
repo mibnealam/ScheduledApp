@@ -45,10 +45,9 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         TextView courseNameTextView = (TextView) convertView.findViewById(R.id.course_name);
 
         Course course = getItem(position);
-        double colorValue = Double.parseDouble(course.getCourseCredit());
 
         creditTextView.setText(course.getCourseCredit());
-        creditCircle.setColor(getCreditColor(colorValue));
+        creditCircle.setColor(getCreditColor(course.getCourseCredit()));
         courseCodeTextView.setText(course.getCourseCode());
         courseNameTextView.setText(course.getCourseName());
 
@@ -61,21 +60,22 @@ public class CourseAdapter extends ArrayAdapter<Course> {
      * @param credit
      * @return
      */
-    private int getCreditColor(double credit) {
+    private int getCreditColor(String credit) {
         int creditColorResourceId;
 
-        if (credit == 0.75){
-            creditColorResourceId = R.color.credit1;
-        }else if (credit == 1.5){
-            creditColorResourceId = R.color.credit2;
-        }else if (credit == 2.0){
-            creditColorResourceId = R.color.credit3;
-        }else if (credit == 3.0){
-            creditColorResourceId = R.color.credit4;
-        }else if (credit == 3.5){
-            creditColorResourceId = R.color.credit5;
-        }else {
-            creditColorResourceId = R.color.colorAccent;
+        switch (credit) {
+            case "0.75" : creditColorResourceId = R.color.credit1;
+                break;
+            case "1.5" : creditColorResourceId = R.color.credit2;
+                break;
+            case "2.0" : creditColorResourceId = R.color.credit3;
+                break;
+            case "3.0" : creditColorResourceId = R.color.credit4;
+                break;
+            case "3.5" : creditColorResourceId = R.color.credit5;
+                break;
+            default: creditColorResourceId = R.color.colorAccent;
+                break;
         }
 
         return ContextCompat.getColor(getContext(), creditColorResourceId);
