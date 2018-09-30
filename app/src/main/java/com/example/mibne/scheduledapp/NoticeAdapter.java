@@ -74,7 +74,7 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
     }
 
     /**
-     * Return the credit color according to the value
+     * Return the priority color according to the value
      * @param priority
      * @return
      */
@@ -95,7 +95,7 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
     }
 
     /**
-     * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
+     * Return the formatted date string (i.e. "Mar 3") from a Date object.
      */
     private String formatDate(Long dateObject) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd");

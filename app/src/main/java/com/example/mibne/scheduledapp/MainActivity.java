@@ -202,10 +202,10 @@ public class MainActivity extends AppCompatActivity
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Log.v("test", dataSnapshot.child("username").toString());
-                //navUserId.setText(dataSnapshot.child("username").getValue().toString());
-                //navUserName.setText(dataSnapshot.child("name").getValue().toString());
-                //Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
+                Log.v("test", dataSnapshot.child("username").toString());
+                navUserId.setText(dataSnapshot.child("username").getValue().toString());
+                navUserName.setText(dataSnapshot.child("name").getValue().toString());
+                Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
                 //Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
                 if(dataSnapshot.child("username").exists() && dataSnapshot.child("phone").exists()){
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity
                 // ...
             }
         };
-        userinfo.addValueEventListener(userListener);
+        userinfo.addListenerForSingleValueEvent(userListener);
     }
 
     private void onSignedOutCleanup() {

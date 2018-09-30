@@ -1,63 +1,133 @@
 package com.example.mibne.scheduledapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class CourseAdapter extends ArrayAdapter<Course> {
+public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdapterViewHolder> {
+
+    private Context context;
+
+    private List<Course> courseList;
     /**
      * Default Constructor for CourseAdapter
-     * @param context
-     * @param courses
      */
-    public CourseAdapter(Context context, int resource, List<Course> courses) {
-        super(context,resource, courses);
+    public CourseAdapter() {
     }
 
     /**
-     * Provides a view for an AdapterView (ListView, GridView, etc.)
+     * This gets called when each new ViewHolder is created. This happens when the RecyclerView
+     * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
      *
-     * @param position The position in the list of data that should be displayed in the
-     *                 list item view.
-     * @param convertView The recycled view to populate.
-     * @param parent The parent ViewGroup that is used for inflation.
-     * @return The View for the position in the AdapterView.
+     * @param viewGroup The ViewGroup that these ViewHolders are contained within.
+     * @param viewType  If your RecyclerView has more than one type of item (which ours doesn't) you
+     *                  can use this viewType integer to provide a different layout. See
+     *                  {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
+     *                  for more details.
+     * @return A new CourseAdapterViewHolder that holds the View for each list item
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Check if there is an existing list item view (called convertView) that we can reuse,
-        // otherwise, if convertView is null, then inflate a new list item layout.
-        if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.list_item_course, parent, false);
+    public CourseAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        context = viewGroup.getContext();
+        int layoutIdForListItem = R.layout.list_item_course;
+        LayoutInflater inflater = LayoutInflater.from(context);
+        boolean shouldAttachToParentImmedietly = false;
+
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmedietly);
+        return new CourseAdapterViewHolder(view);
+    }
+
+    /**
+     * OnBindViewHolder is called by the RecyclerView to display the data at the specified
+     * position. In this method, we update the contents of the ViewHolder to display the weather
+     * details for this particular position, using the "position" argument that is conveniently
+     * passed into us.
+     *
+     * @param courseAdapterViewHolder The ViewHolder which should be updated to represent the
+     *                                  contents of the item at the given position in the data set.
+     * @param position                  The position of the item within the adapter's data set.
+     */
+
+    @Override
+    public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
+        Course course = courseList.get(position);
+        courseAdapterViewHolder.creditCircle.setColor(getCreditColor(course.getCourseCredit()));
+        courseAdapterViewHolder.mCourseCreditTextView.setText(course.getCourseCredit());
+        courseAdapterViewHolder.mCourseCodeTextView.setText(course.getCourseCode());
+        courseAdapterViewHolder.mCourseNameTextView.setText(course.getCourseName());
+
+        //in some cases, it will prevent unwanted situations
+        courseAdapterViewHolder.checkBox.setOnCheckedChangeListener(null);
+
+        //if true, your checkbox will be selected, else unselected
+        courseAdapterViewHolder.checkBox.setChecked(courseList.get(position).isSelected());
+
+        courseAdapterViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                courseList.get(courseAdapterViewHolder.getAdapterPosition()).setSelected(isChecked);
+            }
+        });
+    }
+
+    /**
+     * This method simply returns the number of items to display. It is used behind the scenes
+     * to help layout our Views and for animations.
+     *
+     * @return The number of items available in our course list
+     */
+
+    @Override
+    public int getItemCount() {
+        if ( null == courseList) return 0;
+        return courseList.size();
+    }
+
+    /**
+     * This method is used to set the course data on a CourseAdapter if we've already
+     * created one. This is handy when we get new data from the firebase but don't want to create a
+     * new CourseAdapter to display it.
+     *
+     * @param courseData The new weather data to be displayed.
+     */
+    public void setCourseData(List<Course> courseData) {
+        courseList = courseData;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Cache of the children views for a course list item.
+     */
+    public class CourseAdapterViewHolder extends RecyclerView.ViewHolder {
+
+        public final TextView mCourseCodeTextView;
+        public final TextView mCourseNameTextView;
+        public final TextView mCourseCreditTextView;
+        public final GradientDrawable creditCircle;
+        public final CheckBox checkBox;
+
+        public CourseAdapterViewHolder(View itemView) {
+            super(itemView);
+            mCourseCodeTextView = (TextView) itemView.findViewById(R.id.course_code);
+            mCourseNameTextView = (TextView) itemView.findViewById(R.id.course_name);
+            mCourseCreditTextView = (TextView) itemView.findViewById(R.id.course_credit);
+            creditCircle = (GradientDrawable) mCourseCreditTextView.getBackground();
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkbox_subject);
         }
-
-        TextView creditTextView = (TextView) convertView.findViewById(R.id.course_credit);
-        GradientDrawable creditCircle = (GradientDrawable) creditTextView.getBackground();
-        TextView courseCodeTextView = (TextView) convertView.findViewById(R.id.course_code);
-        TextView courseNameTextView = (TextView) convertView.findViewById(R.id.course_name);
-
-        Course course = getItem(position);
-
-        creditTextView.setText(course.getCourseCredit());
-        creditCircle.setColor(getCreditColor(course.getCourseCredit()));
-        courseCodeTextView.setText(course.getCourseCode());
-        courseNameTextView.setText(course.getCourseName());
-
-        // Return the list item view that is now showing the appropriate data
-        return convertView;
     }
 
     /**
      * Return the credit color according to the value
-     * @param credit
+     * @param //credit
      * @return
      */
     private int getCreditColor(String credit) {
@@ -66,18 +136,19 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         switch (credit) {
             case "0.75" : creditColorResourceId = R.color.credit1;
                 break;
-            case "1.5" : creditColorResourceId = R.color.credit2;
+            case "1.0" : creditColorResourceId = R.color.credit2;
                 break;
-            case "2.0" : creditColorResourceId = R.color.credit3;
+            case "1.5" : creditColorResourceId = R.color.credit3;
                 break;
-            case "3.0" : creditColorResourceId = R.color.credit4;
+            case "2.0" : creditColorResourceId = R.color.credit4;
                 break;
-            case "3.5" : creditColorResourceId = R.color.credit5;
+            case "3.0" : creditColorResourceId = R.color.credit5;
+                break;
+            case "3.5" : creditColorResourceId = R.color.credit6;
                 break;
             default: creditColorResourceId = R.color.colorAccent;
                 break;
         }
-
-        return ContextCompat.getColor(getContext(), creditColorResourceId);
+        return ContextCompat.getColor(context, creditColorResourceId);
     }
 }

@@ -11,6 +11,8 @@ public class Course {
     /* Credit hours of the course */
     private String mCourseCredit;
 
+    private boolean isSelected;
+
     public Course(){
     }
 
@@ -52,5 +54,12 @@ public class Course {
     }
     public void setCourseName (String courseName){
         this.mCourseName = courseName;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

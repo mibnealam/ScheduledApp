@@ -1,13 +1,10 @@
 package com.example.mibne.scheduledapp;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -19,10 +16,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RegistrationActivity extends AppCompatActivity {
-    private ListView mCourseListView;
+
+    private List<Course> courseList = new ArrayList<>();
+
+    private RecyclerView mCourseRecyclerView;
     private CourseAdapter mCourseAdapter;
     private ProgressBar mProgressBar;
     private String mUsername;
@@ -48,12 +49,30 @@ public class RegistrationActivity extends AppCompatActivity {
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mCourseListView = (ListView) findViewById(R.id.course_list_view);
+        /*
+         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
+         * do things like set the adapter of the RecyclerView and toggle the visibility.
+         */
+        mCourseRecyclerView = (RecyclerView) findViewById(R.id.course_list_view);
+
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mCourseRecyclerView.setLayoutManager(layoutManager);
+
+        /*
+         * Use this setting to improve performance if you know that changes in content do not
+         * change the child layout size in the RecyclerView
+         */
+        mCourseRecyclerView.setHasFixedSize(true);
+        /*
+         * The CourseAdapter is responsible for linking our course data with the Views that
+         * will end up displaying our course data.
+         */
+        mCourseAdapter = new CourseAdapter();
+
+        mCourseRecyclerView.setAdapter(mCourseAdapter);
 
         // Initialize course ListView and its adapter
-        List<Course> courses = new ArrayList<>();
-        mCourseAdapter = new CourseAdapter(this, R.layout.list_item_course, courses);
-        mCourseListView.setAdapter(mCourseAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -66,8 +85,9 @@ public class RegistrationActivity extends AppCompatActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Course course = dataSnapshot.getValue(Course.class);
-                    mCourseAdapter.add(course);
+                    Course courses =  dataSnapshot.getValue(Course.class);
+                    courseList.add(courses);
+                    mCourseAdapter.setCourseData(courseList);
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
