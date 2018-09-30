@@ -73,15 +73,11 @@ public class MainActivity extends AppCompatActivity
         navUserPortrait = (ImageView) headerView.findViewById(R.id.user_portrait_image_view);
 
 
-        //TextView userNameTextView = (TextView) findViewById(R.id.user_name_text_view);
-        //TextView userIdTextView = (TextView) findViewById(R.id.user_id_text_view);
-        //ImageView userPortraitImageView = (ImageView) findViewById(R.id.user_portrait_image_view);
-
         // Find the view pager that will allow the user to swipe between fragments
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
-        SimpleFragmentPagerAdapter adapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
+        MainFragmentPagerAdapter adapter = new MainFragmentPagerAdapter(this, getSupportFragmentManager());
 
         // Set the adapter onto the view pager
         viewPager.setAdapter(adapter);

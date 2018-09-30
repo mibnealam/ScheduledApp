@@ -5,22 +5,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-public class SimpleFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+public class CourseFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private Context mContext;
-    public SimpleFragmentPagerAdapter(Context context, FragmentManager fm){
+
+    public CourseFragmentPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
-
     }
 
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new TodayFragment();
+            return new FixedCoursesFragment();
         } else if (position == 1){
-            return new TomorrowFragment();
+            return new AllCoursesFragment();
         }  else {
-            return new ThisWeekFragment();
+            return new EnrolledCoursesFragment();
         }
     }
 
@@ -34,11 +35,11 @@ public class SimpleFragmentPagerAdapter extends FragmentStatePagerAdapter {
         // Generate title based on item position
         switch (position) {
             case 0:
-                return mContext.getString(R.string.category_today);
+                return mContext.getString(R.string.category_fixed_courses);
             case 1:
-                return mContext.getString(R.string.category_tomorrow);
+                return mContext.getString(R.string.category_all_courses);
             case 2:
-                return mContext.getString(R.string.category_this_week);
+                return mContext.getString(R.string.category_enrolled_courses);
             default:
                 return null;
         }

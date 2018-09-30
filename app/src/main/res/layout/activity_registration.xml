@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".RegistrationActivity" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".RegistrationActivity"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/course_list_view"
+    <!-- activity_screen_slide.xml -->
+    <android.support.design.widget.TabLayout
+        app:tabTextColor="@color/textColorLightGray"
+        style="@style/TabIndexStyle"
+        android:id="@+id/sliding_tabs"
+        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:stackFromBottom="false"
-        android:divider="@android:color/transparent"
-        android:transcriptMode="alwaysScroll"
-        tools:listitem="@layout/list_item_course"/>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
-</RelativeLayout>
+        app:tabMode="fixed" />
+
+    <android.support.v4.view.ViewPager
+        style="@style/TabIndexStyle"
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>
