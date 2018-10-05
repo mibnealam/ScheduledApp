@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +18,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.View.INVISIBLE;
 
 
 /**
@@ -45,6 +49,7 @@ public class EnrolledCoursesFragment extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mCourseDatabaseReferance;
     private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
 
 
     public EnrolledCoursesFragment() {
@@ -54,7 +59,7 @@ public class EnrolledCoursesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_enrolled_courses, container, false);
+        View rootView = inflater.inflate(R.layout.course_list, container, false);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -65,15 +70,15 @@ public class EnrolledCoursesFragment extends Fragment {
             // No user is signed in
         }
 
-        mCourseDatabaseReferance = mFirebaseDatabase.getReference().child("users/" + uid);
+        mCourseDatabaseReferance = mFirebaseDatabase.getReference().child("users/" + uid + "/courses");
 
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_enrolled_course);
-        mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_enrolled_courses);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_course_list);
+        mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_course_list);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mCourseRecyclerView = (RecyclerView) rootView.findViewById(R.id.enrolled_course_list_view);
+        mCourseRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_course);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -95,26 +100,39 @@ public class EnrolledCoursesFragment extends Fragment {
         // Initialize course ListView and its adapter
 
         // Initialize progress bar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
         attachDatabaseReadListener();
 
         return rootView;
     }
 
     private void attachDatabaseReadListener() {
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    mProgressBar.setVisibility(INVISIBLE);
+                } else {
+                    mProgressBar.setVisibility(INVISIBLE);
+                    mEmptyTextView.setText(R.string.prompt_no_selected_course);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mCourseDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
+
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if (dataSnapshot.child("courses").exists()){
-                        Course courses =  dataSnapshot.child("courses").getValue(Course.class);
+                        Course courses =  dataSnapshot.getValue(Course.class);
                         courseList.add(courses);
                         mCourseAdapter.setCourseData(courseList);
-                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    } else {
-                        //Todo set no course available
-                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                        mEmptyTextView.setText("You have\'t selected any course!");
-                    }
+                        mProgressBar.setVisibility(INVISIBLE);
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
@@ -125,6 +143,7 @@ public class EnrolledCoursesFragment extends Fragment {
             mCourseDatabaseReferance.addChildEventListener(mChildEventListener);
         }
     }
+
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
             mCourseDatabaseReferance.removeEventListener(mChildEventListener);

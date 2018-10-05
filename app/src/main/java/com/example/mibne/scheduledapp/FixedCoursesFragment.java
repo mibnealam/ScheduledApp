@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,14 +11,19 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.View.INVISIBLE;
 
 
 /**
@@ -37,10 +43,17 @@ public class FixedCoursesFragment extends Fragment {
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
 
+    private String uid;
+    private String mUserOrganization;
+    private String mUserDepartment;
+    private String mUserBatch;
+
+
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mCourseDatabaseReferance;
     private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
 
 
     public FixedCoursesFragment() {
@@ -50,19 +63,31 @@ public class FixedCoursesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_fixed_courses, container, false);
+        View rootView = inflater.inflate(R.layout.course_list, container, false);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mCourseDatabaseReferance = mFirebaseDatabase.getReference().child("sub/40/fixedCourses");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            uid = user.getUid();
+        } else {
+            // No user is signed in
+        }
 
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_fixed_course);
-        mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_fixed_courses);
+        mUserOrganization = "sub";
+        mUserDepartment = "cse";
+        mUserBatch = "40";
+
+        mCourseDatabaseReferance = mFirebaseDatabase.getReference().child( mUserOrganization + "/" + mUserDepartment + "/" + mUserBatch + "/fixedCourses");
+
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_course_list);
+        mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_course_list);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mCourseRecyclerView = (RecyclerView) rootView.findViewById(R.id.fixed_course_list_view);
+        mCourseRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_course);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -91,6 +116,25 @@ public class FixedCoursesFragment extends Fragment {
     }
 
     private void attachDatabaseReadListener() {
+
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    mProgressBar.setVisibility(INVISIBLE);
+                } else {
+                    mProgressBar.setVisibility(INVISIBLE);
+                    mEmptyTextView.setText(R.string.prompt_no_course);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mCourseDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
+
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override

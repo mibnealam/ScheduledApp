@@ -11,12 +11,20 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdapterViewHolder> {
 
-    private Context context;
+    //firebase database reference
+    private DatabaseReference mDatabase;
 
+    private String uid;
+    private Context context;
     private List<Course> courseList;
     /**
      * Default Constructor for CourseAdapter
@@ -48,7 +56,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified
-     * position. In this method, we update the contents of the ViewHolder to display the weather
+     * position. In this method, we update the contents of the ViewHolder to display the course
      * details for this particular position, using the "position" argument that is conveniently
      * passed into us.
      *
@@ -59,7 +67,20 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
-        Course course = courseList.get(position);
+
+        //Gets the current uid and initializes into variable uid
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            uid = user.getUid();
+        } else {
+            // No user is signed in
+        }
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("users/" + uid);
+
+        //Initialization and setting the course data into views.
+        final Course course = courseList.get(position);
         courseAdapterViewHolder.creditCircle.setColor(getCreditColor(course.getCourseCredit()));
         courseAdapterViewHolder.mCourseCreditTextView.setText(course.getCourseCredit());
         courseAdapterViewHolder.mCourseCodeTextView.setText(course.getCourseCode());
@@ -68,13 +89,20 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         //in some cases, it will prevent unwanted situations
         courseAdapterViewHolder.checkBox.setOnCheckedChangeListener(null);
 
-        //if true, your checkbox will be selected, else unselected
+        //if true, checkbox will be selected, else unselected
         courseAdapterViewHolder.checkBox.setChecked(courseList.get(position).isSelected());
 
         courseAdapterViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 courseList.get(courseAdapterViewHolder.getAdapterPosition()).setSelected(isChecked);
+                if (isChecked) {
+                    //Add a course into users/uid/courses object of firebase database when a course is checked
+                    mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
+                } else {
+                    //Delete a course from users/uid/courses object of firebase database when a course is unchecked
+                    mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
+                }
             }
         });
     }

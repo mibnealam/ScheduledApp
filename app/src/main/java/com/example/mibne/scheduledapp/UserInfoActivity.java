@@ -97,8 +97,8 @@ public class UserInfoActivity extends AppCompatActivity  {
         }
 
         //Get organizations
-        String[] organizationsArray = {"SUB"};
-        String[] departmentsArray = {"CSE"};
+        String[] organizationsArray = {"sub"};
+        String[] departmentsArray = {"cse"};
 
 
         Spinner organizationSpinner = (Spinner) findViewById(R.id.organizations_spinner);

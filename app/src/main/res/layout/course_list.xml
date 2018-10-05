@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AllCoursesFragment">
+    tools:context=".FixedCoursesActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/course_list_view"
+        android:id="@+id/recycler_view_course"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:stackFromBottom="false"
@@ -16,7 +16,7 @@
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
-        android:id="@+id/empty_view_all_courses"
+        android:id="@+id/empty_view_course_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -24,11 +24,11 @@
 
     <!-- Loading indicator is only visible when the list is loading. -->
     <ProgressBar
-        android:id="@+id/progress_bar_all_course"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+    android:id="@+id/progress_bar_course_list"
+    style="?android:attr/progressBarStyleLarge"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"/>
 
 </RelativeLayout>
