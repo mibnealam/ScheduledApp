@@ -99,9 +99,11 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                 if (isChecked) {
                     //Add a course into users/uid/courses object of firebase database when a course is checked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
+                    //Todo: also add this user id into the selected course
                 } else {
                     //Delete a course from users/uid/courses object of firebase database when a course is unchecked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
+                    //Todo: also remove this user id from the selected course
                 }
             }
         });

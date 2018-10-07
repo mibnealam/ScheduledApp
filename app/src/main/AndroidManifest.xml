@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_logo"
@@ -52,7 +55,10 @@
         <activity android:name=".ThisWeekActivity" />
         <activity android:name=".AllCoursesActivity" />
         <activity android:name=".FixedCoursesActivity" />
-        <activity android:name=".EnrolledCoursesActivity"></activity>
+        <activity android:name=".EnrolledCoursesActivity" />
+        <activity android:name=".UploadCourseActivity"
+            android:label="Upload Courses"
+            android:parentActivityName=".AllCoursesActivity"></activity>
     </application>
 
 </manifest>

@@ -12,7 +12,9 @@
         android:stackFromBottom="false"
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
-        tools:listitem="@layout/list_item_course"/>
+        tools:listitem="@layout/list_item_course"
+        android:paddingBottom="96dp"
+        android:clipToPadding="false"/>
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
@@ -30,5 +32,14 @@
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_add_white_24dp"
+        android:layout_margin="16dp" />
 
 </RelativeLayout>

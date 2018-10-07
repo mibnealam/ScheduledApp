@@ -5,6 +5,7 @@
     <color name="colorAccent">#1fc0fd</color>
     <color name="gray">#b0b0b0</color>
     <color name="blue">#0076cf</color>
+    <color name="green">#388e3c</color>
 
     <!-- Text color for the course name in the list item -->
     <color name="textColorCourseName">#818181</color>

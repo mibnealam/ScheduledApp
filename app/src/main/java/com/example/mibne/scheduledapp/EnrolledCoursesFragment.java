@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +62,9 @@ public class EnrolledCoursesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.course_list, container, false);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+        fab.setVisibility(INVISIBLE);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
