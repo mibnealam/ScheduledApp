@@ -25,6 +25,7 @@
     <string name="action_log_in">Log in</string>
     <string name="action_log_out">Logout</string>
     <string name="action_settings">Settings</string>
+    <string name="action_export">Export Notice</string>
 
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>

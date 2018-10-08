@@ -68,8 +68,18 @@
                 android:text="Sept 5"/>
         </LinearLayout>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/export_notice_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_export"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:background="@color/colorAccent"/>
 
+    </LinearLayout>
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
         android:id="@+id/empty_view"

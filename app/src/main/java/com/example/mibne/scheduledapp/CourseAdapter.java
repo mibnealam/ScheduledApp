@@ -174,7 +174,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                 break;
             case "3.0" : creditColorResourceId = R.color.credit5;
                 break;
-            case "3.5" : creditColorResourceId = R.color.credit6;
+            case "4.0" : creditColorResourceId = R.color.credit6;
                 break;
             default: creditColorResourceId = R.color.colorAccent;
                 break;

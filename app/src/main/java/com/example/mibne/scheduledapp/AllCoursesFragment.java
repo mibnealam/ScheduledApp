@@ -1,13 +1,22 @@
 package com.example.mibne.scheduledapp;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,10 +33,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.constraint.Constraints.TAG;
+
 import static android.view.View.INVISIBLE;
 
 
@@ -40,9 +64,11 @@ import static android.view.View.INVISIBLE;
  * create an instance of this fragment.
  */
 public class AllCoursesFragment extends Fragment {
+    private String TAG = "AllCoursesFragment";
     private static final int READ_REQUEST_CODE = 42;
 
     private List<Course> courseList = new ArrayList<>();
+    private List<Course> uploadCourseList = new ArrayList<>();
 
     private RecyclerView mCourseRecyclerView;
     private CourseAdapter mCourseAdapter;
@@ -73,6 +99,7 @@ public class AllCoursesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 performFileSearch();
+                checkFilePermissions();
             }
         });
 
@@ -119,7 +146,6 @@ public class AllCoursesFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
-
         // The ACTION_OPEN_DOCUMENT intent was sent with the request code
         // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
         // response to some other intent, and the code below shouldn't run at all.
@@ -132,8 +158,8 @@ public class AllCoursesFragment extends Fragment {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                Log.i("uri_of_data", "Uri: " + uri.toString());
-                //showImage(uri);
+                Log.v(TAG, getRealPathFromUri(uri));
+                readExcelData(uri);
             }
         }
     }
@@ -179,7 +205,9 @@ public class AllCoursesFragment extends Fragment {
                     mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 }
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    mEmptyTextView.setVisibility(INVISIBLE);
+                }
                 public void onChildRemoved(DataSnapshot dataSnapshot) {}
                 public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
                 public void onCancelled(DatabaseError databaseError) {}
@@ -213,5 +241,263 @@ public class AllCoursesFragment extends Fragment {
         intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
+    /**
+     *reads the excel file columns then rows. Stores data as ExcelUploadData object
+     * @return
+     */
+    private void readExcelData(Uri uri) {
+        Log.d(TAG, "readExcelData: Reading Excel File.");
+        //decarle input file
+        File inputFile = new File(getRealPathFromUri(uri));
+
+        try {
+            InputStream inputStream = new FileInputStream(inputFile);
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            int rowsCount = sheet.getPhysicalNumberOfRows();
+            FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            StringBuilder sb = new StringBuilder();
+
+            //outer loop, loops through rows
+            for (int r = 1; r < rowsCount; r++) {
+                Row row = sheet.getRow(r);
+                int cellsCount = row.getPhysicalNumberOfCells();
+                //inner loop, loops through columns
+                for (int c = 0; c < cellsCount; c++) {
+                    //handles if there are too many columns on the excel sheet.
+                    if(c>3){
+                        Log.e(TAG, "readExcelData: ERROR. Excel File Format is incorrect! " );
+                        //toastMessage("ERROR: Excel File Format is incorrect!");
+                        break;
+                    }else{
+                        String value = getCellAsString(row, c, formulaEvaluator);
+                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
+                        Log.d(TAG, "readExcelData: Data from row: " + cellInfo);
+                        sb.append(value + ",");
+                    }
+                }
+                sb.append(":");
+            }
+            Log.d(TAG, "readExcelData: STRINGBUILDER: " + sb.toString());
+
+            parseStringBuilder(sb);
+
+        }catch (FileNotFoundException e) {
+            Log.e(TAG, "readExcelData: FileNotFoundException. " + e.getMessage() );
+        } catch (IOException e) {
+            Log.e(TAG, "readExcelData: Error reading inputstream. " + e.getMessage() );
+        }
+    }
+
+    /**
+     * Method for parsing imported data and storing in ArrayList<Course>
+     */
+    public void parseStringBuilder(StringBuilder mStringBuilder){
+        Log.d(TAG, "parseStringBuilder: Started parsing.");
+
+        // splits the sb into rows.
+        String[] rows = mStringBuilder.toString().split(":");
+
+        //Add to the ArrayList<Course> row by row
+        for(int i=0; i<rows.length; i++) {
+            //Split the columns of the rows
+            String[] columns = rows[i].split(",");
+
+            //use try catch to make sure there are no "" that try to parse into doubles.
+            try{
+                String courseCode = (columns[0]);
+                String courseName = (columns[1]);
+                String courseCredit = (columns[2]);
+
+                String cellInfo = "(courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")";
+                Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
+
+                //add the the uploadData ArrayList
+                uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
+                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName));
+
+            }catch (NumberFormatException e){
+
+                Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
+
+            }
+        }
+
+        printDataToLog();
+    }
+
+    private void printDataToLog() {
+        Log.d(TAG, "printDataToLog: Printing data to log...");
+
+        for(int i = 0; i< uploadCourseList.size(); i++){
+            String courseCode = uploadCourseList.get(i).getCourseCode();
+            String courseName = uploadCourseList.get(i).getCourseName();
+            String courseCredit = uploadCourseList.get(i).getCourseCredit();
+            Log.d(TAG, "printDataToLog: (courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")");
+        }
+    }
+
+    /**
+     * Returns the cell as a string from the excel file
+     * @param row
+     * @param c
+     * @param formulaEvaluator
+     * @return
+     */
+    private String getCellAsString(Row row, int c, FormulaEvaluator formulaEvaluator) {
+        String value = "";
+        try {
+            Cell cell = row.getCell(c);
+            CellValue cellValue = formulaEvaluator.evaluate(cell);
+            switch (cellValue.getCellType()) {
+                case Cell.CELL_TYPE_BOOLEAN:
+                    value = ""+cellValue.getBooleanValue();
+                    break;
+                case Cell.CELL_TYPE_NUMERIC:
+                    double numericValue = cellValue.getNumberValue();
+                    if(HSSFDateUtil.isCellDateFormatted(cell)) {
+                        double date = cellValue.getNumberValue();
+                        SimpleDateFormat formatter =
+                                new SimpleDateFormat("MM/dd/yy");
+                        value = formatter.format(HSSFDateUtil.getJavaDate(date));
+                    } else {
+                        value = ""+numericValue;
+                    }
+                    break;
+                case Cell.CELL_TYPE_STRING:
+                    value = ""+cellValue.getStringValue();
+                    break;
+                default:
+            }
+        } catch (NullPointerException e) {
+
+            Log.e(TAG, "getCellAsString: NullPointerException: " + e.getMessage() );
+        }
+        return value;
+    }
+
+    /**
+     * Checks file permissions
+     * If there is no file read permission then this method will make a request.
+     */
+
+    private void checkFilePermissions() {
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                this.requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, 1001); //Any number
+            }
+        }else{
+            Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
+        }
+    }
+
+    /**
+     * Gets the full file path from a uri received from a file picker.
+     * @param uri uri of a file
+     * @return file path of the given uri
+     */
+    public String getRealPathFromUri(final Uri uri) {
+        // DocumentProvider
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(getContext(), uri)) {
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+
+                final String id = DocumentsContract.getDocumentId(uri);
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                return getDataColumn(getContext(), contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[]{
+                        split[1]
+                };
+
+                return getDataColumn(getContext(), contentUri, selection, selectionArgs);
+            }
+        }
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+
+            return getDataColumn(getContext(), uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
+    private String getDataColumn(Context context, Uri uri, String selection,
+                                 String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {
+                column
+        };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+    private boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    private boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    private boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    private boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 }
