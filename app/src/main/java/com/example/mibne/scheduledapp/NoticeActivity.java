@@ -5,37 +5,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.View.INVISIBLE;
 
 public class NoticeActivity extends AppCompatActivity {
     private ListView mNoticeListView;
     private ProgressBar mProgressBar;
+    private TextView mEmptyTextView;
     private String mUsername;
+    private String uid;
+    private String mNoticeType;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mNoticeDatabaseReferance;
+    private DatabaseReference rootRef;
     private ChildEventListener mChildEventListener;
+    private ValueEventListener mValueEventListener;
 
     /**
      * Constant value for the notice loader ID. We can choose any integer.
@@ -57,21 +63,44 @@ public class NoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            uid = user.getUid();
+        } else {
+            // No user is signed in
+        }
+
+        final Bundle bundle = getIntent().getExtras();
+        mNoticeType = bundle.getString("Type");
+        getSupportActionBar().setTitle(mNoticeType);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        FloatingActionButton fabNotice = findViewById(R.id.fab_notice);
+        fabNotice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), CreateNoticeActivity.class);
+                intent.putExtra("Type", bundle.getString("Type"));
+                startActivity(intent);
+            }
+        });
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mNoticeDatabaseReferance = mFirebaseDatabase.getReference().child("notices");
+        //Todo : put feature user preferences to get data from different nodes and show
+        rootRef = mFirebaseDatabase.getReference();
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mEmptyTextView = (TextView) findViewById(R.id.empty_view_notice);
         mNoticeListView = (ListView) findViewById(R.id.notice_list_view);
 
         // Initialize notice ListView and its adapter
         final List<Notice> notices = new ArrayList<>();
         mNoticeAdapter = new NoticeAdapter(this, R.layout.list_item_notice, notices);
         mNoticeListView.setAdapter(mNoticeAdapter);
-
-        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
-        mNoticeListView.setEmptyView(mEmptyStateTextView);
 
         // Set an item click listener on the ListView, which sends an intent to a single Notice Activity
         // to know details about a notice
@@ -83,6 +112,7 @@ public class NoticeActivity extends AppCompatActivity {
 
                 Intent noticeFullViewIntent = new Intent(getApplicationContext(), SingleNoticeActivity.class);
                 Bundle bundle = new Bundle();
+                bundle.putString("Type", currentNotice.getNoticeType());
                 bundle.putString("Title", currentNotice.getNoticeTitle());
                 bundle.putString("Date", currentNotice.getNoticeDate().toString());
                 bundle.putString("Description", currentNotice.getNoticeDescription());
@@ -116,17 +146,45 @@ public class NoticeActivity extends AppCompatActivity {
             loadingIndicator.setVisibility(View.GONE);
 
             // Update empty state with no connection error message
-            mEmptyStateTextView.setText(R.string.no_internet_connection);
+            mEmptyStateTextView.setText(R.string.prompt_no_internet_connection);
         }
         View view = findViewById(R.id.progress_bar);
         view.setVisibility(View.GONE);
         attachDatabaseReadListener();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        attachDatabaseReadListener();
+    }
 
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        detachDatabaseReadListener();
+        mNoticeAdapter.clear();
+    }
 
     private void attachDatabaseReadListener() {
+
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    mProgressBar.setVisibility(INVISIBLE);
+                } else {
+                    mProgressBar.setVisibility(INVISIBLE);
+                    mEmptyTextView.setText(R.string.prompt_no_notice);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        //rootRef.child("sub").addListenerForSingleValueEvent(mValueEventListener);
+
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override
@@ -140,12 +198,16 @@ public class NoticeActivity extends AppCompatActivity {
                 public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
                 public void onCancelled(DatabaseError databaseError) {}
             };
-            mNoticeDatabaseReferance.addChildEventListener(mChildEventListener);
+            rootRef.child("sub").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
+            rootRef.child("sub").child("cse").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
+            rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addChildEventListener(mChildEventListener);
+            rootRef.child("sub").child("cse").child("37").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
+            rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
         }
     }
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
-            mNoticeDatabaseReferance.removeEventListener(mChildEventListener);
+            rootRef.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
     }

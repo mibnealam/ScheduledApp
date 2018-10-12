@@ -53,7 +53,7 @@
             android:fontFamily="roboto"
             android:maxLines="1"
             android:textColor="@android:color/white"
-            android:textSize="12sp"
+            android:textSize="14sp"
             tools:text="Notice Description" />
 
     </LinearLayout>

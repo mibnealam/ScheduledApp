@@ -44,7 +44,6 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.list_item_notice, parent, false);
         }
 
-        //TextView noticeTitleTextView = (TextView) convertView.findViewById(R.id.notice_title);
         //TextView noticeTimeTextView = (TextView) convertView.findViewById(R.id.notice_time);
         TextView noticeDescriptionTextView = (TextView) convertView.findViewById(R.id.notice_description);
         TextView noticeNoticeOwnerTextView = (TextView) convertView.findViewById(R.id.notice_heading);
@@ -80,7 +79,7 @@ public class NoticeAdapter extends ArrayAdapter<Notice> {
      */
     private int getPriorityColor(String priority) {
         int priorityColorResourceId;
-        switch (priority) {
+        switch (priority.toLowerCase()) {
             case "high" : priorityColorResourceId = R.color.priority_1;
                 break;
             case "medium" : priorityColorResourceId = R.color.priority_2;

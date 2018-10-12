@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -49,16 +48,20 @@
         <activity
             android:name=".SingleNoticeActivity"
             android:label="Details"
-            android:parentActivityName=".NoticeActivity" />
+            android:parentActivityName=".NoticeActivity"/>
         <activity android:name=".TodayActivity" />
         <activity android:name=".TomorrowActivity" />
         <activity android:name=".ThisWeekActivity" />
         <activity android:name=".AllCoursesActivity" />
         <activity android:name=".FixedCoursesActivity" />
         <activity android:name=".EnrolledCoursesActivity" />
-        <activity android:name=".UploadCourseActivity"
+        <activity
+            android:name=".UploadCourseActivity"
             android:label="Upload Courses"
-            android:parentActivityName=".AllCoursesActivity"></activity>
+            android:parentActivityName=".AllCoursesActivity" />
+        <activity android:name=".CreateNoticeActivity"
+            android:label="Create Notice"
+            android:parentActivityName=".NoticeActivity"></activity>
     </application>
 
 </manifest>

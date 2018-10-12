@@ -172,12 +172,14 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_notice) {
             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+            intent.putExtra("Type", "Notice");
             startActivity(intent);
         } else if (id == R.id.nav_routine) {
             Intent intent = new Intent(getApplicationContext(), RoutineActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_assignment) {
             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+            intent.putExtra("Type", "Assignment");
             startActivity(intent);
         }else if (id == R.id.nav_registration) {
             Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);

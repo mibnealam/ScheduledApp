@@ -22,6 +22,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     //firebase database reference
     private DatabaseReference mDatabase;
+    private DatabaseReference courseDatabaseRef;
 
     private String uid;
     private Context context;
@@ -78,6 +79,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         }
 
         mDatabase = FirebaseDatabase.getInstance().getReference("users/" + uid);
+        courseDatabaseRef = FirebaseDatabase.getInstance().getReference("sub/cse/courses");
 
         //Initialization and setting the course data into views.
         final Course course = courseList.get(position);
@@ -99,11 +101,13 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                 if (isChecked) {
                     //Add a course into users/uid/courses object of firebase database when a course is checked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
-                    //Todo: also add this user id into the selected course
+                    courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue("true");
+                    //Todo: also add this user id into the selected course fixed course
                 } else {
                     //Delete a course from users/uid/courses object of firebase database when a course is unchecked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
-                    //Todo: also remove this user id from the selected course
+                    courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue(null);
+                    //Todo: also remove this user id from the selected course course fixed course
                 }
             }
         });

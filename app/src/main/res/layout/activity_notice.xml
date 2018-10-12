@@ -21,7 +21,7 @@
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
-        android:id="@+id/empty_view"
+        android:id="@+id/empty_view_notice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -34,4 +34,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_notice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_edit_white_24dp"
+        android:layout_margin="16dp" />
 </RelativeLayout>
