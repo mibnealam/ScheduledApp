@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1006224823864",
+    "firebase_url": "https://scheduledapp-1.firebaseio.com",
+    "project_id": "scheduledapp-1",
+    "storage_bucket": "scheduledapp-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006224823864:android:3762b2d10f74ebfc",
+        "android_client_info": {
+          "package_name": "com.example.mibne.scheduledapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006224823864-cetr3p0j53j274uj1oediaquqrvjtb4t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mibne.scheduledapp",
+            "certificate_hash": "87479a52f80cf2d94af8220594a85927de94abb0"
+          }
+        },
+        {
+          "client_id": "1006224823864-d3dc8r6839m70mvefmg68auemlnnol5g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrDgVpGCp0QUgQ41tSzmiam83JMNEaaTM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006224823864-d3dc8r6839m70mvefmg68auemlnnol5g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

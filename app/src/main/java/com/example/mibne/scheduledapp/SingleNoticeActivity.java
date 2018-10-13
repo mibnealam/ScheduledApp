@@ -1,8 +1,10 @@
 package com.example.mibne.scheduledapp;
 
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,8 +17,6 @@ public class SingleNoticeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_notice);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView titleTextView = (TextView) findViewById(R.id.notice_title);
         TextView dateTextView = (TextView) findViewById(R.id.notice_date);
@@ -45,6 +45,17 @@ public class SingleNoticeActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

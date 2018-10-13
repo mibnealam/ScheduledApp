@@ -71,8 +71,8 @@ public class NoticeActivity extends AppCompatActivity {
             // No user is signed in
         }
 
-        final Bundle bundle = getIntent().getExtras();
-        mNoticeType = bundle.getString("Type");
+        Bundle mNoticeTypeBundle = getIntent().getExtras();
+        mNoticeType = mNoticeTypeBundle.getString("Type");
         getSupportActionBar().setTitle(mNoticeType);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -82,7 +82,7 @@ public class NoticeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CreateNoticeActivity.class);
-                intent.putExtra("Type", bundle.getString("Type"));
+                intent.putExtra("Type", mNoticeType);
                 startActivity(intent);
             }
         });

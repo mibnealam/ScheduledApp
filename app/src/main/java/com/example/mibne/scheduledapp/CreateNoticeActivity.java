@@ -231,6 +231,9 @@ public class CreateNoticeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case android.R.id.home:
+            finish();
+            return true;
             case R.id.send_notice:
                 sendNotice();
                 return true;
