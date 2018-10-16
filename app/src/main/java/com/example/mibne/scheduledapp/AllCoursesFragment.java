@@ -167,6 +167,7 @@ public class AllCoursesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        courseList.clear();
         attachDatabaseReadListener();
     }
 

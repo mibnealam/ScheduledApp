@@ -6,10 +6,10 @@ public class Routine {
     private String mCourseCode;
 
     /* Class starting time of the routines specific course */
-    private Long mStartTime;
+    private String mStartTime;
 
     /* Class ending time of the routines specific course */
-    private Long mEndTime;
+    private String mEndTime;
 
     /* Class holding day of the routines specific course */
     private String mDay;
@@ -22,18 +22,18 @@ public class Routine {
 
     /**Constructs a new {@link Routine} object.
      *
+     * @param day is the class holding day of the routines specific course
      * @param courseCode is the course code of the routine
      * @param startTime is the class starting time of the routines specific course
      * @param endTime is the class ending time of the routines specific course
-     * @param day is the class holding day of the routines specific course
      * @param roomNo is the room number of the routines specific course
      */
-    public Routine (String courseCode, Long startTime, Long endTime,
-                   String day, String roomNo){
+    public Routine (String day, String courseCode, String startTime, String endTime,
+                   String roomNo){
+        this.mDay = day;
         this.mCourseCode = courseCode;
         this.mStartTime = startTime;
         this.mEndTime = endTime;
-        this.mDay = day;
         this.mRoomNo = roomNo;
     }
 
@@ -49,19 +49,19 @@ public class Routine {
     /**
      * Returns the class starting time of a course of the routine.
      */
-    public Long getStartTime (){
+    public String getStartTime (){
         return mStartTime;
     }
-    public void setStartTime (Long startTime){
+    public void setStartTime (String startTime){
         this.mStartTime = startTime;
     }
     /**
      * Returns the class ending time of a course of the routine.
      */
-    public Long getEndTime (){
+    public String getEndTime (){
         return mEndTime;
     }
-    public void setEndTime (Long endTime){
+    public void setEndTime (String endTime){
         this.mEndTime = endTime;
     }
     /**

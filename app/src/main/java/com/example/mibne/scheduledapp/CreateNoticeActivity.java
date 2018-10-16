@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -246,7 +247,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
     private void sendNotice() {
         if (confirmInput()) {
             // Handle item selection
-            if (noticeTo.matches("[cse]")){
+            if (noticeTo.matches("[cse]{3}")){
                 mNoticeDatabaseReferance.child("sub").child(noticeTo).child("notices").push().setValue(notice);
             } else if (noticeTo.matches("[0-9]{2}")) {
                 mNoticeDatabaseReferance.child("sub").child("cse").child(noticeTo).child("notices").push().setValue(notice);

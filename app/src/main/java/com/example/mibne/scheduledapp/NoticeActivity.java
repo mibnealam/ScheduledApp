@@ -156,6 +156,7 @@ public class NoticeActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        mNoticeAdapter.clear();
         attachDatabaseReadListener();
     }
 
@@ -163,7 +164,6 @@ public class NoticeActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         detachDatabaseReadListener();
-        mNoticeAdapter.clear();
     }
 
     private void attachDatabaseReadListener() {
@@ -200,7 +200,8 @@ public class NoticeActivity extends AppCompatActivity {
             };
             rootRef.child("sub").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
             rootRef.child("sub").child("cse").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
-            rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addChildEventListener(mChildEventListener);
+            //Todo fetch notices from sub/cse/courses/courseCode/notices if uid exists
+            //rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addChildEventListener(mChildEventListener);
             rootRef.child("sub").child("cse").child("37").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
             rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
         }
@@ -208,6 +209,7 @@ public class NoticeActivity extends AppCompatActivity {
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
             rootRef.removeEventListener(mChildEventListener);
+            mNoticeAdapter.clear();
             mChildEventListener = null;
         }
     }

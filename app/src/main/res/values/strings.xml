@@ -18,6 +18,7 @@
     <string name="prompt_empty_field">Please fill all the fields!</string>
     <string name="prompt_no_data">Ops! No data available.</string>
     <string name="prompt_no_course">No course available!</string>
+    <string name="prompt_no_routine">No routine available!</string>
     <string name="prompt_no_notice">No notice available!</string>
     <string name="prompt_no_selected_course">Please select your course first!</string>
     <string name="prompt_no_internet_connection">Opps! No internet connection.</string>
