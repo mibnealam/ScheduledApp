@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Scheduled App</string>
+    <string name="app_email">contact.scheduledapp@gmail.com</string>
 
     <!-- Strings for Login and Sign up page -->
     <string name="welcome_text">Welcome to Scheduled App!</string>
@@ -57,6 +58,75 @@
     <string name="category_all_courses">All Courses</string>
     <string name="category_fixed_courses">Fixed</string>
     <string name="category_enrolled_courses">Enrolled</string>
+    <string name="account_title">Account</string>
+    <string name="pref_summary_account">Edit user information</string>
+    <string name="pref_title_account">Account Settings</string>
+
+    <!--Preference screen strings starts -->
+    <string name="pref_account_title">Account</string>
+    <string name="pref_username">Name</string>
+    <string name="pref_default_display_name">John Doe</string>
+    <string name="pref_user_organization_title">Organization</string>
+    <string name="pref_organization_dialogue_title">Select your Organization</string>
+    <string name="pref_department_dialogue_title">Select your Department</string>
+    <string name="pref_user_department_title">Department</string>
+    <string name="sub">State University of Bangladesh</string>
+    <string name="pref_user_id">ID</string>
+    <string name="pref_default_display_id">UG02-00-00-000</string>
+    <string name="pref_default_display_email">scheduledapp@gmail.com</string>
+    <string name="pref_default_display_phone">+88017111000</string>
+    <string name="pref_user_email">Email</string>
+    <string name="pref_user_phone">Phone</string>
+    <string name="user_account_information_title">User Information</string>
+    <string name="pref_registration_title">Registration</string>
+    <string name="title_notification_status">Get Notifications</string>
+    <string name="notifications_status">On</string>
+    <string name="pref_notificationType_title">Notification Targets</string>
+    <string name="pref_notificationType_dialog_title">Notifications you\'ll get from</string>
+    <string name="pref_header_about_title">About</string>
+    <string name="pref_notification_title">Notification</string>
+    <string name="about_summary">This application is a simple notifier app. It’ll help a student/teacher to manage class schedule, notice and assignment and never to miss them unintentionally</string>
+    <string name="title_version">Version</string>
+    <string name="app_version">Alpha 1.0</string>
+    <string name="key_send_feedback">feedback</string>
+    <string name="summary_support">Send your feedback for better user experience</string>
+    <string name="title_send_feedback">Feedback</string>
+
+    <string-array name="pref_organizations_array">
+
+        <item>State University of Bangladesh</item>
+        <item>Department</item>
+
+    </string-array>
+
+    <string-array name="pref_department_array">
+
+        <item>CSE</item>
+        <item>Pharmacy</item>
+        <item>Law</item>
+        <item>Architecture</item>
+        <item>BBA</item>
+
+    </string-array>
+
+    <string-array name="pref_notificationType_entries">
+
+        <item>Organization</item>
+        <item>Department</item>
+        <item>Course</item>
+        <item>Routine</item>
+
+    </string-array>
+    <string-array name="pref_notificationType_default">
+
+        <item>Organization</item>
+        <item>Department</item>
+        <item>Course</item>
+        <item>Routine</item>
+
+    </string-array>
+    <!--Preference screen strings ends -->
+
 
     <string-array name="array_notice_priority">
 
@@ -64,6 +134,7 @@
         <item>Low</item>
         <item>Medium</item>
         <item>High</item>
+
     </string-array>
 
 </resources>
