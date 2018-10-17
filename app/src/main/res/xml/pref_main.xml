@@ -51,9 +51,10 @@
 
         <!-- preference opens a registration intent -->
         <Preference
-            android:title="@string/pref_registration_title">
+            android:title="@string/pref_registration_title"
+            android:summary="@string/registration_summary">
             <intent
-                android:action="android.intent.action.VIEW" />
+                android:action="android.intent.action.RegistrationActivity" />
         </Preference>
 
     </PreferenceCategory>

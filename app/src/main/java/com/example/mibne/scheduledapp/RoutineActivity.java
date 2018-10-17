@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -58,6 +59,7 @@ public class RoutineActivity extends AppCompatActivity {
     private List<Routine> routineList = new ArrayList<>();
     private List<Routine> uploadRoutineList = new ArrayList<>();
 
+    private LinearLayout mRoutineUserView;
     private RecyclerView mRoutineRecyclerView;
     private RoutineAdapter mRoutineAdapter;
     private ProgressBar mProgressBar;
@@ -95,6 +97,7 @@ public class RoutineActivity extends AppCompatActivity {
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_routine_list);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_routine_list);
+        mRoutineUserView = (LinearLayout) findViewById(R.id.user_view_routine);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -123,6 +126,8 @@ public class RoutineActivity extends AppCompatActivity {
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         attachDatabaseReadListener();
+
+        mRoutineUserView.setVisibility(INVISIBLE);
 
     }
 

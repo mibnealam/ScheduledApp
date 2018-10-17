@@ -181,9 +181,6 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
             intent.putExtra("Type", "Assignment");
             startActivity(intent);
-        }else if (id == R.id.nav_registration) {
-            Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
-            startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);

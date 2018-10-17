@@ -90,6 +90,7 @@
     <string name="app_version">Alpha 1.0</string>
     <string name="key_send_feedback">feedback</string>
     <string name="summary_support">Send your feedback for better user experience</string>
+    <string name="registration_summary">Select your courses</string>
     <string name="title_send_feedback">Feedback</string>
 
     <string-array name="pref_organizations_array">
