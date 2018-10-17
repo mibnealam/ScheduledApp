@@ -6,18 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".RegistrationActivity" >
 
-    <ListView
-        android:id="@+id/notice_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/notice_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:stackFromBottom="false"
-        android:divider="@android:color/transparent"
         android:dividerHeight="16dp"
-        android:paddingTop="16dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:stackFromBottom="false"
+        android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
-        tools:listitem="@layout/list_item_notice"/>
+        tools:listitem="@layout/list_item_full_routine"
+        android:paddingBottom="96dp"
+        android:clipToPadding="false"/>
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView

@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -30,8 +29,22 @@ import java.util.List;
 import static android.view.View.INVISIBLE;
 
 public class NoticeActivity extends AppCompatActivity {
-    private ListView mNoticeListView;
+
+    public static final String LOG_TAG = NoticeActivity.class.getName();
+
+    /**
+     * Constant value for the notice loader ID. We can choose any integer.
+     * This really only comes into play if you're using multiple loaders.
+     */
+    private static final int NOTICE_LOADER_ID = 1;
+
+    private List<Notice> noticeList = new ArrayList<>();
+
+    private RecyclerView mNoticeRecyclerView;
+    /** Adapter for the list of Notices */
+    private NoticeAdapter mNoticeAdapter;
     private ProgressBar mProgressBar;
+    /** TextView that is displayed when the list is empty */
     private TextView mEmptyTextView;
     private String mUsername;
     private String uid;
@@ -43,20 +56,6 @@ public class NoticeActivity extends AppCompatActivity {
     private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListener;
 
-    /**
-     * Constant value for the notice loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
-     */
-    private static final int NOTICE_LOADER_ID = 1;
-
-    /** Adapter for the list of Notices */
-    private NoticeAdapter mNoticeAdapter;
-
-
-    public static final String LOG_TAG = NoticeActivity.class.getName();
-
-    /** TextView that is displayed when the list is empty */
-    private TextView mEmptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,33 +94,28 @@ public class NoticeActivity extends AppCompatActivity {
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_notice);
-        mNoticeListView = (ListView) findViewById(R.id.notice_list_view);
+        mNoticeRecyclerView = (RecyclerView) findViewById(R.id.notice_recycler_view);
 
-        // Initialize notice ListView and its adapter
-        final List<Notice> notices = new ArrayList<>();
-        mNoticeAdapter = new NoticeAdapter(this, R.layout.list_item_notice, notices);
-        mNoticeListView.setAdapter(mNoticeAdapter);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mNoticeRecyclerView.setLayoutManager(layoutManager);
 
-        // Set an item click listener on the ListView, which sends an intent to a single Notice Activity
-        // to know details about a notice
-        mNoticeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Find the current notice that was clicked on
-                Notice currentNotice = mNoticeAdapter.getItem(position);
+        /*
+         * Use this setting to improve performance if you know that changes in content do not
+         * change the child layout size in the RecyclerView
+         */
+        mNoticeRecyclerView.setHasFixedSize(true);
 
-                Intent noticeFullViewIntent = new Intent(getApplicationContext(), SingleNoticeActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("Type", currentNotice.getNoticeType());
-                bundle.putString("Title", currentNotice.getNoticeTitle());
-                bundle.putString("Date", currentNotice.getNoticeDate().toString());
-                bundle.putString("Description", currentNotice.getNoticeDescription());
-                bundle.putString("Owner", currentNotice.getNoticeOwner());
-                bundle.putString("Deadline", currentNotice.getNoticeDeadline().toString());
-                noticeFullViewIntent.putExtras(bundle);
-                startActivity(noticeFullViewIntent);
-            }
-        });
+        /*
+         * The CourseAdapter is responsible for linking our course data with the Views that
+         * will end up displaying our course data.
+         */
+        mNoticeAdapter = new NoticeAdapter();
+
+        mNoticeRecyclerView.setAdapter(mNoticeAdapter);
+
+        // Initialize progress bar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
@@ -146,17 +140,16 @@ public class NoticeActivity extends AppCompatActivity {
             loadingIndicator.setVisibility(View.GONE);
 
             // Update empty state with no connection error message
-            mEmptyStateTextView.setText(R.string.prompt_no_internet_connection);
+            mEmptyTextView.setText(R.string.prompt_no_internet_connection);
         }
-        View view = findViewById(R.id.progress_bar);
-        view.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
         attachDatabaseReadListener();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mNoticeAdapter.clear();
+        noticeList.clear();
         attachDatabaseReadListener();
     }
 
@@ -168,29 +161,14 @@ public class NoticeActivity extends AppCompatActivity {
 
     private void attachDatabaseReadListener() {
 
-        mValueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    mProgressBar.setVisibility(INVISIBLE);
-                } else {
-                    mProgressBar.setVisibility(INVISIBLE);
-                    mEmptyTextView.setText(R.string.prompt_no_notice);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        //rootRef.child("sub").addListenerForSingleValueEvent(mValueEventListener);
-
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Notice notice = dataSnapshot.getValue(Notice.class);
-                    mNoticeAdapter.add(notice);
+                    Notice notice =  dataSnapshot.getValue(Notice.class);
+                    noticeList.add(notice);
+                    mNoticeAdapter.setNoticeData(noticeList);
+                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 }
 
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
@@ -209,7 +187,7 @@ public class NoticeActivity extends AppCompatActivity {
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {
             rootRef.removeEventListener(mChildEventListener);
-            mNoticeAdapter.clear();
+            noticeList.clear();
             mChildEventListener = null;
         }
     }

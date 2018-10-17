@@ -121,8 +121,6 @@ public class RoutineActivity extends AppCompatActivity {
 
         mRoutineRecyclerView.setAdapter(mRoutineAdapter);
 
-        // Initialize course ListView and its adapter
-
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         attachDatabaseReadListener();

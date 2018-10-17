@@ -52,7 +52,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
 
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified
-     * position. In this method, we update the contents of the ViewHolder to display the course
+     * position. In this method, we update the contents of the ViewHolder to display the routine
      * details for this particular position, using the "position" argument that is conveniently
      * passed into us.
      *
@@ -63,7 +63,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
     @Override
     public void onBindViewHolder(RoutineAdapterViewHolder routineAdapterViewHolder, int position) {
 
-        //Initialization and setting the course data into views.
+        //Initialization and setting the routine data into views.
         Routine routine = routineList.get(position);
 
         routineAdapterViewHolder.mRoutineDayTextView.setText(routine.getDay().substring(0, 3).toUpperCase());
@@ -78,7 +78,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
      * This method simply returns the number of items to display. It is used behind the scenes
      * to help layout our Views and for animations.
      *
-     * @return The number of items available in our course list
+     * @return The number of items available in our routinelist
      */
     @Override
     public int getItemCount() {
@@ -87,20 +87,20 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
     }
 
     /**
-     * This method is used to set the course data on a RoutineAdapter if we've already
+     * This method is used to set the routine data on a RoutineAdapter if we've already
      * created one. This is handy when we get new data from the firebase but don't want to create a
      * new RoutineAdapter to display it.
      *
-     * @param routineDataData The new weather data to be displayed.
+     * @param routineData The new weather data to be displayed.
      */
-    public void setRoutineData(List<Routine> routineDataData) {
-        routineList = routineDataData;
+    public void setRoutineData(List<Routine> routineData) {
+        routineList = routineData;
         notifyDataSetChanged();
     }
 
 
     /**
-     * Cache of the children views for a course list item.
+     * Cache of the children views for a routine list item.
      */
     public class RoutineAdapterViewHolder extends RecyclerView.ViewHolder {
 
