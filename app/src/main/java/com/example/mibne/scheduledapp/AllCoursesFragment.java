@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -183,6 +184,11 @@ public class AllCoursesFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    for (DataSnapshot courseSnapshot: dataSnapshot.getChildren()) {
+                        Course courses =  courseSnapshot.getValue(Course.class);
+                        courseList.add(courses);
+                    }
+                    mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
@@ -195,26 +201,7 @@ public class AllCoursesFragment extends Fragment {
 
             }
         };
-        mCourseDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
-
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Course courses =  dataSnapshot.getValue(Course.class);
-                    courseList.add(courses);
-                    mCourseAdapter.setCourseData(courseList);
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                }
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    mEmptyTextView.setVisibility(INVISIBLE);
-                }
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            mCourseDatabaseReferance.addChildEventListener(mChildEventListener);
-        }
+        mCourseDatabaseReferance.addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {

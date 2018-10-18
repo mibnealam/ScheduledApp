@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,8 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.View.INVISIBLE;
 
 public class NoticeActivity extends AppCompatActivity {
 
@@ -143,7 +142,6 @@ public class NoticeActivity extends AppCompatActivity {
             mEmptyTextView.setText(R.string.prompt_no_internet_connection);
         }
         mProgressBar.setVisibility(View.GONE);
-        attachDatabaseReadListener();
     }
 
     @Override
@@ -161,28 +159,34 @@ public class NoticeActivity extends AppCompatActivity {
 
     private void attachDatabaseReadListener() {
 
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Notice notice =  dataSnapshot.getValue(Notice.class);
-                    noticeList.add(notice);
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot noticeSnapshot: dataSnapshot.getChildren()) {
+                        Notice notice =  noticeSnapshot.getValue(Notice.class);
+                        noticeList.add(notice);
+                    }
                     mNoticeAdapter.setNoticeData(noticeList);
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    mEmptyTextView.setVisibility(View.GONE);
+                } else {
+                    mProgressBar.setVisibility(View.GONE);
+                    mEmptyTextView.setText(R.string.prompt_no_notice);
                 }
+            }
 
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            rootRef.child("sub").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
-            rootRef.child("sub").child("cse").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
-            //Todo fetch notices from sub/cse/courses/courseCode/notices if uid exists
-            //rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addChildEventListener(mChildEventListener);
-            rootRef.child("sub").child("cse").child("37").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
-            rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addChildEventListener(mChildEventListener);
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        rootRef.child("sub").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child("sub").child("cse").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        //Todo fetch notices from sub/cse/courses/courseCode/notices if uid exists
+        //rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addValueEventListener(mValueEventListener);
+        rootRef.child("sub").child("cse").child("37").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {

@@ -132,6 +132,11 @@ public class FixedCoursesFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    for (DataSnapshot courseSnapshot: dataSnapshot.getChildren()) {
+                        Course courses =  courseSnapshot.getValue(Course.class);
+                        courseList.add(courses);
+                    }
+                    mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
@@ -144,31 +149,7 @@ public class FixedCoursesFragment extends Fragment {
 
             }
         };
-        mCourseDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
-
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if (dataSnapshot.exists()){
-                        Course courses =  dataSnapshot.getValue(Course.class);
-                        courseList.add(courses);
-                        mCourseAdapter.setCourseData(courseList);
-                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    } else {
-                        //Todo set no course available
-                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                        mEmptyTextView.setText("No Course Available!");
-                    }
-                }
-
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            mCourseDatabaseReferance.addChildEventListener(mChildEventListener);
-        }
+        mCourseDatabaseReferance.addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
         if (mChildEventListener != null) {

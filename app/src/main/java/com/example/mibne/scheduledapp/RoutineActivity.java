@@ -123,7 +123,6 @@ public class RoutineActivity extends AppCompatActivity {
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        attachDatabaseReadListener();
 
         mRoutineUserView.setVisibility(INVISIBLE);
 
@@ -164,15 +163,22 @@ public class RoutineActivity extends AppCompatActivity {
         }
     }
 
+
     private void attachDatabaseReadListener() {
         mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
+                        Routine routine =  routineDataSnapshot.getValue(Routine.class);
+                        routineList.add(routine);
+                    }
+                    mRoutineAdapter.setRoutineData(routineList);
+                    mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
-                    mEmptyTextView.setText(R.string.prompt_no_routine);
+                    mEmptyTextView.setText(R.string.prompt_no_notice);
                 }
             }
 
@@ -181,31 +187,13 @@ public class RoutineActivity extends AppCompatActivity {
 
             }
         };
-        mRoutineDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
-
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Routine routines =  dataSnapshot.getValue(Routine.class);
-                    routineList.add(routines);
-                    mRoutineAdapter.setRoutineData(routineList);
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                }
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    mEmptyTextView.setVisibility(INVISIBLE);
-                }
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            mRoutineDatabaseReferance.addChildEventListener(mChildEventListener);
-        }
+        mRoutineDatabaseReferance.addValueEventListener(mValueEventListener);
     }
+
     private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mRoutineDatabaseReferance.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
+        if (mValueEventListener != null) {
+            mRoutineDatabaseReferance.removeEventListener(mValueEventListener);
+            mValueEventListener = null;
         }
     }
 
