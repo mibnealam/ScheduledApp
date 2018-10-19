@@ -25,7 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -304,7 +306,12 @@ public class AllCoursesFragment extends Fragment {
 
                 //add the the uploadData ArrayList
                 uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
-                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName));
+                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getContext(), "Course Upload Successful.", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }catch (NumberFormatException e){
 

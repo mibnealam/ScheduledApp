@@ -1,7 +1,9 @@
 package com.example.mibne.scheduledapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -61,16 +66,35 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
      * @param position                  The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(RoutineAdapterViewHolder routineAdapterViewHolder, int position) {
+    public void onBindViewHolder(RoutineAdapterViewHolder routineAdapterViewHolder, final int position) {
 
         //Initialization and setting the routine data into views.
-        Routine routine = routineList.get(position);
+        final Routine routine = routineList.get(position);
 
         routineAdapterViewHolder.mRoutineDayTextView.setText(routine.getDay().substring(0, 3).toUpperCase());
         routineAdapterViewHolder.mRoutineCourseCodeTextView.setText(routine.getCourseCode());
         routineAdapterViewHolder.mRoutineTimeTextView.setText(routine.getStartTime() + "-" + routine.getEndTime());
         routineAdapterViewHolder.mRoutineRoomNoTextView.setText(routine.getRoomNo());
         routineAdapterViewHolder.linearLayout.setBackgroundColor(getDayColor(routine.getDay().toLowerCase()));
+
+        // Set an item click listener on the ListView, which sends an intent to a single Notice Activity
+        // to know details about a notice
+        routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Item " + position + " just clicked!", Toast.LENGTH_SHORT).show();
+
+//                Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("courseCode", routine.getCourseCode());
+//                bundle.putString("day", routine.getDay());
+//                bundle.putString("startTime", routine.getStartTime());
+//                bundle.putString("endTime", routine.getEndTime());
+//                bundle.putString("roomNo", routine.getRoomNo());
+//                editRoutineIntent.putExtras(bundle);
+//                context.startActivity(editRoutineIntent);
+            }
+        });
     }
 
 

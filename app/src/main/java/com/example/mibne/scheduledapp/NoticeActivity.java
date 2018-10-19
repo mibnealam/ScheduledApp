@@ -141,7 +141,7 @@ public class NoticeActivity extends AppCompatActivity {
             // Update empty state with no connection error message
             mEmptyTextView.setText(R.string.prompt_no_internet_connection);
         }
-        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override

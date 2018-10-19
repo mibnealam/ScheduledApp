@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="16dp"
+    tools:context=".AddRoutineActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/course_code_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:errorEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edit_text_course_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textAllCaps="true"
+            android:textSize="18sp"
+            android:maxLines="3"
+            android:hint="CSE-0101" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/room_no_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:errorEnabled="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edit_text_room_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textSize="18sp"
+            android:maxLines="3"
+            android:hint="Room No" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/text_view_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="center"
+                android:hint="8.00 AM"/>
+
+            <Button
+                android:id="@+id/button_start_time_picker"
+                style="?android:textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_start_time"
+                android:textStyle="normal"
+                android:layout_gravity="right"
+                android:textAllCaps="false"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="showStartTimePickerDialog"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/text_view_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="center"
+                android:hint="5.00 PM"/>
+
+            <Button
+                android:id="@+id/button_end_time_picker"
+                style="?android:textAppearanceSmall"
+                android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/action_end_time"
+                android:textStyle="normal"
+                android:layout_gravity="right"
+                android:textAllCaps="false"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="showEndTimePickerDialog"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <Spinner
+                android:id="@+id/week_day_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:padding="16dp"
+                android:gravity="center"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/button_add_class"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/white"
+        android:text="@string/action_add_class"
+        android:layout_gravity="center"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

@@ -24,7 +24,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -80,16 +83,28 @@ public class RoutineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
 
-        FloatingActionButton fab = findViewById(R.id.fab_add_routine);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonUploadRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_upload_routine);
+
+        floatingActionButtonUploadRoutine.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                performFileSearch();
+            public void onClick(View v) {
                 checkFilePermissions();
+                performFileSearch();
+
             }
         });
 
+        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonAddRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_add_routine);
 
+        floatingActionButtonAddRoutine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AddRoutineActivity.class);
+                startActivity(intent);
+            }
+        });
+        
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
         mUserOrganization = "sub";
@@ -294,7 +309,12 @@ public class RoutineActivity extends AppCompatActivity {
                 //add the the uploadData ArrayList
                 uploadRoutineList.add(new Routine(day,courseCode,startTime,endTime,roomNo));
                 Log.v(TAG, uploadRoutineList.toString());
-                mRoutineDatabaseReferance.push().setValue(new Routine(day,courseCode,startTime,endTime,roomNo));
+                mRoutineDatabaseReferance.push().setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(RoutineActivity.this, "Routine Upload SuccessFul!", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }catch (NumberFormatException e){
 

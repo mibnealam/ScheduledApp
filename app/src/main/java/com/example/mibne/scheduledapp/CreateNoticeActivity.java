@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,11 +37,11 @@ import java.util.Date;
 
 public class CreateNoticeActivity extends AppCompatActivity {
 
-    TextInputLayout noticeTitleEditText;
-    TextView buttonDatePicker;
-    TextInputLayout noticeDescriptionEditText;
-    TextInputLayout noticeToEditText;
-    TextInputLayout noticeFromEditText;
+    private TextInputLayout noticeTitleEditText;
+    private TextView buttonDatePicker;
+    private TextInputLayout noticeDescriptionEditText;
+    private TextInputLayout noticeToEditText;
+    private TextInputLayout noticeFromEditText;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -49,16 +50,16 @@ public class CreateNoticeActivity extends AppCompatActivity {
 
     private Notice notice;
 
-    String title;
-    String description;
-    String owner;
-    String noticeTo;
-    static Long deadline;
-    static boolean deadlineIsEmpty = true;
-    String noticePriority;
-    boolean noticePriorityIsEmpty = true;
-    Long date;
-    String noticeType;
+    private String title;
+    private String description;
+    private String owner;
+    private String noticeTo;
+    private static Long deadline;
+    private static boolean deadlineIsEmpty = true;
+    private String noticePriority;
+    private boolean noticePriorityIsEmpty = true;
+    private Long date;
+    private String noticeType;
 
 
     @Override
@@ -248,18 +249,42 @@ public class CreateNoticeActivity extends AppCompatActivity {
         if (confirmInput()) {
             // Handle item selection
             if (noticeTo.matches("[cse]{3}")){
-                mNoticeDatabaseReferance.child("sub").child(noticeTo).child("notices").push().setValue(notice);
+                mNoticeDatabaseReferance.child("sub").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
             } else if (noticeTo.matches("[0-9]{2}")) {
-                mNoticeDatabaseReferance.child("sub").child("cse").child(noticeTo).child("notices").push().setValue(notice);
+                mNoticeDatabaseReferance.child("sub").child("cse").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
             }  else if (noticeTo.matches("[A-Za-z]{3}-[0-9]{4}")) {
-                mNoticeDatabaseReferance.child("sub").child("cse").child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice);
+                mNoticeDatabaseReferance.child("sub").child("cse").child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                });
             } else if (noticeTo.matches("[uUpP][gG][0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}")) {
                 mUserDatabaseReferance.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for(DataSnapshot data: dataSnapshot.getChildren()){
                             if (data.child("username").getValue().equals(noticeTo)) {
-                                mUserDatabaseReferance.child(data.getKey()).child("notices").push().setValue(notice);
+                                mUserDatabaseReferance.child(data.getKey()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    }
+                                });
                             } else {
                                 Toast.makeText(getApplicationContext(), "User " + noticeTo + "does not exist.", Toast.LENGTH_LONG).show();
                             }
@@ -275,9 +300,6 @@ public class CreateNoticeActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Wrong input To!", Toast.LENGTH_SHORT).show();
             }
-            Log.v("noticeTag", notice.toString());
-            Toast.makeText(getApplicationContext(), "Sending Notice", Toast.LENGTH_SHORT).show();
-            finish();
         }
     }
 
