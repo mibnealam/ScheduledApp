@@ -31,6 +31,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static ScrollView scrollView;
+    private static View loadingIndicator;
+
     private EditText userIdEditText;
 
     private static final  int RC_SIGN_IN = 9001;
@@ -45,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        View loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
+        loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
         userIdEditText = findViewById(R.id.user_id);
@@ -123,10 +126,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // [START signIn]
     private void signIn() {
         Log.v("test", "User Starts sign in!");
-        //ScrollView scrollView = findViewById(R.id.login_form);
-        //scrollView.setVisibility(View.GONE);
-        //View loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
-        //loadingIndicator.setVisibility(View.VISIBLE);
+        scrollView = findViewById(R.id.login_form);
+        scrollView.setVisibility(View.GONE);
+        loadingIndicator.setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -137,18 +139,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
+                scrollView.setVisibility(View.GONE);
+                loadingIndicator.setVisibility(View.VISIBLE);
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                // ...
+                scrollView.setVisibility(View.VISIBLE);
+                loadingIndicator.setVisibility(View.GONE);
             }
         }
     }

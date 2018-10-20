@@ -172,7 +172,13 @@ public class NoticeActivity extends AppCompatActivity {
                     mEmptyTextView.setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_notice);
+                    switch (mNoticeType) {
+                        case "Assignment" :
+                            mEmptyTextView.setText(R.string.prompt_no_assignment);
+                            break;
+                        case "Notice" :
+                            mEmptyTextView.setText(R.string.prompt_no_notice);
+                    }
                 }
             }
 

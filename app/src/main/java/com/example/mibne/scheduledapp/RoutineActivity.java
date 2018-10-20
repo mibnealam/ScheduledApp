@@ -172,7 +172,6 @@ public class RoutineActivity extends AppCompatActivity {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                Log.v(TAG, getRealPathFromUri(uri));
                 readExcelData(uri);
             }
         }
@@ -193,7 +192,7 @@ public class RoutineActivity extends AppCompatActivity {
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
-                    mEmptyTextView.setText(R.string.prompt_no_notice);
+                    mEmptyTextView.setText(R.string.prompt_no_routine);
                 }
             }
 
@@ -239,11 +238,8 @@ public class RoutineActivity extends AppCompatActivity {
      */
     private void readExcelData(Uri uri) {
         Log.d(TAG, "readExcelData: Reading Excel File.");
-        //decarle input file
-        File inputFile = new File(getRealPathFromUri(uri));
-
         try {
-            InputStream inputStream = new FileInputStream(inputFile);
+            InputStream inputStream = getInputUri(uri);
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheetAt(0);
             int rowsCount = sheet.getPhysicalNumberOfRows();
@@ -312,7 +308,7 @@ public class RoutineActivity extends AppCompatActivity {
                 mRoutineDatabaseReferance.push().setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(RoutineActivity.this, "Routine Upload SuccessFul!", Toast.LENGTH_SHORT).show();
+                        mEmptyTextView.setVisibility(View.GONE);
                     }
                 });
 
@@ -396,110 +392,8 @@ public class RoutineActivity extends AppCompatActivity {
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
-
-    /**
-     * Gets the full file path from a uri received from a file picker.
-     * @param uri uri of a file
-     * @return file path of the given uri
-     */
-    public String getRealPathFromUri(final Uri uri) {
-        // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(this, uri)) {
-            // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-            }
-            // DownloadsProvider
-            else if (isDownloadsDocument(uri)) {
-
-                final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(this, contentUri, null, null);
-            }
-            // MediaProvider
-            else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-
-                final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{
-                        split[1]
-                };
-
-                return getDataColumn(this, contentUri, selection, selectionArgs);
-            }
-        }
-        // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
-            // Return the remote address
-            if (isGooglePhotosUri(uri))
-                return uri.getLastPathSegment();
-
-            return getDataColumn(this, uri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return null;
-    }
-
-    private String getDataColumn(Context context, Uri uri, String selection,
-                                 String[] selectionArgs) {
-
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    private boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    private InputStream getInputUri(Uri uri) throws IOException {
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        return inputStream;
     }
 }

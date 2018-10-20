@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -48,10 +47,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -86,7 +83,6 @@ public class AllCoursesFragment extends Fragment {
     private DatabaseReference mCourseDatabaseReferance;
     private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListener;
-
 
     public AllCoursesFragment() {
         // Required empty public constructor
@@ -161,7 +157,6 @@ public class AllCoursesFragment extends Fragment {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                Log.v(TAG, getRealPathFromUri(uri));
                 readExcelData(uri);
             }
         }
@@ -239,11 +234,9 @@ public class AllCoursesFragment extends Fragment {
      */
     private void readExcelData(Uri uri) {
         Log.d(TAG, "readExcelData: Reading Excel File.");
-        //decarle input file
-        File inputFile = new File(getRealPathFromUri(uri));
 
         try {
-            InputStream inputStream = new FileInputStream(inputFile);
+            InputStream inputStream = getInputUri(uri);
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheetAt(0);
             int rowsCount = sheet.getPhysicalNumberOfRows();
@@ -280,7 +273,6 @@ public class AllCoursesFragment extends Fragment {
             Log.e(TAG, "readExcelData: Error reading inputstream. " + e.getMessage() );
         }
     }
-
     /**
      * Method for parsing imported data and storing in ArrayList<Course>
      */
@@ -309,7 +301,7 @@ public class AllCoursesFragment extends Fragment {
                 mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(getContext(), "Course Upload Successful.", Toast.LENGTH_SHORT).show();
+                        mEmptyTextView.setVisibility(View.GONE);
                     }
                 });
 
@@ -373,6 +365,7 @@ public class AllCoursesFragment extends Fragment {
         return value;
     }
 
+
     /**
      * Checks file permissions
      * If there is no file read permission then this method will make a request.
@@ -390,109 +383,8 @@ public class AllCoursesFragment extends Fragment {
         }
     }
 
-    /**
-     * Gets the full file path from a uri received from a file picker.
-     * @param uri uri of a file
-     * @return file path of the given uri
-     */
-    public String getRealPathFromUri(final Uri uri) {
-        // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(getContext(), uri)) {
-            // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-            }
-            // DownloadsProvider
-            else if (isDownloadsDocument(uri)) {
-
-                final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(getContext(), contentUri, null, null);
-            }
-            // MediaProvider
-            else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-
-                final String selection = "_id=?";
-                final String[] selectionArgs = new String[]{
-                        split[1]
-                };
-
-                return getDataColumn(getContext(), contentUri, selection, selectionArgs);
-            }
-        }
-        // MediaStore (and general)
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
-            // Return the remote address
-            if (isGooglePhotosUri(uri))
-                return uri.getLastPathSegment();
-
-            return getDataColumn(getContext(), uri, null, null);
-        }
-        // File
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return null;
-    }
-
-    private String getDataColumn(Context context, Uri uri, String selection,
-                                 String[] selectionArgs) {
-
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-        return null;
-    }
-
-    private boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    private boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    private InputStream getInputUri(Uri uri) throws IOException {
+        InputStream inputStream = getActivity().getApplicationContext().getContentResolver().openInputStream(uri);
+        return inputStream;
     }
 }

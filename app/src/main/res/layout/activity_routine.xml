@@ -554,9 +554,11 @@
         android:id="@+id/fab_routine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="6dp"
+        android:accessibilityHeading="false"
         fab:fab_addButtonColorNormal="@color/colorAccent"
         fab:fab_addButtonColorPressed="@color/colorPrimary"
         fab:fab_addButtonPlusIconColor="@color/white"
@@ -568,20 +570,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_size="normal"
-            fab:fab_title="Upload routine"
             fab:fab_colorPressed="@color/colorPrimary"
-            fab:fab_icon="@drawable/ic_add_white_24dp" />
+            fab:fab_icon="@drawable/ic_add_white_24dp"
+            fab:fab_size="normal"
+            fab:fab_title="Upload routine" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_upload_routine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_size="mini"
-            fab:fab_title="Add a class"
             fab:fab_colorPressed="@color/colorPrimary"
-            fab:fab_icon="@drawable/ic_file_upload_white_24dp"/>
+            fab:fab_icon="@drawable/ic_file_upload_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_title="Add a class" />
 
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

@@ -60,10 +60,6 @@
         <activity android:name=".FixedCoursesActivity" />
         <activity android:name=".EnrolledCoursesActivity" />
         <activity
-            android:name=".UploadCourseActivity"
-            android:label="Upload Courses"
-            android:parentActivityName=".AllCoursesActivity" />
-        <activity
             android:name=".CreateNoticeActivity"
             android:label="Create Notice"
             android:parentActivityName=".NoticeActivity" />
