@@ -1,15 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TodayFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Today" />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_notice"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:stackFromBottom="false"
+                android:divider="@android:color/transparent"
+                android:transcriptMode="alwaysScroll"
+                tools:listitem="@layout/list_item_notice"
+                android:paddingBottom="96dp"
+                android:clipToPadding="false"/>
+
+        </LinearLayout>
+        <!-- Empty view is only visible when the list has no items. -->
+        <TextView
+            android:id="@+id/empty_view_no_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceLarge"/>
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/list_view_routine_with_category"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                tools:listitem="@layout/list_item_routine"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Loading indicator is only visible when the list is loading. -->
+    <ProgressBar
+        android:id="@+id/progress_bar_today"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"/>
+
+</RelativeLayout>

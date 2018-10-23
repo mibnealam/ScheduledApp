@@ -20,6 +20,7 @@
     <string name="prompt_no_data">Ops! No data available.</string>
     <string name="prompt_no_course">No course available!</string>
     <string name="prompt_no_routine">No routine available!</string>
+    <string name="prompt_no_class_today">No Class Today!</string>
     <string name="prompt_no_notice">No notice available!</string>
     <string name="prompt_no_assignment">No assignment available!</string>
     <string name="prompt_no_selected_course">Please select your course first!</string>
@@ -50,8 +51,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="nav_header_title">Scheduled App</string>
-    <string name="nav_header_subtitle">State University of Bangladesh</string>
+    <string name="nav_header_title">Username not available</string>
+    <string name="nav_header_subtitle">User Id not available</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="pattern_user_id">UG02-37-14-007</string>

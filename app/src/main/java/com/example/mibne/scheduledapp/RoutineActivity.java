@@ -104,11 +104,11 @@ public class RoutineActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
 
         mUserOrganization = "sub";
         mUserDepartment = "cse";
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_routine_list);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_routine_list);
@@ -305,7 +305,7 @@ public class RoutineActivity extends AppCompatActivity {
                 //add the the uploadData ArrayList
                 uploadRoutineList.add(new Routine(day,courseCode,startTime,endTime,roomNo));
                 Log.v(TAG, uploadRoutineList.toString());
-                mRoutineDatabaseReferance.push().setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mRoutineDatabaseReferance.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         mEmptyTextView.setVisibility(View.GONE);
@@ -356,7 +356,7 @@ public class RoutineActivity extends AppCompatActivity {
                     if(HSSFDateUtil.isCellDateFormatted(cell)) {
                         double date = cellValue.getNumberValue();
                         SimpleDateFormat formatter =
-                                new SimpleDateFormat("HH.mm a");
+                                new SimpleDateFormat("hh.mm a");
                         value = formatter.format(HSSFDateUtil.getJavaDate(date));
                     } else {
                         value = ""+numericValue;

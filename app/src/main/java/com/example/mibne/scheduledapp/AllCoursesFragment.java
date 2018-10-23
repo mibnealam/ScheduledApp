@@ -132,8 +132,6 @@ public class AllCoursesFragment extends Fragment {
 
         mCourseRecyclerView.setAdapter(mCourseAdapter);
 
-        // Initialize course ListView and its adapter
-
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         attachDatabaseReadListener();
@@ -185,6 +183,7 @@ public class AllCoursesFragment extends Fragment {
                         Course courses =  courseSnapshot.getValue(Course.class);
                         courseList.add(courses);
                     }
+                    Log.v(TAG, courseList.toString());
                     mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {

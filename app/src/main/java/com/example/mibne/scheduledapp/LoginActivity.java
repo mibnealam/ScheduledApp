@@ -186,6 +186,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (account != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Log.v("update UI :", "account is null");
         }
