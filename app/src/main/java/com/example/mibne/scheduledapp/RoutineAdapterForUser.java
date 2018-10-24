@@ -1,6 +1,8 @@
 package com.example.mibne.scheduledapp;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,11 +52,38 @@ public class RoutineAdapterForUser extends ArrayAdapter<Routine> {
 
 
         mRoutineCourseCodeTextView.setText(currentRoutine.getCourseCode());
-        mRoutineTimeTextView.setText(currentRoutine.getStartTime().replaceAll("[A-Z]", "") + "-" + currentRoutine.getEndTime().replaceAll("[A-Z]", ""));
+        mRoutineTimeTextView.setText(currentRoutine.getStartTime().replaceAll("[A-Z ]", "") + "-" + currentRoutine.getEndTime().replaceAll("[A-Z ]", ""));
         mRoutineRoomNoTextView.setText(currentRoutine.getRoomNo());
-
+        linearLayout.setBackgroundColor(getRoutineColor(currentRoutine.getStartTime().replaceAll("[A-Z ]", "")));
 
         // Return the list item view that is now showing the appropriate data
         return listItemView;
+    }
+
+    /**
+     * Return the day color according to the time
+     * @param  time
+     * @return
+     */
+    private int getRoutineColor(String time) {
+        int dayColorResourceId;
+
+        switch (time) {
+            case "08.00" : dayColorResourceId = R.color.credit1;
+                break;
+            case "09.30" : dayColorResourceId = R.color.credit2;
+                break;
+            case "11.00" : dayColorResourceId = R.color.credit3;
+                break;
+            case "12.30" : dayColorResourceId = R.color.credit4;
+                break;
+            case "02.00" : dayColorResourceId = R.color.credit5;
+                break;
+            case "03.30" : dayColorResourceId = R.color.credit6;
+                break;
+            default: dayColorResourceId = R.color.blue_gray;
+                break;
+        }
+        return ContextCompat.getColor(getContext(), dayColorResourceId);
     }
 }

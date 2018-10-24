@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,12 +30,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    String TAG = "MainActivity";
 
     TextView navUserId;
     TextView navUserName;
     ImageView navUserPortrait;
+    LinearLayout navUserContainer;
+
+    String uid;
+    String userName;
+    String userID;
+    String userOrganization;
+    String userDepartment;
+    List<Course> userCourses;
+    String userEmail;
+    String userPhone;
 
     //Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -70,6 +85,15 @@ public class MainActivity extends AppCompatActivity
         navUserId = (TextView)headerView.findViewById(R.id.user_id_text_view);
         navUserName = (TextView)headerView.findViewById(R.id.user_name_text_view);
         navUserPortrait = (ImageView) headerView.findViewById(R.id.user_portrait_image_view);
+        navUserContainer = (LinearLayout) headerView.findViewById(R.id.header_container_user_info);
+
+        navUserContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), EditUserAccountActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
         // Find the view pager that will allow the user to swipe between fragments
@@ -92,7 +116,8 @@ public class MainActivity extends AppCompatActivity
                 if (user != null) {
                     // User is signed in
                     Log.v("test", "User is signed in");
-                    mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users/" + user.getUid());
+                    uid = user.getUid();
+                    mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users/" + uid);
                     onSignedInInitialize(mUsersDatabaseReference);
                 } else {
                     // User is signed out
@@ -121,7 +146,6 @@ public class MainActivity extends AppCompatActivity
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        //mCourseAdapter.clear();
         detachDatabaseReadListener();
     }
     long back_pressed;
@@ -189,7 +213,9 @@ public class MainActivity extends AppCompatActivity
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.v("test", dataSnapshot.child("username").toString());
+                Log.v(TAG, dataSnapshot.toString());
+                //Todo : initialize user data variables with user data and
+                //Todo : pass them through required activity and fragments
                 navUserId.setText(dataSnapshot.child("username").getValue().toString());
                 navUserName.setText(dataSnapshot.child("name").getValue().toString());
                 Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
@@ -217,8 +243,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onSignedOutCleanup() {
-        //mUsername = ANONYMOUS;
-        //mCourseAdapter.clear();
         detachDatabaseReadListener();
     }
 

@@ -36,6 +36,7 @@
     <string name="action_add_class">Add this class</string>
     <string name="action_start_time">Start Time</string>
     <string name="action_end_time">End Time</string>
+    <string name="action_update">Update</string>
 
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -46,7 +47,9 @@
     <string name="title_activity_routine">Routine</string>
     <string name="title_activity_assignment">Assignment</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_send_feedback">Feedback</string>
     <string name="title_activity_all_courses">AllCoursesActivity</string>
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -64,10 +67,10 @@
     <string name="category_fixed_courses">Fixed</string>
     <string name="category_enrolled_courses">Enrolled</string>
     <string name="account_title">Account</string>
-    <string name="pref_summary_account">Edit user information</string>
-    <string name="pref_title_account">Account Settings</string>
 
     <!--Preference screen strings starts -->
+    <string name="pref_summary_account">Edit user information</string>
+    <string name="pref_title_account">Account Settings</string>
     <string name="pref_account_title">Account</string>
     <string name="pref_username">Name</string>
     <string name="pref_default_display_name">John Doe</string>
@@ -90,13 +93,13 @@
     <string name="pref_notificationType_dialog_title">Notifications you\'ll get from</string>
     <string name="pref_header_about_title">About</string>
     <string name="pref_notification_title">Notification</string>
-    <string name="about_summary">This application is a simple notifier app. It’ll help a student/teacher to manage class schedule, notice and assignment and never to miss them unintentionally</string>
+    <string name="about_summary">This application is a simple notifier app to keep you updated.</string>
     <string name="title_version">Version</string>
-    <string name="app_version">Alpha 1.0</string>
+    <string name="app_version">Pre Alpha</string>
     <string name="key_send_feedback">feedback</string>
     <string name="summary_support">Send your feedback for better user experience</string>
     <string name="registration_summary">Select your courses</string>
-    <string name="title_send_feedback">Feedback</string>
+    <string name="account_summary">Edit user account</string>
 
     <string-array name="pref_organizations_array">
 
@@ -155,5 +158,14 @@
         <item>Friday</item>
 
     </string-array>
+
+
+    <!--Developer Information-->
+    <string name="developed_by">Designed &amp; developed by</string>
+    <string name="developer_name">Mahfuj Ibne Alam \nStudent of CSE dept.\nState University of Bangladesh</string>
+    <string name="developer_email">mibnealam@gmail.com</string>
+    <string name="reach_developer">Reach Developer</string>
+    <string name="app_summary">This is a free and open source android application to help students and teachers with their academic schedule.</string>
+    <string name="contribution">Everyone are welcome to contribute in the github codebase for better user experience and ask any question or help.</string>
 
 </resources>

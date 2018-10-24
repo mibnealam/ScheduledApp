@@ -3,51 +3,12 @@
         android:title="@string/pref_account_title"
         android:key="pref_key_account_settings">
 
-        <PreferenceScreen
-            android:key="pref_user_account_key"
+        <Preference
             android:title="@string/user_account_information_title"
-            android:persistent="false">
-
-            <!-- opens another nested subscreen -->
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="@string/pref_default_display_name"
-                android:inputType="textCapWords"
-                android:key="pref_user_name_key"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="@string/pref_username" />
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="@string/pref_default_display_id"
-                android:inputType="textCapWords"
-                android:key="pref_user_id_key"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="@string/pref_user_id" />
-
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="@string/pref_default_display_email"
-                android:inputType="textCapWords"
-                android:key="pref_default_display_email"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="@string/pref_user_email" />
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="@string/pref_default_display_phone"
-                android:inputType="textCapWords"
-                android:key="pref_default_display_phone"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="@string/pref_user_phone" />
-
-        </PreferenceScreen>
+            android:summary="@string/account_summary">
+            <intent
+                android:action="android.intent.action.EditUserAccountActivity" />
+        </Preference>
 
         <!-- preference opens a registration intent -->
         <Preference
@@ -77,9 +38,25 @@
 
     <PreferenceCategory android:title="@string/pref_header_about_title">
 
-        <Preference
-            android:selectable="false"
-            android:summary="@string/about_summary" />
+        <PreferenceScreen
+            android:title="@string/app_name"
+            android:summary="@string/about_summary">
+
+            <Preference
+                android:title="@string/developed_by"
+                android:summary="@string/developer_name" />
+            <Preference
+                android:title="@string/reach_developer"
+                android:summary="@string/developer_email">
+                <intent
+                    android:action="android.intent.action.Gmail" />
+            </Preference>
+            <Preference
+                android:summary="@string/app_summary"/>
+            <Preference
+                android:summary="@string/contribution"/>
+
+        </PreferenceScreen>
 
         <Preference
             android:summary="@string/app_version"
@@ -88,7 +65,9 @@
         <Preference
             android:key="@string/key_send_feedback"
             android:summary="@string/summary_support"
-            android:title="@string/title_send_feedback" />
+            android:title="@string/title_send_feedback" >
+
+        </Preference>
 
     </PreferenceCategory>
 

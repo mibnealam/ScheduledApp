@@ -64,7 +64,14 @@
             android:label="Create Notice"
             android:parentActivityName=".NoticeActivity" />
         <activity android:name=".EditRoutineActivity" />
-        <activity android:name=".AddRoutineActivity"></activity>
+        <activity android:name=".AddRoutineActivity" />
+        <activity android:name=".EditUserAccountActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.EditUserAccountActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

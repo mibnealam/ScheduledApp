@@ -74,7 +74,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
                 <EditText
                     android:id="@+id/user_id"
                     android:layout_width="250dp"
@@ -89,7 +90,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
                 <EditText
                     android:id="@+id/user_phone_no"
                     android:layout_width="250dp"
@@ -108,8 +110,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_next"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/colorAccent"
-                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:backgroundTint="@color/colorAccent"
+                android:textColor="@color/white"
                 android:layout_margin="16dp"/>
         </LinearLayout>
     </ScrollView>

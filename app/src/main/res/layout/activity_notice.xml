@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_edit_white_24dp"
+        android:src="@drawable/ic_edit_black_24dp"
+        android:tint="@color/white"
         android:layout_margin="16dp" />
 </RelativeLayout>
