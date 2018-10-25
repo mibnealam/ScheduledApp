@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity
     ImageView navUserPortrait;
     LinearLayout navUserContainer;
 
+    Bundle userDataBundle = new Bundle();
+
     String uid;
     String userName;
     String userID;
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), EditUserAccountActivity.class);
+                intent.putExtras(userDataBundle);
                 startActivity(intent);
             }
         });
@@ -199,6 +202,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            intent.putExtras(userDataBundle);
             startActivity(intent);
         } else if (id == R.id.nav_log_out) {
             FirebaseAuth.getInstance().signOut();
@@ -221,6 +225,19 @@ public class MainActivity extends AppCompatActivity
                 Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
                 //Get Post object and use the values to update the UI
                 User user = dataSnapshot.getValue(User.class);
+
+                userDataBundle.putString("uid", uid);
+                userDataBundle.putString("userName", user.getName());
+                userDataBundle.putString("userId", user.getUsername());
+                userDataBundle.putString("email", user.getEmail());
+                userDataBundle.putString("phone", user.getPhone());
+                userDataBundle.putString("photoUrl", user.getPhotoUrl());
+                userDataBundle.putString("organization", user.getOrganization());
+                userDataBundle.putString("department", user.getDepartment());
+                userDataBundle.putString("role", user.getRole());
+
+                Log.v("userName", userDataBundle.toString());
+
                 if(dataSnapshot.child("username").exists() && dataSnapshot.child("phone").exists()){
                     if(!dataSnapshot.child("courses").exists()){
                         Log.v("test", "no course selected!");

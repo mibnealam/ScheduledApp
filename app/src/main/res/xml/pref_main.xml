@@ -1,13 +1,13 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="pref_root">
     <PreferenceCategory
         android:title="@string/pref_account_title"
         android:key="pref_key_account_settings">
 
         <Preference
+            android:key="@string/key_pref_edit_user_info"
             android:title="@string/user_account_information_title"
             android:summary="@string/account_summary">
-            <intent
-                android:action="android.intent.action.EditUserAccountActivity" />
         </Preference>
 
         <!-- preference opens a registration intent -->
@@ -54,7 +54,12 @@
             <Preference
                 android:summary="@string/app_summary"/>
             <Preference
-                android:summary="@string/contribution"/>
+                android:title="@string/find_code"
+                android:summary="@string/contribution">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="@string/github_link"/>
+            </Preference>
 
         </PreferenceScreen>
 
@@ -66,7 +71,6 @@
             android:key="@string/key_send_feedback"
             android:summary="@string/summary_support"
             android:title="@string/title_send_feedback" >
-
         </Preference>
 
     </PreferenceCategory>

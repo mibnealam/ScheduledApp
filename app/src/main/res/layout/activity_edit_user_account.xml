@@ -18,20 +18,21 @@
             android:orientation="vertical">
             <RelativeLayout
                 android:id="@+id/edit_portrait_image_view_container"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_gravity="center_horizontal">
 
                 <ImageView
                     android:id="@+id/edit_portrait_image_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:padding="12dp"
                     app:srcCompat="@mipmap/ic_person" />
                 <View
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:background="@drawable/ic_edit_black_24dp"
-                    android:backgroundTint="@color/colorAccent"
+                    android:backgroundTint="@color/colorPrimary"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"/>
 
@@ -101,44 +102,44 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
-                android:layout_margin="16dp"
-                android:layout_marginBottom="18dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="18dp"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/prompt_organization"/>
-                <Spinner
-                    android:id="@+id/organizations_spinner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+            <!--<LinearLayout-->
+                <!--android:layout_width="250dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_margin="16dp"-->
+                <!--android:layout_marginBottom="18dp">-->
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginRight="18dp"-->
+                    <!--android:layout_marginLeft="4dp"-->
+                    <!--android:text="@string/prompt_organization"/>-->
+                <!--<Spinner-->
+                    <!--android:id="@+id/organizations_spinner"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"/>-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="18dp"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/prompt_department"/>
-                <Spinner
-                    android:id="@+id/departments_spinner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+            <!--<LinearLayout-->
+                <!--android:layout_width="250dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginRight="16dp"-->
+                <!--android:layout_marginLeft="16dp"-->
+                <!--android:layout_marginTop="16dp">-->
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginRight="18dp"-->
+                    <!--android:layout_marginLeft="4dp"-->
+                    <!--android:text="@string/prompt_department"/>-->
+                <!--<Spinner-->
+                    <!--android:id="@+id/departments_spinner"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"/>-->
+            <!--</LinearLayout>-->
 
             <Button
                 android:id="@+id/next_button"

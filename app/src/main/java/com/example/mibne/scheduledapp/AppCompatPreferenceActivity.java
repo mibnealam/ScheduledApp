@@ -84,6 +84,8 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         getDelegate().onConfigurationChanged(newConfig);
     }
 
+    public abstract void onCreatePreferences(Bundle bundle, String s);
+
     @Override
     protected void onStop() {
         super.onStop();

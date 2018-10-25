@@ -96,7 +96,12 @@
     <string name="about_summary">This application is a simple notifier app to keep you updated.</string>
     <string name="title_version">Version</string>
     <string name="app_version">Pre Alpha</string>
+    <string name="choose_email_client">Choose email client</string>
+
+    <string name="key_pref_edit_user_info">key_pref_edit_user_info</string>
     <string name="key_send_feedback">feedback</string>
+
+
     <string name="summary_support">Send your feedback for better user experience</string>
     <string name="registration_summary">Select your courses</string>
     <string name="account_summary">Edit user account</string>
@@ -165,6 +170,8 @@
     <string name="developer_name">Mahfuj Ibne Alam \nStudent of CSE dept.\nState University of Bangladesh</string>
     <string name="developer_email">mibnealam@gmail.com</string>
     <string name="reach_developer">Reach Developer</string>
+    <string name="find_code">Connect with Github</string>
+    <string name="github_link">https://github.com/mibnealam/ScheduledApp</string>
     <string name="app_summary">This is a free and open source android application to help students and teachers with their academic schedule.</string>
     <string name="contribution">Everyone are welcome to contribute in the github codebase for better user experience and ask any question or help.</string>
 
