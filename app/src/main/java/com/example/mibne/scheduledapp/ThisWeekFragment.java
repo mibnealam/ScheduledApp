@@ -172,7 +172,7 @@ public class ThisWeekFragment extends Fragment {
 
                 } else {
                     mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_today);
+                    mEmptyTextView.setText(R.string.prompt_no_class_this_week);
                 }
             }
 

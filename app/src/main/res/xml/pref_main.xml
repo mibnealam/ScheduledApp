@@ -46,10 +46,9 @@
                 android:title="@string/developed_by"
                 android:summary="@string/developer_name" />
             <Preference
+                android:key="@string/key_contact_developer"
                 android:title="@string/reach_developer"
                 android:summary="@string/developer_email">
-                <intent
-                    android:action="android.intent.action.Gmail" />
             </Preference>
             <Preference
                 android:summary="@string/app_summary"/>

@@ -163,7 +163,6 @@ public class TodayFragment extends Fragment {
         };
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
         Calendar calendar = Calendar.getInstance();
-        //calendar.add(Calendar.DAY_OF_WEEK, +1);
         final String dayOfTheWeek = sdf.format(calendar.getTime());
         Log.v(TAG, dayOfTheWeek);
 

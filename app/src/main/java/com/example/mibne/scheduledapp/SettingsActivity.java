@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
-import android.support.v7.preference.Preference;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -17,6 +17,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //addPreferencesFromResource(R.xml.pref_main);
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
@@ -66,11 +67,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     return true;
                 }
             });
-        }
 
-        @Override
-        public void onCreatePreferences(Bundle bundle, String s) {
-
+            Preference contactDeveloperPref = findPreference(getString(R.string.key_contact_developer));
+            contactDeveloperPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    contactDeveloper(getActivity().getApplicationContext());
+                    return true;
+                }
+            });
         }
     }
 
@@ -93,6 +98,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact.scheduledapp@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from scheduled app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+    }
+
+    /**
+     * Email client intent to contact developer
+     */
+    public static void contactDeveloper(Context context) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mibnealam@gmail.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Query from scheduled app");
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
     }
 }

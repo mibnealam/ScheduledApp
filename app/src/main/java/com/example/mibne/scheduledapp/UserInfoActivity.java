@@ -3,6 +3,7 @@ package com.example.mibne.scheduledapp;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -242,7 +243,8 @@ public class UserInfoActivity extends AppCompatActivity  {
     // [START updateUI]
     private void updateUI() {
             Log.v("Dashboard intent :", "not working");
-            Intent intent = new Intent(this, RegistrationActivity.class);
+        Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
     }
     /**

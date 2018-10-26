@@ -45,7 +45,6 @@
                     android:id="@+id/button_date_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
                     android:textColor="@android:color/white"
                     android:text="@string/action_pick_date"
                     android:layout_gravity="center"

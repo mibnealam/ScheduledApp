@@ -153,7 +153,7 @@ public class TomorrowFragment extends Fragment {
                     mEmptyTextView.setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_today);
+                    mEmptyTextView.setText(R.string.prompt_no_class_tomorrow);
                 }
             }
 
@@ -179,7 +179,7 @@ public class TomorrowFragment extends Fragment {
 
                 } else {
                     mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_today);
+                    mEmptyTextView.setText(R.string.prompt_no_class_tomorrow);
                 }
             }
 
