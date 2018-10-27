@@ -52,7 +52,6 @@ public class NoticeActivity extends AppCompatActivity {
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference rootRef;
-    private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListener;
 
 
@@ -195,10 +194,10 @@ public class NoticeActivity extends AppCompatActivity {
         rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            rootRef.removeEventListener(mChildEventListener);
+        if (mValueEventListener != null) {
+            rootRef.removeEventListener(mValueEventListener);
             noticeList.clear();
-            mChildEventListener = null;
+            mValueEventListener = null;
         }
     }
 }

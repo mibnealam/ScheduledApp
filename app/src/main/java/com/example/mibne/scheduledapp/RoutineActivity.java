@@ -74,7 +74,6 @@ public class RoutineActivity extends AppCompatActivity {
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRoutineDatabaseReferance;
-    private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListener;
 
 

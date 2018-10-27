@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity
     //Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
-    private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private ValueEventListener mUserValueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
                     Log.v("test", "User is signed in");
                     uid = user.getUid();
                     mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users/" + uid);
-                    onSignedInInitialize(mUsersDatabaseReference);
+                    onSignedInInitialize();
                 } else {
                     // User is signed out
                     Log.v("test", "User is signed out");
@@ -215,8 +215,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void onSignedInInitialize(DatabaseReference userinfo) {
-        ValueEventListener userListener = new ValueEventListener() {
+    private void onSignedInInitialize() {
+        mUserValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity
                 // ...
             }
         };
-        userinfo.addValueEventListener(userListener);
+        mUsersDatabaseReference.addValueEventListener(mUserValueEventListener);
     }
 
     private void onSignedOutCleanup() {
@@ -268,9 +268,9 @@ public class MainActivity extends AppCompatActivity
 
 
     private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mUsersDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
+        if (mUserValueEventListener != null) {
+            mUsersDatabaseReference.removeEventListener(mUserValueEventListener);
+            mUserValueEventListener = null;
         }
     }
 }

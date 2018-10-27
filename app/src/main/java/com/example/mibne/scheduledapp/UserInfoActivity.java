@@ -60,7 +60,6 @@ public class UserInfoActivity extends AppCompatActivity  {
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
-    private ChildEventListener mChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +96,7 @@ public class UserInfoActivity extends AppCompatActivity  {
             uid = user.getUid();
         }
 
+        mUserRole = "student";
         //Get organizations
         String[] organizationsArray = {"sub"};
         String[] departmentsArray = {"cse"};
@@ -163,10 +163,10 @@ public class UserInfoActivity extends AppCompatActivity  {
                 // Check for already existed userId
                 if (TextUtils.isEmpty(userId)) {
                     createUser(mUserDepartment, mUserEmail, mUsername, mUserOrganization,
-                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, null, mUsernameEditText.getText().toString());
+                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString());
                 } else {
                     updateUser(mUserDepartment, null, null, mUserOrganization,
-                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, null, mUsernameEditText.getText().toString());
+                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString());
                 }
                 // Clear input box
                 mUsernameEditText.setText("");
@@ -242,10 +242,10 @@ public class UserInfoActivity extends AppCompatActivity  {
 
     // [START updateUI]
     private void updateUI() {
-            Log.v("Dashboard intent :", "not working");
         Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            this.finish();
     }
     /**
      * User data change listener
@@ -273,5 +273,12 @@ public class UserInfoActivity extends AppCompatActivity  {
                 Log.e(TAG, "Failed to read user", error.toException());
             }
         });
+    }
+
+    private void detachDatabaseReadListener() {
+//        if (mValueEventListener != null) {
+//            mCourseDatabaseReferance.removeEventListener(mValueEventListener);
+//            mValueEventListener = null;
+//        }
     }
 }

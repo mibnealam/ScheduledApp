@@ -187,6 +187,7 @@ public class ThisWeekFragment extends Fragment {
     private void detachDatabaseReadListener() {
         if (mValueEventListenerForRoutine != null) {
             mRoutineDatabaseReferance.removeEventListener(mValueEventListenerForRoutine);
+            mUserDatabaseReferance.removeEventListener(mValueEventListenerForUser);
             mValueEventListenerForRoutine = null;
         }
     }

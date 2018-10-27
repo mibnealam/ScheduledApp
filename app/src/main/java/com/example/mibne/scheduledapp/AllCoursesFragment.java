@@ -81,7 +81,6 @@ public class AllCoursesFragment extends Fragment {
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mCourseDatabaseReferance;
-    private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListener;
 
     public AllCoursesFragment() {
@@ -134,8 +133,6 @@ public class AllCoursesFragment extends Fragment {
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        attachDatabaseReadListener();
-
 
         return rootView;
     }
@@ -183,7 +180,6 @@ public class AllCoursesFragment extends Fragment {
                         Course courses =  courseSnapshot.getValue(Course.class);
                         courseList.add(courses);
                     }
-                    Log.v(TAG, courseList.toString());
                     mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
@@ -200,9 +196,9 @@ public class AllCoursesFragment extends Fragment {
         mCourseDatabaseReferance.addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mCourseDatabaseReferance.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
+        if (mValueEventListener != null) {
+            mCourseDatabaseReferance.removeEventListener(mValueEventListener);
+            mValueEventListener = null;
         }
     }
 
