@@ -233,7 +233,7 @@ public class EditUserAccountActivity extends AppCompatActivity {
             userEmailTextInputLayout.setError(null);
             return true;
         } else {
-            userIdTextInputLayout.setError("Invalid email!");
+            userEmailTextInputLayout.setError("Invalid email!");
             return false;
         }
     }
