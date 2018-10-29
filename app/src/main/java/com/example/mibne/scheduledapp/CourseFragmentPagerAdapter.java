@@ -16,9 +16,7 @@ public class CourseFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) {
-            return new FixedCoursesFragment();
-        } else if (position == 1){
+        if (position == 0){
             return new AllCoursesFragment();
         }  else {
             return new EnrolledCoursesFragment();
@@ -27,7 +25,7 @@ public class CourseFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
     // This determines the title for each tab
     @Override
@@ -35,10 +33,8 @@ public class CourseFragmentPagerAdapter extends FragmentStatePagerAdapter {
         // Generate title based on item position
         switch (position) {
             case 0:
-                return mContext.getString(R.string.category_fixed_courses);
-            case 1:
                 return mContext.getString(R.string.category_all_courses);
-            case 2:
+            case 1:
                 return mContext.getString(R.string.category_enrolled_courses);
             default:
                 return null;

@@ -57,7 +57,6 @@
         <activity android:name=".TomorrowActivity" />
         <activity android:name=".ThisWeekActivity" />
         <activity android:name=".AllCoursesActivity" />
-        <activity android:name=".FixedCoursesActivity" />
         <activity android:name=".EnrolledCoursesActivity" />
         <activity
             android:name=".CreateNoticeActivity"
