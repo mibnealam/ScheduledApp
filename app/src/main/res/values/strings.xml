@@ -100,7 +100,9 @@
     <string name="about_summary">This application is a simple notifier app to keep you updated.</string>
     <string name="title_version">Version</string>
     <string name="app_version">Pre Alpha</string>
+
     <string name="choose_email_client">Choose email client</string>
+    <string name="choose_export_option">Choose Option</string>
 
     <string name="key_pref_edit_user_info">key_pref_edit_user_info</string>
     <string name="key_send_feedback">feedback</string>
@@ -130,7 +132,7 @@
 
     <string-array name="pref_notificationType_entries">
 
-        <item>Organization</item>
+        <item>General</item>
         <item>Department</item>
         <item>Course</item>
         <item>Routine</item>
@@ -138,7 +140,7 @@
     </string-array>
     <string-array name="pref_notificationType_default">
 
-        <item>Organization</item>
+        <item>General</item>
         <item>Department</item>
         <item>Course</item>
         <item>Routine</item>
@@ -166,6 +168,13 @@
         <item>Wednesday</item>
         <item>Thursday</item>
         <item>Friday</item>
+
+    </string-array>
+
+    <string-array name="export_array">
+
+        <item>Export as PDF</item>
+        <item>Export to Calendar</item>
 
     </string-array>
 

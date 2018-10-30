@@ -1,7 +1,6 @@
 package com.example.mibne.scheduledapp;
 
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 
 public class SingleNoticeActivity extends AppCompatActivity {
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class SingleNoticeActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.export_notice_button);
 
         //Get the bundle
-        final Bundle bundle = getIntent().getExtras();
+        bundle = getIntent().getExtras();
 
         //Extract the data… and set value to the textView
         titleTextView.setText(bundle.getString("Title"));
@@ -41,8 +41,7 @@ public class SingleNoticeActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, "Exporting " + bundle.getString("Type"), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                openDialog();
             }
         });
     }
@@ -66,4 +65,11 @@ public class SingleNoticeActivity extends AppCompatActivity {
         return dateFormat.format(dateObject);
     }
 
+    public void openDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new ChooseExportOptionDialogueFragment();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "ExportDialogFragment");
+
+    }
 }

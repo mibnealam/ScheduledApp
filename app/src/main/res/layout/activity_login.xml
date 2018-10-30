@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -17,7 +16,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="250dp"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_gravity="center_horizontal">
@@ -35,17 +34,18 @@
                 android:text="@string/welcome_text"
                 android:layout_gravity="center_horizontal"
                 android:textSize="18sp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="16dp"/>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/user_login_email_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="center_horizontal">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/login_user_email"
-                    android:layout_width="250dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:maxLines="3"
@@ -60,7 +60,7 @@
                 app:passwordToggleEnabled="true">
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/user_login_password"
-                    android:layout_width="250dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_password"
                     android:inputType="textPassword"
@@ -92,7 +92,7 @@
                     android:id="@+id/action_log_in_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="100dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:text="@string/action_log_in"
                     android:textStyle="bold"
                     android:layout_gravity="right"
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:text="Or sign in with"/>
                 <View
-                    android:layout_width="140dp"
+                    android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/gray"
                     android:layout_marginTop="10dp"
@@ -131,22 +131,21 @@
                 <com.google.android.gms.common.SignInButton
                     android:id="@+id/action_log_in_with_google_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="48dp" />
             </LinearLayout>
+
                 <Button
                     android:id="@+id/forgot_password_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:paddingTop="16dp"
                     android:background="@android:color/transparent"
+                    android:layout_margin="16dp"
                     android:gravity="center"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/action_forgot_password"
                     android:textColor="@color/colorAccent"
                     android:textAllCaps="false" />
-
 
         </LinearLayout>
 
