@@ -82,17 +82,16 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
         routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Item " + position + " just clicked!", Toast.LENGTH_SHORT).show();
 
-//                Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putString("courseCode", routine.getCourseCode());
-//                bundle.putString("day", routine.getDay());
-//                bundle.putString("startTime", routine.getStartTime());
-//                bundle.putString("endTime", routine.getEndTime());
-//                bundle.putString("roomNo", routine.getRoomNo());
-//                editRoutineIntent.putExtras(bundle);
-//                context.startActivity(editRoutineIntent);
+                Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("courseCode", routine.getCourseCode());
+                bundle.putString("day", routine.getDay());
+                bundle.putString("startTime", routine.getStartTime());
+                bundle.putString("endTime", routine.getEndTime());
+                bundle.putString("roomNo", routine.getRoomNo());
+                editRoutineIntent.putExtras(bundle);
+                context.startActivity(editRoutineIntent);
             }
         });
     }

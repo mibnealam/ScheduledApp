@@ -18,6 +18,9 @@ public class SingleNoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_notice);
 
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         TextView titleTextView = (TextView) findViewById(R.id.notice_title);
         TextView dateTextView = (TextView) findViewById(R.id.notice_date);
         TextView descriptionTextView = (TextView) findViewById(R.id.notice_description);

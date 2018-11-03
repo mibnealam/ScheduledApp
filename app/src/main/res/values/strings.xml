@@ -26,7 +26,8 @@
     <string name="prompt_no_notice">No notice available!</string>
     <string name="prompt_no_assignment">No assignment available!</string>
     <string name="prompt_no_selected_course">Please select your course first!</string>
-    <string name="prompt_no_internet_connection">Opps! No internet connection.</string>
+    <string name="prompt_no_internet_connection">Ops! No internet connection.</string>
+    <string name="prompt_dialog_confirm">You are going to erase all data of this course</string>
 
     <string name="action_sign_up">Sign up</string>
     <string name="action_forgot_password">Forgot/Reset password?</string>
@@ -38,9 +39,12 @@
     <string name="action_export">Export This Notice</string>
     <string name="action_pick_date">Deadline</string>
     <string name="action_add_class">Add this class</string>
+    <string name="action_update_class">Update</string>
     <string name="action_start_time">Start Time</string>
     <string name="action_end_time">End Time</string>
     <string name="action_update">Update</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
 
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -53,6 +57,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_send_feedback">Feedback</string>
     <string name="title_activity_all_courses">AllCoursesActivity</string>
+    <string name="title_dialog_confirm">Are you sure about this?</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -61,8 +66,6 @@
     <string name="nav_header_title">Username not available</string>
     <string name="nav_header_subtitle">User Id not available</string>
     <string name="nav_header_desc">Navigation header</string>
-
-    <string name="pattern_user_id">UG02-37-14-007</string>
 
     <string name="category_today">Today</string>
     <string name="category_tomorrow">Tomorrow</string>
@@ -84,7 +87,7 @@
     <string name="pref_user_department_title">Department</string>
     <string name="sub">State University of Bangladesh</string>
     <string name="pref_user_id">ID</string>
-    <string name="pref_default_display_id">UG02-00-00-000</string>
+    <string name="pref_default_display_id">UG02&#8211;00&#8211;00&#8211;000</string>
     <string name="pref_default_display_email">scheduledapp@gmail.com</string>
     <string name="pref_default_display_phone">+88017111000</string>
     <string name="pref_user_email">Email</string>

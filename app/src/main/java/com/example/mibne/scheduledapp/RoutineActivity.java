@@ -72,7 +72,6 @@ public class RoutineActivity extends AppCompatActivity {
     private String mUserOrganization;
 
     // Firebase instance variables
-    private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRoutineDatabaseReferance;
     private ValueEventListener mValueEventListener;
 
@@ -107,7 +106,7 @@ public class RoutineActivity extends AppCompatActivity {
         mUserOrganization = "sub";
         mUserDepartment = "cse";
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_routine_list);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_routine_list);

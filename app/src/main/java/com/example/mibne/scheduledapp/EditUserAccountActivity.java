@@ -85,6 +85,7 @@ public class EditUserAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_user_account);
 
         getSupportActionBar().setTitle("Edit Account");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();

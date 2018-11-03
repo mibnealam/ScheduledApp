@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity
 
     String TAG = "MainActivity";
 
-    private
-
     TextView navUserId;
     TextView navUserName;
     ImageView navUserPortrait;

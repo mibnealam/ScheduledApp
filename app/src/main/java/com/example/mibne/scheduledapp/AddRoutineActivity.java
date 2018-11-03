@@ -2,7 +2,6 @@ package com.example.mibne.scheduledapp;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.os.Build;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -27,27 +26,17 @@ import java.util.Calendar;
 
 public class AddRoutineActivity extends AppCompatActivity {
 
-    private static String timePickerFlag;
 
     private TextInputLayout courseCodeEditText;
     private TextInputLayout roomNoEditText;
     private TextView startTimeTextView;
     private TextView endTimeTextView;
     private String routineDay;
-    private Button addClassButton;
-    private static boolean startTimeIsEmpty = true;
-    private static boolean endTimeIsEmpty = true;
-    private boolean routineDayIsEmpty = true;
-
-    private String mOrganization;
-    private String mDepartment;
 
     Routine routine;
 
     // Firebase instance variables
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mRoutineDatabaseReferance;
-    private DatabaseReference mUserDatabaseReferance;
+    private DatabaseReference mRoutineDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +44,19 @@ public class AddRoutineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_routine);
 
         getSupportActionBar().setTitle("Add A Class");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mOrganization = "sub";
-        mDepartment = "cse";
+        String mOrganization = "sub";
+        String mDepartment = "cse";
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mOrganization).child(mDepartment).child("routines");
-        mUserDatabaseReferance = mFirebaseDatabase.getReference().child("users");
+        mRoutineDatabaseReference = FirebaseDatabase.getInstance().getReference().child(mOrganization).child(mDepartment).child("routines");
 
         courseCodeEditText = (TextInputLayout) findViewById(R.id.course_code_wrapper);
         roomNoEditText = (TextInputLayout) findViewById(R.id.room_no_wrapper);
         startTimeTextView = (TextView) findViewById(R.id.text_view_start_time);
         endTimeTextView = (TextView) findViewById(R.id.text_view_end_time);
-        addClassButton = (Button) findViewById(R.id.button_add_class);
+        Button addClassButton = (Button) findViewById(R.id.button_add_class);
 
         Spinner spinner = (Spinner) findViewById(R.id.week_day_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -85,13 +73,11 @@ public class AddRoutineActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // An item was selected. You can retrieve the selected item using
                 routineDay = parent.getItemAtPosition(position).toString();
-                routineDayIsEmpty = false;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(null,"Please Select priority", Toast.LENGTH_SHORT).show();
-                routineDayIsEmpty = true;
+                Toast.makeText(null,"Please Select day", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -151,32 +137,14 @@ public class AddRoutineActivity extends AppCompatActivity {
     }
 
     private boolean validateStartTime() {
-        if (startTimeIsEmpty){
-            startTimeTextView.setText("Choose Start Time");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                startTimeTextView.setTextColor(getColor(R.color.credit6));
-            }
-            return false;
-        } else {
-            startTimeIsEmpty = false;
-            return true;
-        }
+        return false;
     }
     private boolean validateEndTime() {
-        if (endTimeIsEmpty){
-            endTimeTextView.setText("Choose End Time");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                startTimeTextView.setTextColor(getColor(R.color.credit6));
-            }
-            return false;
-        } else {
-            endTimeIsEmpty = false;
-            return true;
-        }
+        return false;
     }
 
     public boolean confirmInput() {
-        if (!validateCourseCode() | !validateRoomNo() | !validateStartTime() | !validateEndTime()){
+        if (!validateCourseCode() | !validateRoomNo()){
             Log.v("routineStored", "validation error!");
             return false;
         } else {
@@ -194,7 +162,7 @@ public class AddRoutineActivity extends AppCompatActivity {
 
     public void sendRoutineData() {
         if (confirmInput()) {
-            mRoutineDatabaseReferance.push().setValue(routine).addOnSuccessListener(new OnSuccessListener<Void>() {
+            mRoutineDatabaseReference.push().setValue(routine).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Toast.makeText(AddRoutineActivity.this, "Class is added!", Toast.LENGTH_LONG).show();
@@ -207,12 +175,10 @@ public class AddRoutineActivity extends AppCompatActivity {
     public void showStartTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "startTimePicker");
-        timePickerFlag = "startTimePicker";
     }
     public void showEndTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "endTimePicker");
-        timePickerFlag = "endTimePicker";
     }
 
     public static class TimePickerFragment extends DialogFragment
@@ -234,17 +200,16 @@ public class AddRoutineActivity extends AppCompatActivity {
             // Update deadline text view when the date is chosen by the user
             Calendar calendar = Calendar.getInstance();
             calendar.set(0, 0, 0, hourOfDay, minute);
-            switch (timePickerFlag){
+
+            switch (getTag()){
                 case "startTimePicker" : {
                     TextView textView = getActivity().findViewById(R.id.text_view_start_time);
                     textView.setText(DateFormat.format("hh:mm aaa", calendar));
-                    startTimeIsEmpty = false;
                     break;
                 }
                 case "endTimePicker" : {
                     TextView textView = getActivity().findViewById(R.id.text_view_end_time);
                     textView.setText(DateFormat.format("hh:mm aaa", calendar));
-                    endTimeIsEmpty = false;
                     break;
                 }
                 default:

@@ -71,6 +71,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
         noticeType = bundle.getString("Type");
         getSupportActionBar().setTitle("Create " + noticeType);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mNoticeDatabaseReferance = mFirebaseDatabase.getReference();
