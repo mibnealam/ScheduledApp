@@ -12,10 +12,9 @@
 
         <!-- preference opens a registration intent -->
         <Preference
+            android:key="@string/key_user_course_registration"
             android:title="@string/pref_registration_title"
             android:summary="@string/registration_summary">
-            <intent
-                android:action="android.intent.action.RegistrationActivity" />
         </Preference>
 
     </PreferenceCategory>

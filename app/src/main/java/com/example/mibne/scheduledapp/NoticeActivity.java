@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +50,10 @@ public class NoticeActivity extends AppCompatActivity {
     private String mUsername;
     private String uid;
     private String mNoticeType;
+    private String mUserOrganization;
+    private String mUserDepartment;
+    private String mUserBatch;
+    private String role;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -60,21 +66,26 @@ public class NoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            uid = user.getUid();
-        } else {
-            // No user is signed in
-        }
-
         Bundle mNoticeTypeBundle = getIntent().getExtras();
         mNoticeType = mNoticeTypeBundle.getString("Type");
+        mUsername = mNoticeTypeBundle.getString("userId");
+        uid = mNoticeTypeBundle.getString("uid");
+        mUserOrganization = mNoticeTypeBundle.getString("organization");
+        mUserDepartment = mNoticeTypeBundle.getString("department");
+        role = mNoticeTypeBundle.getString("role");
+        mUserBatch = mUsername.substring(5,7);
         getSupportActionBar().setTitle(mNoticeType);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         FloatingActionButton fabNotice = findViewById(R.id.fab_notice);
+
+        if (role.equals("admin") || role.equals("teacher")) {
+            fabNotice.setVisibility(View.VISIBLE);
+        } else {
+            fabNotice.setVisibility(View.GONE);
+        }
+
         fabNotice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,11 +197,11 @@ public class NoticeActivity extends AppCompatActivity {
 
             }
         };
-        rootRef.child("sub").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
-        rootRef.child("sub").child("cse").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child(mUserOrganization).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child(mUserOrganization).child(mUserDepartment).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
         //Todo fetch notices from sub/cse/courses/courseCode/notices if uid exists
         //rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addValueEventListener(mValueEventListener);
-        rootRef.child("sub").child("cse").child("37").child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child(mUserOrganization).child(mUserDepartment).child(mUserBatch).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
         rootRef.child("users").child(uid).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
     }
     private void detachDatabaseReadListener() {

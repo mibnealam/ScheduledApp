@@ -18,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
+import static com.example.mibne.scheduledapp.MainActivity.role;
+
 public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineAdapterViewHolder> {
 
     private List<Routine> routineList;
@@ -79,21 +81,23 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
 
         // Set an item click listener on the ListView, which sends an intent to a single Notice Activity
         // to know details about a notice
-        routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (role.equals("admin")) {
+            routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("courseCode", routine.getCourseCode());
-                bundle.putString("day", routine.getDay());
-                bundle.putString("startTime", routine.getStartTime());
-                bundle.putString("endTime", routine.getEndTime());
-                bundle.putString("roomNo", routine.getRoomNo());
-                editRoutineIntent.putExtras(bundle);
-                context.startActivity(editRoutineIntent);
-            }
-        });
+                    Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("courseCode", routine.getCourseCode());
+                    bundle.putString("day", routine.getDay());
+                    bundle.putString("startTime", routine.getStartTime());
+                    bundle.putString("endTime", routine.getEndTime());
+                    bundle.putString("roomNo", routine.getRoomNo());
+                    editRoutineIntent.putExtras(bundle);
+                    context.startActivity(editRoutineIntent);
+                }
+            });
+        }
     }
 
 

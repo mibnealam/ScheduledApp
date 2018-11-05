@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -52,6 +53,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             editUserInfoPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
                     Intent intent = new Intent(getActivity().getApplicationContext(), EditUserAccountActivity.class);
+                    Bundle bundle = getActivity().getIntent().getExtras();
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+
+            Preference userCourseRegistrationPref = findPreference(getString(R.string.key_user_course_registration));
+            userCourseRegistrationPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(getActivity().getApplicationContext(), RegistrationActivity.class);
                     Bundle bundle = getActivity().getIntent().getExtras();
                     intent.putExtras(bundle);
                     startActivity(intent);

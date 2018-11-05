@@ -42,16 +42,10 @@ public class MainActivity extends AppCompatActivity
     ImageView navUserPortrait;
     LinearLayout navUserContainer;
 
-    Bundle userDataBundle = new Bundle();
+    private Bundle userDataBundle = new Bundle();
 
-    String uid;
-    String userName;
-    String userID;
-    String userOrganization;
-    String userDepartment;
-    List<Course> userCourses;
-    String userEmail;
-    String userPhone;
+    private String uid;
+    public static String role;
 
     //Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -191,14 +185,17 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_notice) {
             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
-            intent.putExtra("Type", "Notice");
+            userDataBundle.putString("Type", "Notice");
+            intent.putExtras(userDataBundle);
             startActivity(intent);
         } else if (id == R.id.nav_routine) {
             Intent intent = new Intent(getApplicationContext(), RoutineActivity.class);
+            intent.putExtras(userDataBundle);
             startActivity(intent);
         } else if (id == R.id.nav_assignment) {
             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
-            intent.putExtra("Type", "Assignment");
+            userDataBundle.putString("Type", "Assignment");
+            intent.putExtras(userDataBundle);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -238,6 +235,8 @@ public class MainActivity extends AppCompatActivity
                     //Get Post object and use the values to update the UI
                     User user = dataSnapshot.getValue(User.class);
 
+                    role = user.getRole();
+
                     userDataBundle.putString("uid", uid);
                     userDataBundle.putString("userName", user.getName());
                     userDataBundle.putString("userId", user.getUsername());
@@ -246,7 +245,7 @@ public class MainActivity extends AppCompatActivity
                     userDataBundle.putString("photoUrl", user.getPhotoUrl());
                     userDataBundle.putString("organization", user.getOrganization());
                     userDataBundle.putString("department", user.getDepartment());
-                    userDataBundle.putString("role", user.getRole());
+                    userDataBundle.putString("role", role);
                 }
             }
 

@@ -250,6 +250,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
         if (confirmInput()) {
             // Handle item selection
             if (noticeTo.matches("[cse]{3}")){
+                //Sends notice to the cse department
                 mNoticeDatabaseReferance.child("sub").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -258,7 +259,8 @@ public class CreateNoticeActivity extends AppCompatActivity {
                     }
                 });
             } else if (noticeTo.matches("[0-9]{2}")) {
-                mNoticeDatabaseReferance.child("sub").child("cse").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                //Sends notice to a batch of cse department
+                mNoticeDatabaseReferance.child("sub").child("cse").child("batches").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
@@ -266,6 +268,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
                     }
                 });
             }  else if (noticeTo.matches("[A-Za-z]{3}-[0-9]{4}")) {
+                //Sends notice to a course of cse department
                 mNoticeDatabaseReferance.child("sub").child("cse").child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -274,6 +277,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
                     }
                 });
             } else if (noticeTo.matches("[uUpP][gG][0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}")) {
+                //Sends notice to a user
                 mUserDatabaseReferance.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

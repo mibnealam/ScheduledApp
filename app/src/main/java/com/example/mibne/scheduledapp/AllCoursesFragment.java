@@ -77,6 +77,7 @@ public class AllCoursesFragment extends Fragment {
 
     private String mUserDepartment;
     private String mUserOrganization;
+    private String role;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -92,7 +93,21 @@ public class AllCoursesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.course_list, container, false);
 
+        Bundle bundle = getActivity().getIntent().getExtras();
+
+        mUserOrganization = bundle.getString("organization");
+        mUserDepartment = bundle.getString("department");
+        role = bundle.getString("role");
+
+
         FloatingActionButton fab = rootView.findViewById(R.id.fab);
+
+        if (role.equals("admin")) {
+            fab.setVisibility(View.VISIBLE);
+        } else {
+            fab.setVisibility(View.GONE);
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,8 +118,6 @@ public class AllCoursesFragment extends Fragment {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mUserOrganization = "sub";
-        mUserDepartment = "cse";
         mCourseDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/courses");
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_course_list);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_course_list);

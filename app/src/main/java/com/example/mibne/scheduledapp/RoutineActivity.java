@@ -70,6 +70,7 @@ public class RoutineActivity extends AppCompatActivity {
 
     private String mUserDepartment;
     private String mUserOrganization;
+    private String role;
 
     // Firebase instance variables
     private DatabaseReference mRoutineDatabaseReferance;
@@ -81,6 +82,13 @@ public class RoutineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
 
+        Bundle userDataBundle = getIntent().getExtras();
+        mUserOrganization = userDataBundle.getString("organization");
+        mUserDepartment = userDataBundle.getString("department");
+        role = userDataBundle.getString("role");
+
+
+        com.getbase.floatingactionbutton.FloatingActionsMenu floatingActionsMenu = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.fab_routine);
 
         com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonUploadRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_upload_routine);
 
@@ -103,8 +111,20 @@ public class RoutineActivity extends AppCompatActivity {
             }
         });
 
-        mUserOrganization = "sub";
-        mUserDepartment = "cse";
+        switch (role) {
+            case "teacher" :
+                floatingActionsMenu.setVisibility(View.VISIBLE);
+                floatingActionButtonUploadRoutine.setVisibility(View.GONE);
+                break;
+            case "admin" :
+                floatingActionsMenu.setVisibility(View.VISIBLE);
+                break;
+
+                default:
+                    floatingActionsMenu.setVisibility(View.GONE);
+                    break;
+        }
+
 
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
