@@ -4,19 +4,11 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ScrollView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,12 +25,12 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextInputLayout userEmailTextInputLayout;
-    private TextInputLayout userPasswordTextInputLayout;
-    private String email;
-    private String password;
+//    private TextInputLayout userEmailTextInputLayout;
+//    private TextInputLayout userPasswordTextInputLayout;
+//    private String email;
+//    private String password;
 
-    private ScrollView scrollView;
+    private LinearLayout linearLayout;
     private View loadingIndicator;
 
 
@@ -57,8 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        userEmailTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_email_wrapper) ;
-        userPasswordTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_password_wrapper) ;
+//        userEmailTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_email_wrapper) ;
+//        userPasswordTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_password_wrapper) ;
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -73,9 +65,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
         findViewById(R.id.action_log_in_with_google_button).setOnClickListener((View.OnClickListener) this);
-        findViewById(R.id.forgot_password_button).setOnClickListener((View.OnClickListener) this);
-        findViewById(R.id.action_log_in_button).setOnClickListener((View.OnClickListener) this);
-        findViewById(R.id.action_create_account).setOnClickListener((View.OnClickListener) this);
+//        findViewById(R.id.forgot_password_button).setOnClickListener((View.OnClickListener) this);
+//        findViewById(R.id.action_log_in_button).setOnClickListener((View.OnClickListener) this);
+//        findViewById(R.id.action_create_account).setOnClickListener((View.OnClickListener) this);
     }
 
     @Override
@@ -86,89 +78,89 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         updateUI(currentUser);
     }
     // [START validateUserEmail]
-    private boolean validateUserEmail() {
-        String userEmailInput = userEmailTextInputLayout.getEditText().getText().toString().trim();
-
-        if (userEmailInput.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
-            userEmailTextInputLayout.setError(null);
-            return true;
-        } else {
-            userEmailTextInputLayout.setError("Invalid email!");
-            return false;
-        }
-    }
+//    private boolean validateUserEmail() {
+//        String userEmailInput = userEmailTextInputLayout.getEditText().getText().toString().trim();
+//
+//        if (userEmailInput.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
+//            userEmailTextInputLayout.setError(null);
+//            return true;
+//        } else {
+//            userEmailTextInputLayout.setError("Invalid email!");
+//            return false;
+//        }
+//    }
     // [END validateUserEmail]
 
     // [START validateUserPassword]
-    private boolean validateUserPassword() {
-        String userPasswordInput = userPasswordTextInputLayout.getEditText().getText().toString().trim();
-
-        if (userPasswordInput.isEmpty()) {
-            userPasswordTextInputLayout.setError("Enter password please");
-            return false;
-        } else {
-            userPasswordTextInputLayout.setError(null);
-            return true;
-        }
-    }
+//    private boolean validateUserPassword() {
+//        String userPasswordInput = userPasswordTextInputLayout.getEditText().getText().toString().trim();
+//
+//        if (userPasswordInput.isEmpty()) {
+//            userPasswordTextInputLayout.setError("Enter password please");
+//            return false;
+//        } else {
+//            userPasswordTextInputLayout.setError(null);
+//            return true;
+//        }
+//    }
     // [END validateUserPassword]
 
     // [START confirmInput]
-    public boolean confirmInput() {
-        if (!validateUserEmail() | !validateUserPassword()) {
-            return false;
-        } else {
-            email = userEmailTextInputLayout.getEditText().getText().toString().trim();
-            password = userPasswordTextInputLayout.getEditText().getText().toString();
-            return true;
-        }
-    }
+//    public boolean confirmInput() {
+//        if (!validateUserEmail() | !validateUserPassword()) {
+//            return false;
+//        } else {
+//            email = userEmailTextInputLayout.getEditText().getText().toString().trim();
+//            password = userPasswordTextInputLayout.getEditText().getText().toString();
+//            return true;
+//        }
+//    }
     // [END confirmInput]
 
     // [START logIn]
-    private void logIn() {
-        if (confirmInput()) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(LoginActivity.this, "Wrong Email/Password",
-                                        Toast.LENGTH_LONG).show();
-                                updateUI(null);
-                            }
-                        }
-                    });
-        }
-    }
+//    private void logIn() {
+//        if (confirmInput()) {
+//            mAuth.signInWithEmailAndPassword(email, password)
+//                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            if (task.isSuccessful()) {
+//                                // Sign in success, update UI with the signed-in user's information
+//                                Log.d(TAG, "signInWithEmail:success");
+//                                FirebaseUser user = mAuth.getCurrentUser();
+//                                updateUI(user);
+//                            } else {
+//                                // If sign in fails, display a message to the user.
+//                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+//                                Toast.makeText(LoginActivity.this, "Wrong Email/Password",
+//                                        Toast.LENGTH_LONG).show();
+//                                updateUI(null);
+//                            }
+//                        }
+//                    });
+//        }
+//    }
     // [END logIn]
 
     // [START forgotPassword]
-    private void forgotPassword() {
-        Intent intent = new Intent(this, ResetPasswordActivity.class);
-        startActivity(intent);
-    }
+//    private void forgotPassword() {
+//        Intent intent = new Intent(this, ResetPasswordActivity.class);
+//        startActivity(intent);
+//    }
     // [END forgotPassword]
 
     // [START createAccount]
-    private void createAccount() {
-        Intent intent = new Intent(this, CreateAccountActivity.class);
-        startActivity(intent);
-    }
+//    private void createAccount() {
+//        Intent intent = new Intent(this, CreateAccountActivity.class);
+//        startActivity(intent);
+//    }
     // [END createAccount]
 
     // [START signIn]
     private void signIn() {
         Log.v("test", "User Starts sign in!");
-        scrollView = findViewById(R.id.login_form);
-        scrollView.setVisibility(View.GONE);
+        linearLayout = findViewById(R.id.login_form);
+        linearLayout.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -185,14 +177,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
-                scrollView.setVisibility(View.GONE);
+                linearLayout.setVisibility(View.GONE);
                 loadingIndicator.setVisibility(View.VISIBLE);
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                scrollView.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
                 loadingIndicator.setVisibility(View.GONE);
             }
         }
@@ -237,18 +229,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.action_log_in_button:
-                logIn();
-                break;
-            case R.id.action_create_account:
-                createAccount();
-                break;
+//            case R.id.action_log_in_button:
+//                logIn();
+//                break;
+//            case R.id.action_create_account:
+//                createAccount();
+//                break;
             case R.id.action_log_in_with_google_button:
                 signIn();
                 break;
-            case R.id.forgot_password_button:
-                forgotPassword();
-                break;
+//            case R.id.forgot_password_button:
+//                forgotPassword();
+//                break;
                 default:
                     break;
         }
