@@ -53,7 +53,6 @@ public class NoticeActivity extends AppCompatActivity {
     private String mUserOrganization;
     private String mUserDepartment;
     private String mUserBatch;
-    private String role;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -66,13 +65,13 @@ public class NoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
-        Bundle mNoticeTypeBundle = getIntent().getExtras();
+        final Bundle mNoticeTypeBundle = getIntent().getExtras();
         mNoticeType = mNoticeTypeBundle.getString("Type");
         mUsername = mNoticeTypeBundle.getString("userId");
         uid = mNoticeTypeBundle.getString("uid");
         mUserOrganization = mNoticeTypeBundle.getString("organization");
         mUserDepartment = mNoticeTypeBundle.getString("department");
-        role = mNoticeTypeBundle.getString("role");
+        String role = mNoticeTypeBundle.getString("role");
         mUserBatch = mUsername.substring(5,7);
         getSupportActionBar().setTitle(mNoticeType);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -90,7 +89,7 @@ public class NoticeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CreateNoticeActivity.class);
-                intent.putExtra("Type", mNoticeType);
+                intent.putExtras(mNoticeTypeBundle);
                 startActivity(intent);
             }
         });

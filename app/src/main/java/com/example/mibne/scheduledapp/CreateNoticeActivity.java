@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
@@ -60,6 +61,9 @@ public class CreateNoticeActivity extends AppCompatActivity {
     private boolean noticePriorityIsEmpty = true;
     private Long date;
     private String noticeType;
+    private String mUserDepartment;
+    private String mUserOrganization;
+    private String role;
 
 
     @Override
@@ -69,6 +73,9 @@ public class CreateNoticeActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         noticeType = bundle.getString("Type");
+        mUserOrganization = bundle.getString("organization");
+        mUserDepartment = bundle.getString("department");
+        role = bundle.getString("role");
         getSupportActionBar().setTitle("Create " + noticeType);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
@@ -249,31 +256,46 @@ public class CreateNoticeActivity extends AppCompatActivity {
     private void sendNotice() {
         if (confirmInput()) {
             // Handle item selection
-            if (noticeTo.matches("[cse]{3}")){
+            if (noticeTo.matches("[c][s][e]") && role.equals("admin")){
                 //Sends notice to the cse department
-                mNoticeDatabaseReferance.child("sub").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mNoticeDatabaseReferance.child(mUserOrganization).child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
                         finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
                     }
                 });
             } else if (noticeTo.matches("[0-9]{2}")) {
                 //Sends notice to a batch of cse department
-                mNoticeDatabaseReferance.child("sub").child("cse").child("batches").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mNoticeDatabaseReferance.child(mUserOrganization).child(mUserDepartment).child("batches").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
                         finish();
                     }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
+                    }
                 });
             }  else if (noticeTo.matches("[A-Za-z]{3}-[0-9]{4}")) {
                 //Sends notice to a course of cse department
-                mNoticeDatabaseReferance.child("sub").child("cse").child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mNoticeDatabaseReferance.child(mUserOrganization).child(mUserDepartment).child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
                         finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
                     }
                 });
             } else if (noticeTo.matches("[uUpP][gG][0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}")) {
@@ -288,6 +310,11 @@ public class CreateNoticeActivity extends AppCompatActivity {
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
                                         finish();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
                                     }
                                 });
                             } else {

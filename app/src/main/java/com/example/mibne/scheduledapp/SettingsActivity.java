@@ -7,8 +7,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
+import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+
+import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -88,6 +98,57 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     return true;
                 }
             });
+
+            final Preference notificationPref = (Preference) findPreference(getString(R.string.key_pref_notification_targets));
+            notificationPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    android.app.FragmentManager fragmentManager = getFragmentManager();
+                    //openDialog(fragmentManager);
+                    return true;
+                }
+            });
+
+            final SwitchPreference notificationStatePref = (SwitchPreference) findPreference(getString(R.string.key_pref_notifications));
+            notificationStatePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (notificationStatePref.isChecked()){
+                        notificationPref.setEnabled(false);
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("General");
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("Department");
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("Course");
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("Routine")
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        notificationStatePref.setChecked(false);
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                            notificationStatePref.setChecked(true);
+                                        }
+                                    }
+                                });
+                    } else {
+                        FirebaseMessaging.getInstance().subscribeToTopic("Self");
+                        FirebaseMessaging.getInstance().subscribeToTopic("General");
+                        FirebaseMessaging.getInstance().subscribeToTopic("Department");
+                        FirebaseMessaging.getInstance().subscribeToTopic("Course");
+                        FirebaseMessaging.getInstance().subscribeToTopic("Routine")
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        notificationStatePref.setChecked(true);
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                            notificationStatePref.setChecked(false);
+                                        }
+                                    }
+                                });
+                    }
+                    return true;
+                }
+            });
         }
     }
 
@@ -122,5 +183,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mibnealam@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from scheduled app");
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+    }
+
+    private static void openDialog(FragmentManager fragmentManager) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new NotificationOptionsDialogueFragment();
+        //dialog.setArguments(bundle);
+        dialog.show(fragmentManager, "Notifications");
     }
 }

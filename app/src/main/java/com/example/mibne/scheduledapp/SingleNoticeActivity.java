@@ -75,4 +75,5 @@ public class SingleNoticeActivity extends AppCompatActivity {
         dialog.show(getSupportFragmentManager(), "ExportDialogFragment");
 
     }
+
 }

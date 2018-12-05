@@ -49,9 +49,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.list_item_course;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmedietly = false;
+        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmedietly);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         return new CourseAdapterViewHolder(view);
     }
 
@@ -131,7 +131,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
      * created one. This is handy when we get new data from the firebase but don't want to create a
      * new CourseAdapter to display it.
      *
-     * @param courseData The new weather data to be displayed.
+     * @param courseData The new course data to be displayed.
      */
     public void setCourseData(List<Course> courseData) {
         courseList = courseData;

@@ -23,16 +23,16 @@
         android:title="@string/pref_notification_title"
         android:key="pref_key_storage_settings">
         <SwitchPreference
-            android:key="pref_key_auto_delete"
+            android:key="@string/key_pref_notifications"
             android:summary="@string/notifications_status"
             android:title="@string/title_notification_status"
             android:defaultValue="true" />
-        <MultiSelectListPreference
-            android:key="pref_notificationType"
+        <!-- preference opens a registration intent -->
+        <Preference
+            android:key="@string/key_pref_notification_targets"
             android:title="@string/pref_notificationType_title"
-            android:dialogTitle="@string/pref_notificationType_dialog_title"
-            android:entries="@array/pref_notificationType_entries"
-            android:entryValues="@array/pref_notificationType_entries"/>
+            android:summary="@string/pref_notificationType_dialog_title">
+        </Preference>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_about_title">

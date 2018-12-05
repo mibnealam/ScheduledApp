@@ -32,6 +32,7 @@ public class AddRoutineActivity extends AppCompatActivity {
     private TextView startTimeTextView;
     private TextView endTimeTextView;
     private String routineDay;
+    private String routineId;
 
     Routine routine;
 
@@ -154,6 +155,8 @@ public class AddRoutineActivity extends AppCompatActivity {
             routine.setEndTime(endTimeTextView.getText().toString());
             routine.setDay(routineDay);
 
+            routineId = routine.getDay() + "-" + routine.getCourseCode();
+
             Log.v("routineStored", routine.toString());
 
             return true;
@@ -162,7 +165,7 @@ public class AddRoutineActivity extends AppCompatActivity {
 
     public void sendRoutineData() {
         if (confirmInput()) {
-            mRoutineDatabaseReference.push().setValue(routine).addOnSuccessListener(new OnSuccessListener<Void>() {
+            mRoutineDatabaseReference.child(routineId).setValue(routine).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Toast.makeText(AddRoutineActivity.this, "Class is added!", Toast.LENGTH_LONG).show();

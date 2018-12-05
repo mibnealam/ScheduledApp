@@ -46,6 +46,8 @@
     <string name="action_confirm">Confirm</string>
     <string name="action_cancel">Cancel</string>
 
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+
     <string name="error_invalid_password">Password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -107,6 +109,8 @@
     <string name="choose_email_client">Choose email client</string>
     <string name="choose_export_option">Choose Option</string>
 
+    <string name="key_pref_notifications">key_pref_notifications</string>
+    <string name="key_pref_notification_targets">key_pref_notification_targets</string>
     <string name="key_pref_edit_user_info">key_pref_edit_user_info</string>
     <string name="key_send_feedback">feedback</string>
     <string name="key_contact_developer">key_contact_developer</string>
@@ -192,5 +196,9 @@
     <string name="github_link">https://github.com/mibnealam/ScheduledApp</string>
     <string name="app_summary">This is a free and open source android application to help students and teachers with their academic schedule.</string>
     <string name="contribution">Everyone are welcome to contribute in the github codebase for better user experience and ask any question or help.</string>
+    <string name="channel_name">Foreground Notification</string>
+    <string name="channel_description">Controls foreground notifications</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
