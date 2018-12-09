@@ -1,9 +1,5 @@
 package com.example.mibne.scheduledapp;
 
-import android.util.Log;
-
-import java.sql.Time;
-
 public class Notice {
     /* Title of the notice */
     private String mNoticeTitle;

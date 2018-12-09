@@ -23,14 +23,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -227,8 +225,8 @@ public class MainActivity extends AppCompatActivity
 
                 if (dataSnapshot.exists()) {
                     Log.v(TAG, dataSnapshot.toString());
-                    //Todo : initialize user data variables with user data and
-                    //Todo : pass them through required activity and fragments
+                    // Initialize user data variables with user data and
+                    // pass them through required activity and fragments
                     navUserId.setText(dataSnapshot.child("username").getValue().toString());
                     navUserName.setText(dataSnapshot.child("name").getValue().toString());
                     Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
