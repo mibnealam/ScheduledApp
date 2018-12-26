@@ -72,7 +72,11 @@ public class NoticeActivity extends AppCompatActivity {
         mUserOrganization = mNoticeTypeBundle.getString("organization");
         mUserDepartment = mNoticeTypeBundle.getString("department");
         String role = mNoticeTypeBundle.getString("role");
-        mUserBatch = mUsername.substring(5,7);
+        if (mUsername.length() == 14) {
+            mUserBatch = mUsername.substring(5,7);
+        } else {
+            mUserBatch = "00";
+        }
         getSupportActionBar().setTitle(mNoticeType);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
