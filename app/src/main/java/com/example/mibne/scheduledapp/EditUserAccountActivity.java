@@ -77,7 +77,6 @@ public class EditUserAccountActivity extends AppCompatActivity {
     private DatabaseReference mUserDatabaseReferance;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
-    private ValueEventListener mValueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +121,11 @@ public class EditUserAccountActivity extends AppCompatActivity {
 
         Glide.with(imageView).load(userPortraitUrl).into(imageView);
         userNameTextInputLayout.getEditText().setText(userName);
+        userNameTextInputLayout.setEnabled(false);
         userIdTextInputLayout.getEditText().setText(userId);
         userIdTextInputLayout.setEnabled(false);
         userEmailTextInputLayout.getEditText().setText(userEmail);
+        userEmailTextInputLayout.setEnabled(false);
         userPhoneTextInputLayout.getEditText().setText(userPhone);
 
         imageView.setOnClickListener(new View.OnClickListener() {

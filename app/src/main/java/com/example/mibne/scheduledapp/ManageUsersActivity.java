@@ -2,18 +2,11 @@ package com.example.mibne.scheduledapp;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,9 +19,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,8 +39,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,43 +48,47 @@ import java.util.List;
 
 import static android.view.View.INVISIBLE;
 
-public class RoutineActivity extends AppCompatActivity {
+public class ManageUsersActivity extends AppCompatActivity {
 
-    private String TAG = "RoutineActivity";
+    private String TAG = "ManageUsersActivity";
+
     private static final int READ_REQUEST_CODE = 42;
 
-    private List<Routine> routineList = new ArrayList<>();
-    private List<Routine> uploadRoutineList = new ArrayList<>();
-
-    private LinearLayout mRoutineUserView;
-    private RecyclerView mRoutineRecyclerView;
-    private RoutineAdapter mRoutineAdapter;
-    private ProgressBar mProgressBar;
-    private TextView mEmptyTextView;
+    private List<User> userList = new ArrayList<>();
+    private List<User> uploadUserList = new ArrayList<>();
 
     private String mUserDepartment;
     private String mUserOrganization;
     private String role;
 
-    // Firebase instance variables
-    private DatabaseReference mRoutineDatabaseReferance;
-    private ValueEventListener mValueEventListener;
+    private RecyclerView mUserRecyclerView;
+    private UserAdapter mUserAdapter;
+    private ProgressBar mProgressBar;
+    private TextView mEmptyTextView;
 
+    // Firebase instance variables
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
+    private ValueEventListener mValueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_routine);
+        setContentView(R.layout.activity_manage_users);
 
-        Bundle userDataBundle = getIntent().getExtras();
+        getSupportActionBar().setTitle("Manage Users");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        final Bundle userDataBundle = getIntent().getExtras();
         mUserOrganization = userDataBundle.getString("organization");
         mUserDepartment = userDataBundle.getString("department");
         role = userDataBundle.getString("role");
 
 
-        com.getbase.floatingactionbutton.FloatingActionsMenu floatingActionsMenu = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.fab_routine);
+        com.getbase.floatingactionbutton.FloatingActionsMenu floatingActionsMenu = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.fab_user);
 
-        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonUploadRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_upload_routine);
+        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonUploadRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_upload_user);
 
         floatingActionButtonUploadRoutine.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,74 +98,70 @@ public class RoutineActivity extends AppCompatActivity {
             }
         });
 
-        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonAddRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_add_routine);
+        com.getbase.floatingactionbutton.FloatingActionButton floatingActionButtonAddRoutine = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab_add_user);
 
         floatingActionButtonAddRoutine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AddRoutineActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AddUserActivity.class);
+                intent.putExtras(userDataBundle);
                 startActivity(intent);
             }
         });
 
         switch (role) {
-//            case "teacher" :
-//                floatingActionsMenu.setVisibility(View.VISIBLE);
-//                floatingActionButtonUploadRoutine.setVisibility(View.GONE);
-//                checkFilePermissions();
-//                break;
+            case "teacher" :
+                floatingActionsMenu.setVisibility(View.VISIBLE);
+                floatingActionButtonUploadRoutine.setVisibility(View.GONE);
+                checkFilePermissions();
+                break;
             case "admin" :
                 floatingActionsMenu.setVisibility(View.VISIBLE);
                 checkFilePermissions();
                 break;
-
-                default:
-                    floatingActionsMenu.setVisibility(View.GONE);
-                    break;
+            default:
+                floatingActionsMenu.setVisibility(View.GONE);
+                break;
         }
 
-
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_routine_list);
-        mEmptyTextView = (TextView) findViewById(R.id.empty_view_routine_list);
-        mRoutineUserView = (LinearLayout) findViewById(R.id.user_view_routine);
-
+        // Initialize Firebase components
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_user_list);
+        mEmptyTextView = (TextView) findViewById(R.id.empty_view_user_list);
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mRoutineRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_routine);
+        mUserRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_user);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRoutineRecyclerView.setLayoutManager(layoutManager);
+        mUserRecyclerView.setLayoutManager(layoutManager);
 
         /*
          * Use this setting to improve performance if you know that changes in content do not
          * change the child layout size in the RecyclerView
          */
-        mRoutineRecyclerView.setHasFixedSize(true);
+        mUserRecyclerView.setHasFixedSize(true);
         /*
-         * The CourseAdapter is responsible for linking our course data with the Views that
-         * will end up displaying our course data.
+         * The UserAdapter is responsible for linking our course data with the Views that
+         * will end up displaying user data.
          */
-        mRoutineAdapter = new RoutineAdapter();
+        mUserAdapter = new UserAdapter();
 
-        mRoutineRecyclerView.setAdapter(mRoutineAdapter);
+        mUserRecyclerView.setAdapter(mUserAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        mRoutineUserView.setVisibility(INVISIBLE);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        routineList.clear();
+        userList.clear();
         attachDatabaseReadListener();
     }
 
@@ -175,7 +169,7 @@ public class RoutineActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         detachDatabaseReadListener();
-        routineList.clear();
+        userList.clear();
     }
 
     @Override
@@ -204,11 +198,11 @@ public class RoutineActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
-                        Routine routine =  routineDataSnapshot.getValue(Routine.class);
-                        routineList.add(routine);
+                    for (DataSnapshot userDataSnapshot: dataSnapshot.getChildren()) {
+                        User user =  userDataSnapshot.getValue(User.class);
+                        userList.add(user);
                     }
-                    mRoutineAdapter.setRoutineData(routineList);
+                    mUserAdapter.setUserData(userList);
                     mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
@@ -222,35 +216,14 @@ public class RoutineActivity extends AppCompatActivity {
 
             }
         };
-        mRoutineDatabaseReferance.addValueEventListener(mValueEventListener);
+        mUsersDatabaseReference.addListenerForSingleValueEvent(mValueEventListener);
     }
 
     private void detachDatabaseReadListener() {
         if (mValueEventListener != null) {
-            mRoutineDatabaseReferance.removeEventListener(mValueEventListener);
+            mUsersDatabaseReference.removeEventListener(mValueEventListener);
             mValueEventListener = null;
         }
-    }
-
-    /**
-     * Fires an intent to spin up the "file chooser" UI and select an xls file.
-     */
-    public void performFileSearch() {
-
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-        // browser.
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        // Filter to show only xls files, using the xls MIME data type.
-        // To search for all documents available via installed storage providers,
-        // it would be "*/*".
-        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
-        startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
     /**
@@ -274,7 +247,7 @@ public class RoutineActivity extends AppCompatActivity {
                 //inner loop, loops through columns
                 for (int c = 0; c < cellsCount; c++) {
                     //handles if there are too many columns on the excel sheet.
-                    if(c>5){
+                    if(c>7){
                         Log.e(TAG, "readExcelData: ERROR. Excel File Format is incorrect! " );
                         //toastMessage("ERROR: Excel File Format is incorrect!");
                         break;
@@ -314,24 +287,50 @@ public class RoutineActivity extends AppCompatActivity {
 
             //use try catch to make sure there are no "" that try to parse into doubles.
             try{
-                String day = (columns[0]);
-                String startTime = (columns[1]);
-                String endTime = (columns[2]);
-                String courseCode = (columns[3]);
-                String roomNo = (columns[4]);
+                final String username = (columns[0]);
+                final String name = (columns[1]);
+                final String email = (columns[2]);
+                String password = (columns[3]);
+                final String phone = (columns[4]);
+                final String role = (columns[5]);
 
-                String cellInfo = "(courseCode,courseName): (" + day + "," + courseCode + "," + startTime + "," + endTime + "," + roomNo + ")";
+                String cellInfo = "(cell_info): (" + username + "," + name + "," + email + "," + name + "," + phone + "," + role + "," + mUserDepartment + "," + mUserOrganization + ")";
                 Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
 
                 //add the the uploadData ArrayList
-                uploadRoutineList.add(new Routine(day,courseCode,startTime,endTime,roomNo));
-                Log.v(TAG, uploadRoutineList.toString());
-                mRoutineDatabaseReferance.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mEmptyTextView.setVisibility(View.GONE);
-                    }
-                });
+                uploadUserList.add(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, "_"));
+
+                mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "createUserWithEmail:success");
+                                    FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                                    mUsersDatabaseReference.child(user.getUid()).setValue(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, user.getUid()));
+                                    //updateUI(user);
+                                    FirebaseAuth.getInstance().signOut();
+
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                    Toast.makeText(ManageUsersActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                    //updateUI(null);
+                                }
+
+                                // ...
+                            }
+                        });
+
+//                Log.v(TAG, uploadUserList.toString());
+//                mUsersDatabaseReference.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        mEmptyTextView.setVisibility(View.GONE);
+//                    }
+//                });
 
             }catch (NumberFormatException e){
 
@@ -346,13 +345,12 @@ public class RoutineActivity extends AppCompatActivity {
     private void printDataToLog() {
         Log.d(TAG, "printDataToLog: Printing data to log...");
 
-        for(int i = 0; i< uploadRoutineList.size(); i++){
-            String day = uploadRoutineList.get(i).getDay();
-            String courseCode = uploadRoutineList.get(i).getCourseCode();
-            String startTime = uploadRoutineList.get(i).getStartTime();
-            String endTime = uploadRoutineList.get(i).getEndTime();
-            String roomNo = uploadRoutineList.get(i).getRoomNo();
-            Log.d(TAG, "printDataToLog: (day,courseCode,startTime,endTime,roomNo): (" + day + "," + courseCode + "," + startTime + "," + endTime + "," + roomNo + ")");
+        for(int i = 0; i< uploadUserList.size(); i++){
+            String username = uploadUserList.get(i).getUsername();
+            String email = uploadUserList.get(i).getEmail();
+            String phone = uploadUserList.get(i).getPhone();
+            String name = uploadUserList.get(i).getName();
+            Log.d(TAG, "printDataToLog: (id,email,phone,name): (" + username + "," + email + "," + phone + "," + name + ")");
         }
     }
 
@@ -393,6 +391,27 @@ public class RoutineActivity extends AppCompatActivity {
             Log.e(TAG, "getCellAsString: NullPointerException: " + e.getMessage() );
         }
         return value;
+    }
+
+    /**
+     * Fires an intent to spin up the "file chooser" UI and select an xls file.
+     */
+    public void performFileSearch() {
+
+        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+        // browser.
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        // Filter to only show results that can be "opened", such as a
+        // file (as opposed to a list of contacts or timezones)
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Filter to show only xls files, using the xls MIME data type.
+        // To search for all documents available via installed storage providers,
+        // it would be "*/*".
+        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
     /**

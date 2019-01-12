@@ -63,7 +63,6 @@ public class TodayFragment extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRoutineDatabaseReferance;
     private DatabaseReference mUserDatabaseReferance;
-    private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListenerForRoutine;
     private ValueEventListener mValueEventListenerForUser;
 

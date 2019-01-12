@@ -191,7 +191,7 @@ public class UserInfoActivity extends AppCompatActivity  {
             userId = uid;
         }
 
-        User user = new User(department, email, name, organization, phone, photoUrl, role, username);
+        User user = new User(department, email, name, organization, phone, photoUrl, role, username, userId);
 
         mUsersDatabaseReference.child(userId).setValue(user);
 

@@ -83,7 +83,7 @@ public class NoticeActivity extends AppCompatActivity {
 
         FloatingActionButton fabNotice = findViewById(R.id.fab_notice);
 
-        if (role.equals("admin") || role.equals("teacher")) {
+        if (role.equals("admin")) {
             fabNotice.setVisibility(View.VISIBLE);
         } else {
             fabNotice.setVisibility(View.GONE);

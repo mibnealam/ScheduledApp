@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     String TAG = "MainActivity";
+
+    Menu nav_Menu;
 
     TextView navUserId;
     TextView navUserName;
@@ -73,7 +76,10 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_manage_users).setVisible(false);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         View headerView =  navigationView.getHeaderView(0);
         navUserId = (TextView)headerView.findViewById(R.id.user_id_text_view);
@@ -195,6 +201,10 @@ public class MainActivity extends AppCompatActivity
             userDataBundle.putString("Type", "Assignment");
             intent.putExtras(userDataBundle);
             startActivity(intent);
+        } else if (id == R.id.nav_manage_users) {
+            Intent intent = new Intent(getApplicationContext(), ManageUsersActivity.class);
+            intent.putExtras(userDataBundle);
+            startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             intent.putExtras(userDataBundle);
@@ -234,6 +244,9 @@ public class MainActivity extends AppCompatActivity
                     User user = dataSnapshot.getValue(User.class);
 
                     role = user.getRole();
+                    if (role.equals("admin")) {
+                        nav_Menu.findItem(R.id.nav_manage_users).setVisible(true);
+                    }
 
                     userDataBundle.putString("uid", uid);
                     userDataBundle.putString("userName", user.getName());

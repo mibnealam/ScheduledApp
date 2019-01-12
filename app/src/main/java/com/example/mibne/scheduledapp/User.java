@@ -12,12 +12,13 @@ public class User {
     private String photoUrl;
     private String role;
     private String username;
+    private String uid;
 
     public User() {
     }
 
     public User(String department, String email, String name,String organization,
-                String phone, String photoUrl, String role, String username) {
+                String phone, String photoUrl, String role, String username, String uid) {
         this.department = department;
         this.email = email;
         this.name = name;
@@ -26,6 +27,7 @@ public class User {
         this.photoUrl = photoUrl;
         this.role = role;
         this.username = username;
+        this.uid = uid;
     }
 
     public String getDepartment() {
@@ -89,6 +91,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUid() {
+        return  uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
 }

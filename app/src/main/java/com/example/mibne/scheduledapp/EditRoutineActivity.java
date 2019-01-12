@@ -221,7 +221,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setIcon(R.drawable.ic_warning_black_24dp);
             builder.setTitle(R.string.title_dialog_confirm);
-            builder.setMessage(R.string.prompt_dialog_confirm)
+            builder.setMessage(R.string.prompt_dialog_confirm_course)
                     .setPositiveButton(R.string.action_confirm, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // delete routine from FireBase

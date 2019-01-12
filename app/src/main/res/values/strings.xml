@@ -27,7 +27,8 @@
     <string name="prompt_no_assignment">No assignment available!</string>
     <string name="prompt_no_selected_course">Please select your course first!</string>
     <string name="prompt_no_internet_connection">Ops! No internet connection.</string>
-    <string name="prompt_dialog_confirm">You are going to erase all data of this course</string>
+    <string name="prompt_dialog_confirm_user">You are going to erase all data of this user</string>
+    <string name="prompt_dialog_confirm_course">You are going to erase all data of this course</string>
 
     <string name="action_sign_up">Sign up</string>
     <string name="action_forgot_password">Forgot/Reset password?</string>
@@ -43,6 +44,8 @@
     <string name="action_start_time">Start Time</string>
     <string name="action_end_time">End Time</string>
     <string name="action_update">Update</string>
+    <string name="action_save">Save</string>
+    <string name="action_add">Add</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_cancel">Cancel</string>
 

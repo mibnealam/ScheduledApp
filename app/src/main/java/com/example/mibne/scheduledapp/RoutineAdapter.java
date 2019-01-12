@@ -79,7 +79,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
         routineAdapterViewHolder.mRoutineRoomNoTextView.setText(routine.getRoomNo());
         routineAdapterViewHolder.linearLayout.setBackgroundColor(getDayColor(routine.getDay().toLowerCase()));
 
-        // Set an item click listener on the ListView, which sends an intent to a single Notice Activity
+        // Set an item click listener on the ListView, which sends an intent to a single Routine Activity
         // to know details about a notice
         if (role.equals("admin")) {
             routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
