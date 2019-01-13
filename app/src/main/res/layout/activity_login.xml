@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity">
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -149,7 +149,7 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
     <!-- Loading indicator is only shown before the first load -->
     <ProgressBar
         android:id="@+id/sign_in_loading_indicator"

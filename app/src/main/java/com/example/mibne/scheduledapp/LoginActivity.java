@@ -1,38 +1,40 @@
 package com.example.mibne.scheduledapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+    boolean isConnected;
 
     private TextInputLayout userEmailTextInputLayout;
     private TextInputLayout userPasswordTextInputLayout;
     private String email;
     private String password;
 
-    private LinearLayout linearLayout;
+    private ScrollView scrollView;
     private View loadingIndicator;
 
 
@@ -83,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private boolean validateUserEmail() {
         String userEmailInput = userEmailTextInputLayout.getEditText().getText().toString().trim();
 
-        if (userEmailInput.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
+        if (userEmailInput.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
             userEmailTextInputLayout.setError(null);
             return true;
         } else {
@@ -121,31 +123,52 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     // [START logIn]
     private void logIn() {
-        if (confirmInput()) {
-            linearLayout = findViewById(R.id.login_form);
-            linearLayout.setVisibility(View.GONE);
-            loadingIndicator.setVisibility(View.VISIBLE);
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(LoginActivity.this, "Wrong Email/Password",
-                                        Toast.LENGTH_LONG).show();
-                                updateUI(null);
-                                linearLayout.setVisibility(View.VISIBLE);
-                                loadingIndicator.setVisibility(View.GONE);
+        if (checkConnection()) {
+            if (confirmInput()) {
+                scrollView = findViewById(R.id.login_form);
+                scrollView.setVisibility(View.GONE);
+                loadingIndicator.setVisibility(View.VISIBLE);
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    updateUI(user);
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    Toast.makeText(LoginActivity.this, "Wrong Email/Password",
+                                            Toast.LENGTH_LONG).show();
+                                    updateUI(null);
+                                    scrollView.setVisibility(View.VISIBLE);
+                                    loadingIndicator.setVisibility(View.GONE);
+                                }
                             }
-                        }
-                    });
+                        });
+            }
+        } else {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.prompt_no_internet_connection, Snackbar.LENGTH_LONG);
+            snackbar.show();
         }
+    }
+
+    // Method to manually check connection status
+    private boolean checkConnection() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if (isConnected) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
     // [END logIn]
 
@@ -166,8 +189,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // [START signIn]
     private void signIn() {
         Log.v("test", "User Starts sign in!");
-        linearLayout = findViewById(R.id.login_form);
-        linearLayout.setVisibility(View.GONE);
+        scrollView = findViewById(R.id.login_form);
+        scrollView.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -184,14 +207,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 //            try {
 //                // Google Sign In was successful, authenticate with Firebase
-//                linearLayout.setVisibility(View.GONE);
+//                scrollView.setVisibility(View.GONE);
 //                loadingIndicator.setVisibility(View.VISIBLE);
 //                GoogleSignInAccount account = task.getResult(ApiException.class);
 //                firebaseAuthWithGoogle(account);
 //            } catch (ApiException e) {
 //                // Google Sign In failed, update UI appropriately
 //                Log.w(TAG, "Google sign in failed", e);
-//                linearLayout.setVisibility(View.VISIBLE);
+//                scrollView.setVisibility(View.VISIBLE);
 //                loadingIndicator.setVisibility(View.GONE);
 //            }
 //        }
