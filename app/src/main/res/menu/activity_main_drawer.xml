@@ -12,10 +12,14 @@
             android:id="@+id/nav_routine"
             android:icon="@drawable/ic_timeline_black_24dp"
             android:title="Routine" />
+        <!--<item-->
+            <!--android:id="@+id/nav_assignment"-->
+            <!--android:icon="@drawable/ic_assignment_black_24dp"-->
+            <!--android:title="Assignment" />-->
         <item
-            android:id="@+id/nav_assignment"
-            android:icon="@drawable/ic_assignment_black_24dp"
-            android:title="Assignment" />
+            android:id="@+id/nav_result"
+            android:icon="@drawable/ic_school_black_24dp"
+            android:title="Result" />
     </group>
 
     <item android:title="">

@@ -1,6 +1,8 @@
 package com.example.mibne.scheduledapp;
 
 import android.content.Intent;
+import android.drm.DrmStore;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -196,12 +198,18 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), RoutineActivity.class);
             intent.putExtras(userDataBundle);
             startActivity(intent);
-        } else if (id == R.id.nav_assignment) {
-            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
-            userDataBundle.putString("Type", "Assignment");
-            intent.putExtras(userDataBundle);
+        }
+//        else if (id == R.id.nav_assignment) {
+//            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+//            userDataBundle.putString("Type", "Assignment");
+//            intent.putExtras(userDataBundle);
+//            startActivity(intent);
+//        }
+        else if (id == R.id.nav_result) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://103.239.5.178:2020/apps/"));
             startActivity(intent);
-        } else if (id == R.id.nav_manage_users) {
+        }
+        else if (id == R.id.nav_manage_users) {
             Intent intent = new Intent(getApplicationContext(), ManageUsersActivity.class);
             intent.putExtras(userDataBundle);
             startActivity(intent);
