@@ -34,6 +34,9 @@ public class AddRoutineActivity extends AppCompatActivity {
     private String routineDay;
     private String routineId;
 
+    String mOrganization;
+    String mDepartment;
+
     Routine routine;
 
     // Firebase instance variables
@@ -48,8 +51,10 @@ public class AddRoutineActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String mOrganization = "sub";
-        String mDepartment = "cse";
+        Bundle userDataBundle = getIntent().getExtras();
+        mOrganization = userDataBundle.getString("organization");
+        mDepartment = userDataBundle.getString("department");
+
 
         mRoutineDatabaseReference = FirebaseDatabase.getInstance().getReference().child(mOrganization).child(mDepartment).child("routines");
 

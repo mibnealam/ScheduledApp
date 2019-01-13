@@ -257,7 +257,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
         if (confirmInput()) {
             // Handle item selection
             if (noticeTo.matches("[c][s][e]") && role.equals("admin")){
-                //Sends notice to the cse department
+                //Sends notice to the users department
                 mNoticeDatabaseReferance.child(mUserOrganization).child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -271,7 +271,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
                     }
                 });
             } else if (noticeTo.matches("[0-9]{2}")) {
-                //Sends notice to a batch of cse department
+                //Sends notice to a batch of users department
                 mNoticeDatabaseReferance.child(mUserOrganization).child(mUserDepartment).child("batches").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -285,7 +285,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
                     }
                 });
             }  else if (noticeTo.matches("[A-Za-z]{3}-[0-9]{4}")) {
-                //Sends notice to a course of cse department
+                //Sends notice to a course of users department
                 mNoticeDatabaseReferance.child(mUserOrganization).child(mUserDepartment).child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static android.view.View.INVISIBLE;
+import static com.example.mibne.scheduledapp.MainActivity.userDataBundle;
 
 
 /**
@@ -84,8 +85,8 @@ public class ThisWeekFragment extends Fragment {
             // No user is signed in
         }
 
-        mUserOrganization = "sub";
-        mUserDepartment = "cse";
+        mUserOrganization = userDataBundle.getString("organization");
+        mUserDepartment = userDataBundle.getString("department");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");

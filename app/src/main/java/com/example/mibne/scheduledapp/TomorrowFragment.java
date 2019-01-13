@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.example.mibne.scheduledapp.MainActivity.userDataBundle;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,7 +66,6 @@ public class TomorrowFragment extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRoutineDatabaseReferance;
     private DatabaseReference mUserDatabaseReferance;
-    private ChildEventListener mChildEventListener;
     private ValueEventListener mValueEventListenerForRoutine;
     private ValueEventListener mValueEventListenerForUser;
 
@@ -87,8 +88,8 @@ public class TomorrowFragment extends Fragment {
         }
 
 
-        mUserOrganization = "sub";
-        mUserDepartment = "cse";
+        mUserOrganization = userDataBundle.getString("organization");
+        mUserDepartment = userDataBundle.getString("department");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");

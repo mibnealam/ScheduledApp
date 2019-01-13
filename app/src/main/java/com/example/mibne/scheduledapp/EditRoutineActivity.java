@@ -28,10 +28,15 @@ import com.google.firebase.database.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.mibne.scheduledapp.MainActivity.userDataBundle;
+
 
 public class EditRoutineActivity extends AppCompatActivity {
 
     private static Activity activity;
+
+    private String mUserOrganization;
+    private String mUserDepartment;
 
     private TextInputLayout roomNoTextInputLayout;
     private TextInputLayout remarksTextInputLayout;
@@ -63,10 +68,10 @@ public class EditRoutineActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String mOrganization = "sub";
-        String mDepartment = "cse";
+        mUserOrganization = userDataBundle.getString("organization");
+        mUserDepartment = userDataBundle.getString("department");
 
-        mRoutineDatabaseReference = FirebaseDatabase.getInstance().getReference().child(mOrganization).child(mDepartment).child("routines");
+        mRoutineDatabaseReference = FirebaseDatabase.getInstance().getReference().child(mUserOrganization).child(mUserDepartment).child("routines");
 
         routineId = bundle.getString("day") + "-" + bundle.getString("courseCode");
         day = bundle.getString("day");

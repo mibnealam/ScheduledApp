@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     ImageView navUserPortrait;
     LinearLayout navUserContainer;
 
-    private Bundle userDataBundle = new Bundle();
+    public static Bundle userDataBundle = new Bundle();
 
     private String uid;
     public static String role;

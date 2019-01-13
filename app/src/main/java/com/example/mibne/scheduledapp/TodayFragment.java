@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static com.example.mibne.scheduledapp.MainActivity.userDataBundle;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -85,8 +87,8 @@ public class TodayFragment extends Fragment {
         }
 
 
-        mUserOrganization = "sub";
-        mUserDepartment = "cse";
+        mUserOrganization = userDataBundle.getString("organization");
+        mUserDepartment = userDataBundle.getString("department");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");

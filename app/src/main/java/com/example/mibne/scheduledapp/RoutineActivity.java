@@ -82,7 +82,7 @@ public class RoutineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
 
-        Bundle userDataBundle = getIntent().getExtras();
+        final Bundle userDataBundle = getIntent().getExtras();
         mUserOrganization = userDataBundle.getString("organization");
         mUserDepartment = userDataBundle.getString("department");
         role = userDataBundle.getString("role");
@@ -106,6 +106,7 @@ public class RoutineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), AddRoutineActivity.class);
+                intent.putExtras(userDataBundle);
                 startActivity(intent);
             }
         });
