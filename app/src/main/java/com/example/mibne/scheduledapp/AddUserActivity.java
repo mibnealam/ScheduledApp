@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp;
 
         import android.app.Activity;
+        import android.content.Intent;
         import android.support.annotation.NonNull;
         import android.support.design.widget.TextInputLayout;
         import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,8 @@ package com.example.mibne.scheduledapp;
         import android.widget.Toast;
 
         import com.google.android.gms.tasks.OnCompleteListener;
+        import com.google.android.gms.tasks.OnFailureListener;
+        import com.google.android.gms.tasks.OnSuccessListener;
         import com.google.android.gms.tasks.Task;
         import com.google.firebase.auth.AuthResult;
         import com.google.firebase.auth.FirebaseAuth;
@@ -70,7 +73,6 @@ public class AddUserActivity extends AppCompatActivity {
         nameTextInputLayout = (TextInputLayout) findViewById(R.id.edit_name_wrapper);
         idTextInputLayout = (TextInputLayout) findViewById(R.id.edit_id_wrapper);
         emailTextInputLayout = (TextInputLayout) findViewById(R.id.edit_email_wrapper);
-        emailTextInputLayout.setEnabled(false);
         phoneTextInputLayout = (TextInputLayout) findViewById(R.id.edit_phone_wrapper);
         roleTextInputLayout = (TextInputLayout) findViewById(R.id.edit_role_wrapper);
         passwordTextInputLayout = (TextInputLayout) findViewById(R.id.user_password_wrapper);
@@ -237,9 +239,21 @@ public class AddUserActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
-                                mUserDatabaseReference.child(firebaseUser.getUid()).setValue(user);
+                                mUserDatabaseReference.child(firebaseUser.getUid()).setValue(new User(mUserDepartment, user.getEmail(), user.getName(), mUserOrganization, user.getPhone(), "", user.getRole(), user.getUsername(), firebaseUser.getUid())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(AddUserActivity.this, "User data not saved.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 //updateUI(user);
-                                FirebaseAuth.getInstance().signOut();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());

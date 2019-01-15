@@ -79,6 +79,7 @@ public class EditUserActivity extends AppCompatActivity {
         nameTextInputLayout = (TextInputLayout) findViewById(R.id.edit_name_wrapper);
         idTextInputLayout = (TextInputLayout) findViewById(R.id.edit_id_wrapper);
         emailTextInputLayout = (TextInputLayout) findViewById(R.id.edit_email_wrapper);
+        emailTextInputLayout.setEnabled(false);
         phoneTextInputLayout = (TextInputLayout) findViewById(R.id.edit_phone_wrapper);
         roleTextInputLayout = (TextInputLayout) findViewById(R.id.edit_role_wrapper);
 

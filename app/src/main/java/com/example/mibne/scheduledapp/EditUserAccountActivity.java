@@ -1,9 +1,7 @@
 package com.example.mibne.scheduledapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -21,24 +19,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnPausedListener;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +60,8 @@ public class EditUserAccountActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ProgressBar progressBarPhotoUpload;
 
-    private Button button;
+    private Button updateButton;
+    private Button passwordResetButton;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -117,7 +108,8 @@ public class EditUserAccountActivity extends AppCompatActivity {
         userEmailTextInputLayout = (TextInputLayout) findViewById(R.id.edit_user_email_wrapper);
         userPhoneTextInputLayout = (TextInputLayout) findViewById(R.id.edit_user_phone_wrapper);
 
-        button = (Button) findViewById(R.id.update_info_button);
+        updateButton = (Button) findViewById(R.id.update_info_button);
+        passwordResetButton = (Button) findViewById(R.id.reset_password_button);
 
         Glide.with(imageView).load(userPortraitUrl).into(imageView);
         userNameTextInputLayout.getEditText().setText(userName);
@@ -138,10 +130,28 @@ public class EditUserAccountActivity extends AppCompatActivity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateInfo();
+            }
+        });
+        passwordResetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+
+                auth.sendPasswordResetEmail(userEmail)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "Email sent.");
+                                    Toast.makeText(EditUserAccountActivity.this, "A password reset email is sent.", Toast.LENGTH_SHORT).show();
+                                    FirebaseAuth.getInstance().signOut();
+                                }
+                            }
+                        });
             }
         });
     }

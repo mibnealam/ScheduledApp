@@ -53,8 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loadingIndicator = findViewById(R.id.sign_in_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        userEmailTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_email_wrapper) ;
-        userPasswordTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_password_wrapper) ;
+        userEmailTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_email_wrapper);
+        userPasswordTextInputLayout = (TextInputLayout) findViewById(R.id.user_login_password_wrapper);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

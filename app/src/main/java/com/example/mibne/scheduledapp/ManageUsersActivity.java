@@ -128,6 +128,8 @@ public class ManageUsersActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+
+
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_user_list);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_user_list);
 

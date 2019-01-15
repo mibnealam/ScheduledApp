@@ -31,7 +31,7 @@ import java.util.List;
 
 public class NoticeActivity extends AppCompatActivity {
 
-    public static final String LOG_TAG = NoticeActivity.class.getName();
+    public static final String TAG = NoticeActivity.class.getName();
 
     /**
      * Constant value for the notice loader ID. We can choose any integer.
