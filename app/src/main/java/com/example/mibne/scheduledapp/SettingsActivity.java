@@ -233,7 +233,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact.scheduledapp@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from scheduled app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+        intent.createChooser(intent, context.getString(R.string.choose_email_client));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     /**
@@ -244,7 +246,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mibnealam@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from scheduled app");
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));
+        intent.createChooser(intent, context.getString(R.string.choose_email_client));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     private static void openDialog(FragmentManager fragmentManager) {

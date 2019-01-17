@@ -19,9 +19,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -117,7 +119,6 @@ public class EditUserAccountActivity extends AppCompatActivity {
         userIdTextInputLayout.getEditText().setText(userId);
         userIdTextInputLayout.setEnabled(false);
         userEmailTextInputLayout.getEditText().setText(userEmail);
-        userEmailTextInputLayout.setEnabled(false);
         userPhoneTextInputLayout.getEditText().setText(userPhone);
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -279,15 +280,31 @@ public class EditUserAccountActivity extends AppCompatActivity {
     private void updateInfo() {
         if (confirmInput()) {
 
-            Map<String, Object> childUpdates = new HashMap<>();
+            final Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put("name", user.getName());
             childUpdates.put("username", user.getUsername());
             childUpdates.put("email", user.getEmail());
             childUpdates.put("phone", user.getPhone());
-            mUserDatabaseReferance.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            firebaseUser.updateEmail(user.getEmail())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "User email address updated.");
+                                mUserDatabaseReferance.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(EditUserAccountActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onSuccess(Void aVoid) {
-                    Toast.makeText(EditUserAccountActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(EditUserAccountActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
                 }
             });
         }
