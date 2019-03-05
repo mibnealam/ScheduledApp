@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".NoticeActivity"
+            android:label="@string/title_activity_notice"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -40,10 +44,6 @@
         <activity
             android:name=".RoutineActivity"
             android:label="@string/title_activity_routine"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".NoticeActivity"
-            android:label="@string/title_activity_notice"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".SettingsActivity"
@@ -85,7 +85,7 @@
             android:name=".ManageUsersActivity"
             android:label="Manage User"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".EditUserActivity"></activity>
+        <activity android:name=".EditUserActivity" />
     </application>
 
 </manifest>

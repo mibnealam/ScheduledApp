@@ -310,7 +310,8 @@ public class ManageUsersActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "createUserWithEmail:success");
                                     FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                                    mUsersDatabaseReference.child(user.getUid()).setValue(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, user.getUid()));
+                                    mUsersDatabaseReference.child(user.getUid())
+                                            .setValue(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, user.getUid()));
                                     //updateUI(user);
                                     FirebaseAuth.getInstance().signOut();
 
@@ -326,7 +327,7 @@ public class ManageUsersActivity extends AppCompatActivity {
                             }
                         });
 
-//                Log.v(TAG, uploadUserList.toString());
+                Log.v(TAG, uploadUserList.toString());
 //                mUsersDatabaseReference.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
 //                    @Override
 //                    public void onSuccess(Void aVoid) {

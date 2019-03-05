@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,10 +12,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -27,6 +31,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
     private String uid;
     private Context context;
     private List<Course> courseList;
+
+    private String mUserDepartment;
+    private String mUserOrganization;
     /**
      * Default Constructor for CourseAdapter
      */
@@ -79,7 +86,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         }
 
         mDatabase = FirebaseDatabase.getInstance().getReference("users/" + uid);
-        courseDatabaseRef = FirebaseDatabase.getInstance().getReference("sub/cse/courses");
+        courseDatabaseRef = FirebaseDatabase.getInstance().getReference(mUserOrganization + "/" + mUserDepartment + "/courses");
 
         //Initialization and setting the course data into views.
         final Course course = courseList.get(position);
@@ -102,12 +109,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                     //Add a course into users/uid/courses object of firebase database when a course is checked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
                     courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue("true");
-                    //Todo: also add this user id into the selected course fixed course
+                    FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment + course.getCourseCode());
                 } else {
                     //Delete a course from users/uid/courses object of firebase database when a course is unchecked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
                     courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue(null);
-                    //Todo: also remove this user id from the selected course course fixed course
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(mUserOrganization + mUserDepartment + course.getCourseCode());
                 }
             }
         });

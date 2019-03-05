@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 } else {
                     Intent intent = new Intent(getApplicationContext(), UserInfoActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
                 }
 
                 if (dataSnapshot.exists()) {
