@@ -156,7 +156,7 @@ public class EditUserActivity extends AppCompatActivity {
     private boolean validateEmail() {
         String emailInput = emailTextInputLayout.getEditText().getText().toString().trim();
 
-        if (emailInput.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
+        if (emailInput.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
             emailTextInputLayout.setError(null);
             return true;
         } else {
@@ -181,7 +181,7 @@ public class EditUserActivity extends AppCompatActivity {
         String roleInput = roleTextInputLayout.getEditText().getText().toString().trim();
 
         if (roleInput.isEmpty()) {
-            roleTextInputLayout.setError("Please set room number.");
+            roleTextInputLayout.setError("Empty.");
             return false;
         } else if (roleInput.length() > 10) {
             roleTextInputLayout.setError("Too long");
@@ -217,7 +217,7 @@ public class EditUserActivity extends AppCompatActivity {
             childUpdates.put("username", user.getUsername());
             childUpdates.put("email", user.getEmail());
             childUpdates.put("phone", user.getPhone());
-            childUpdates.put("role", user.getPhone());
+            childUpdates.put("role", user.getRole());
 
             mUserDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

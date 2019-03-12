@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
     private Context context;
     private List<Course> courseList;
 
-    private String mUserDepartment;
-    private String mUserOrganization;
+    private String mUserDepartment = MainActivity.userDataBundle.getString("department");
+    private String mUserOrganization =  MainActivity.userDataBundle.getString("organization");
     /**
      * Default Constructor for CourseAdapter
      */
@@ -87,6 +88,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
         mDatabase = FirebaseDatabase.getInstance().getReference("users/" + uid);
         courseDatabaseRef = FirebaseDatabase.getInstance().getReference(mUserOrganization + "/" + mUserDepartment + "/courses");
+        Log.v("databaseRef: ", courseDatabaseRef.toString());
 
         //Initialization and setting the course data into views.
         final Course course = courseList.get(position);
@@ -110,6 +112,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
                     courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue("true");
                     FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment + course.getCourseCode());
+                    Log.v("SubscriptionTopic: ", mUserOrganization + mUserDepartment + course.getCourseCode());
                 } else {
                     //Delete a course from users/uid/courses object of firebase database when a course is unchecked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
