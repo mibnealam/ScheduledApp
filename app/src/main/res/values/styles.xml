@@ -20,7 +20,7 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
 
     <!-- Style for a category of vocabulary words -->
     <style name="CategoryStyle">
@@ -40,4 +40,8 @@
         <item name="tabSelectedTextColor">@android:color/white</item>
     </style>
 
+    <style name="AppTheme.NoActionBar1" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

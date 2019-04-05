@@ -2,9 +2,11 @@ package com.example.mibne.scheduledapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,7 +21,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -54,7 +59,7 @@ import java.util.List;
 
 import static android.view.View.INVISIBLE;
 
-public class RoutineActivity extends AppCompatActivity {
+public class RoutineActivity extends AppCompatActivity implements RoutineAdapter.RoutineAdapterListener {
 
     private String TAG = "RoutineActivity";
     private static final int READ_REQUEST_CODE = 42;
@@ -72,9 +77,13 @@ public class RoutineActivity extends AppCompatActivity {
     private String mUserOrganization;
     private String role;
 
+    private SearchView searchView;
+
     // Firebase instance variables
     private DatabaseReference mRoutineDatabaseReferance;
     private ValueEventListener mValueEventListener;
+
+    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -82,10 +91,16 @@ public class RoutineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
 
-        final Bundle userDataBundle = getIntent().getExtras();
-        mUserOrganization = userDataBundle.getString("organization");
-        mUserDepartment = userDataBundle.getString("department");
-        role = userDataBundle.getString("role");
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        mUserOrganization = sharedPreferences.getString("organization", null);
+        mUserDepartment = sharedPreferences.getString("department", null);
+        role = sharedPreferences.getString("role", "student");
 
 
         com.getbase.floatingactionbutton.FloatingActionsMenu floatingActionsMenu = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.fab_routine);
@@ -106,7 +121,6 @@ public class RoutineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), AddRoutineActivity.class);
-                intent.putExtras(userDataBundle);
                 startActivity(intent);
             }
         });
@@ -154,7 +168,7 @@ public class RoutineActivity extends AppCompatActivity {
          * The CourseAdapter is responsible for linking our course data with the Views that
          * will end up displaying our course data.
          */
-        mRoutineAdapter = new RoutineAdapter();
+        mRoutineAdapter = new RoutineAdapter(this, routineList, this);
 
         mRoutineRecyclerView.setAdapter(mRoutineAdapter);
 
@@ -163,6 +177,38 @@ public class RoutineActivity extends AppCompatActivity {
 
         mRoutineUserView.setVisibility(INVISIBLE);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // listening to search query text change
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // filter recycler view when query submitted
+                mRoutineAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // filter recycler view when text is changed
+                mRoutineAdapter.getFilter().filter(query);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -209,7 +255,7 @@ public class RoutineActivity extends AppCompatActivity {
                         Routine routine =  routineDataSnapshot.getValue(Routine.class);
                         routineList.add(routine);
                     }
-                    mRoutineAdapter.setRoutineData(routineList);
+                    mRoutineAdapter.setRoutineData(sortRoutineByDay(routineList));
                     mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
@@ -320,14 +366,15 @@ public class RoutineActivity extends AppCompatActivity {
                 String endTime = (columns[2]);
                 String courseCode = (columns[3]);
                 String roomNo = (columns[4]);
+                String remarks = "";
 
                 String cellInfo = "(courseCode,courseName): (" + day + "," + courseCode + "," + startTime + "," + endTime + "," + roomNo + ")";
                 Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
 
                 //add the the uploadData ArrayList
-                uploadRoutineList.add(new Routine(day,courseCode,startTime,endTime,roomNo));
+                uploadRoutineList.add(new Routine(day,courseCode,startTime,endTime,roomNo,remarks));
                 Log.v(TAG, uploadRoutineList.toString());
-                mRoutineDatabaseReferance.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mRoutineDatabaseReferance.child(day + "-" + courseCode).setValue(new Routine(day,courseCode,startTime,endTime,roomNo,remarks)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         mEmptyTextView.setVisibility(View.GONE);
@@ -417,5 +464,60 @@ public class RoutineActivity extends AppCompatActivity {
     private InputStream getInputUri(Uri uri) throws IOException {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         return inputStream;
+    }
+
+    @Override
+    public void onRoutineSelected(Routine routine) {
+        if (role.equals("admin")) {
+            Intent editRoutineIntent = new Intent(this, EditRoutineActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("courseCode", routine.getCourseCode());
+            bundle.putString("day", routine.getDay());
+            bundle.putString("startTime", routine.getStartTime());
+            bundle.putString("endTime", routine.getEndTime());
+            bundle.putString("roomNo", routine.getRoomNo());
+            editRoutineIntent.putExtras(bundle);
+            this.startActivity(editRoutineIntent);
+        }
+    }
+
+    public static List<Routine> sortRoutineByDay(List<Routine> routineList) {
+        List<Routine> filteredList = new ArrayList<>();
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Saturday")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Sunday")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Monday")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("TuesDay")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Wednesday")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Thursday")) {
+                filteredList.add(routine);
+            }
+        }
+        for (Routine routine: routineList) {
+            if (routine.getDay().equals("Friday")) {
+                filteredList.add(routine);
+            }
+        }
+        return filteredList;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.drm.DrmStore;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +34,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainActivity extends AppCompatActivity
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity
     TextView navUserName;
     ImageView navUserPortrait;
     LinearLayout navUserContainer;
+
+    SharedPreferences sharedPreferences;
 
     public static Bundle userDataBundle = new Bundle();
 
@@ -61,6 +67,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
 
         // Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -135,6 +143,15 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
+
+        if (sharedPreferences.getBoolean("isSubscribedToGeneral", false)
+                && sharedPreferences.getBoolean("isSubscribedToDept", false)) {
+            Log.v("TopicSubscription", "Calling to subscriptionToTopic() method.");
+            subscribeToTopics();
+        } else {
+            Log.v("TopicSubscription", "Failed to call subscriptionToTopic() method.");
+            subscribeToTopics();
+        }
     }
 
     @Override
@@ -265,6 +282,13 @@ public class MainActivity extends AppCompatActivity
                     userDataBundle.putString("organization", user.getOrganization());
                     userDataBundle.putString("department", user.getDepartment());
                     userDataBundle.putString("role", role);
+
+                    sharedPreferences.edit().putString("uid", uid).apply();
+                    sharedPreferences.edit().putString("userId", user.getUsername()).apply();
+                    sharedPreferences.edit().putString("organization", user.getOrganization()).apply();
+                    sharedPreferences.edit().putString("department", user.getDepartment()).apply();
+                    sharedPreferences.edit().putString("role", role).apply();
+
                 }
             }
 
@@ -276,6 +300,34 @@ public class MainActivity extends AppCompatActivity
             }
         };
         mUsersDatabaseReference.addValueEventListener(mUserValueEventListener);
+    }
+
+    private void subscribeToTopics() {
+        FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + "General").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                    Log.v("TopicSubscription: ", userDataBundle.getString("organization") + "General" );
+                } else {
+                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
+                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
+                }
+            }
+        });
+        FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + userDataBundle.getString("department")).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                    Log.v("TopicSubscription: ", userDataBundle.getString("organization") + userDataBundle.getString("department") );
+                } else {
+                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
+                }
+            }
+        });
     }
 
     private void onSignedOutCleanup() {

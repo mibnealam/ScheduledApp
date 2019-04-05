@@ -89,23 +89,44 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/edit_role_wrapper"
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:id="@+id/edit_role_wrapper"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--app:errorEnabled="true">-->
+
+                <!--<android.support.design.widget.TextInputEditText-->
+                    <!--android:id="@+id/edit_role"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:inputType="text"-->
+                    <!--android:textAllCaps="true"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:maxLines="3"-->
+                    <!--android:hint="Role" />-->
+
+            <!--</android.support.design.widget.TextInputLayout>-->
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:errorEnabled="true">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/edit_role"
-                    android:layout_width="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textAllCaps="true"
-                    android:textSize="18sp"
-                    android:maxLines="3"
-                    android:hint="Role" />
-
-            </android.support.design.widget.TextInputLayout>
+                    android:text="Role"
+                    android:layout_marginLeft="4dp"
+                    android:textColor="@color/gray"
+                    android:textSize="18sp"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/roles_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
 
             <View
                 android:layout_width="0dp"

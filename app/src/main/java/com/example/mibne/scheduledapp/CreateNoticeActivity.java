@@ -3,6 +3,7 @@ package com.example.mibne.scheduledapp;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -38,6 +39,8 @@ import java.util.Date;
 
 public class CreateNoticeActivity extends AppCompatActivity {
 
+    private SharedPreferences sharedPreferences;
+
     private TextInputLayout noticeTitleEditText;
     private TextView buttonDatePicker;
     private TextInputLayout noticeDescriptionEditText;
@@ -71,11 +74,19 @@ public class CreateNoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_notice);
 
-        Bundle bundle = getIntent().getExtras();
-        noticeType = bundle.getString("Type");
-        mUserOrganization = bundle.getString("organization");
-        mUserDepartment = bundle.getString("department");
-        role = bundle.getString("role");
+//        Bundle bundle = getIntent().getExtras();
+//        noticeType = bundle.getString("Type");
+//        mUserOrganization = bundle.getString("organization");
+//        mUserDepartment = bundle.getString("department");
+//        role = bundle.getString("role");
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        noticeType = "Notice";
+        mUserOrganization = sharedPreferences.getString("organization", null);
+        mUserDepartment = sharedPreferences.getString("department", null);
+        role = sharedPreferences.getString("role", "student");
+
+
         getSupportActionBar().setTitle("Create " + noticeType);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
@@ -100,6 +111,8 @@ public class CreateNoticeActivity extends AppCompatActivity {
         noticeTitleEditText = (TextInputLayout) findViewById(R.id.notice_title_wrapper);
         noticeDescriptionEditText = (TextInputLayout) findViewById(R.id.notice_description_wrapper);
         noticeToEditText = (TextInputLayout) findViewById(R.id.notice_to_wrapper);
+        noticeToEditText.getEditText().setText(mUserDepartment);
+        noticeToEditText.setEnabled(false);
         noticeFromEditText = (TextInputLayout) findViewById(R.id.notice_from_wrapper);
 
 
@@ -136,8 +149,8 @@ public class CreateNoticeActivity extends AppCompatActivity {
         } else if (noticeTitleInput.length() > 200) {
             noticeTitleEditText.setError("Title is too long");
             return false;
-        } else if (noticeTitleInput.length() < 10) {
-            noticeTitleEditText.setError("Title is too short");
+        } else if (noticeTitleInput.isEmpty()) {
+            noticeTitleEditText.setError("Title is empty");
             return false;
         } else {
             noticeTitleEditText.setError(null);
@@ -164,9 +177,6 @@ public class CreateNoticeActivity extends AppCompatActivity {
             return false;
         } else if (noticeDescriptionInput.length() > 800) {
             noticeDescriptionEditText.setError("Description is too long");
-            return false;
-        } else if (noticeDescriptionInput.length() < 30) {
-            noticeDescriptionEditText.setError("Description is too short");
             return false;
         } else {
             noticeDescriptionEditText.setError(null);
@@ -256,7 +266,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
     private void sendNotice() {
         if (confirmInput()) {
             // Handle item selection
-            if (noticeTo.matches("[c][s][e]") && role.equals("admin")){
+            if (noticeTo.matches("[a-zA-Z]*") && role.equals("admin")){
                 //Sends notice to the users department
                 mNoticeDatabaseReferance.child(mUserOrganization).child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

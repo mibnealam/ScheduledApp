@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,7 +46,7 @@ import static com.example.mibne.scheduledapp.MainActivity.userDataBundle;
  * create an instance of this fragment.
  */
 
-public class ThisWeekFragment extends Fragment {
+public class ThisWeekFragment extends Fragment implements RoutineAdapter.RoutineAdapterListener {
 
     private String TAG = "ThisWeekFragment";
 
@@ -60,6 +61,7 @@ public class ThisWeekFragment extends Fragment {
 
     private String mUserDepartment;
     private String mUserOrganization;
+    private String role;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -87,6 +89,7 @@ public class ThisWeekFragment extends Fragment {
 
         mUserOrganization = userDataBundle.getString("organization");
         mUserDepartment = userDataBundle.getString("department");
+        role = userDataBundle.getString("role");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
@@ -113,7 +116,7 @@ public class ThisWeekFragment extends Fragment {
          * The CourseAdapter is responsible for linking our course data with the Views that
          * will end up displaying our course data.
          */
-        mRoutineAdapter = new RoutineAdapter();
+        mRoutineAdapter = new RoutineAdapter(getContext(), routineList, this);
 
         mRoutineRecyclerView.setAdapter(mRoutineAdapter);
 
@@ -190,6 +193,21 @@ public class ThisWeekFragment extends Fragment {
             mRoutineDatabaseReferance.removeEventListener(mValueEventListenerForRoutine);
             mUserDatabaseReferance.removeEventListener(mValueEventListenerForUser);
             mValueEventListenerForRoutine = null;
+        }
+    }
+
+    @Override
+    public void onRoutineSelected(Routine routine) {
+        if (role.equals("admin")) {
+            Intent editRoutineIntent = new Intent(getContext(), EditRoutineActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("courseCode", routine.getCourseCode());
+            bundle.putString("day", routine.getDay());
+            bundle.putString("startTime", routine.getStartTime());
+            bundle.putString("endTime", routine.getEndTime());
+            bundle.putString("roomNo", routine.getRoomNo());
+            editRoutineIntent.putExtras(bundle);
+            this.startActivity(editRoutineIntent);
         }
     }
 }

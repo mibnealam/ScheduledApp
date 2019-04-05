@@ -151,7 +151,7 @@ public class EditRoutineActivity extends AppCompatActivity {
     private boolean validateRemarks() {
         String courseCodeInput = remarksTextInputLayout.getEditText().getText().toString().trim();
 
-        if (courseCodeInput.length() > 20) {
+        if (courseCodeInput.length() > 500) {
             remarksTextInputLayout.setError("Too long");
             return false;
         } else {

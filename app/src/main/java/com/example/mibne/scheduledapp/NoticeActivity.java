@@ -3,6 +3,7 @@ package com.example.mibne.scheduledapp;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
@@ -11,15 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,19 +56,23 @@ public class NoticeActivity extends AppCompatActivity {
     private DatabaseReference rootRef;
     private ValueEventListener mValueEventListener;
 
+    private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
-        final Bundle mNoticeTypeBundle = getIntent().getExtras();
-        mNoticeType = mNoticeTypeBundle.getString("Type");
-        mUsername = mNoticeTypeBundle.getString("userId");
-        uid = mNoticeTypeBundle.getString("uid");
-        mUserOrganization = mNoticeTypeBundle.getString("organization");
-        mUserDepartment = mNoticeTypeBundle.getString("department");
-        String role = mNoticeTypeBundle.getString("role");
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        //final Bundle mNoticeTypeBundle = getIntent().getExtras();
+        mNoticeType = "Notice";
+        mUsername = sharedPreferences.getString("userId", null);
+        uid = sharedPreferences.getString("uid", null);
+        mUserOrganization = sharedPreferences.getString("organization", null);
+        mUserDepartment = sharedPreferences.getString("department", null);
+        String role = sharedPreferences.getString("role", "student");
         if (mUsername.length() == 14) {
             mUserBatch = mUsername.substring(5,7);
         } else {
@@ -93,7 +94,6 @@ public class NoticeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CreateNoticeActivity.class);
-                intent.putExtras(mNoticeTypeBundle);
                 startActivity(intent);
             }
         });
@@ -109,7 +109,8 @@ public class NoticeActivity extends AppCompatActivity {
         mNoticeRecyclerView = (RecyclerView) findViewById(R.id.notice_recycler_view);
 
         LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        layoutManager.setStackFromEnd(true);
         mNoticeRecyclerView.setLayoutManager(layoutManager);
 
         /*

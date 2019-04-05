@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.SharedPreferences;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +43,8 @@ public class AddRoutineActivity extends AppCompatActivity {
     // Firebase instance variables
     private DatabaseReference mRoutineDatabaseReference;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +54,10 @@ public class AddRoutineActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Bundle userDataBundle = getIntent().getExtras();
-        mOrganization = userDataBundle.getString("organization");
-        mDepartment = userDataBundle.getString("department");
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        mOrganization = sharedPreferences.getString("organization", null);
+        mDepartment = sharedPreferences.getString("department", null);
 
 
         mRoutineDatabaseReference = FirebaseDatabase.getInstance().getReference().child(mOrganization).child(mDepartment).child("routines");

@@ -14,7 +14,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditUserActivity extends AppCompatActivity {
+public class EditUserActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     private static Activity activity;
 
@@ -38,13 +41,16 @@ public class EditUserActivity extends AppCompatActivity {
     private TextInputLayout idTextInputLayout;
     private TextInputLayout emailTextInputLayout;
     private TextInputLayout phoneTextInputLayout;
-    private TextInputLayout roleTextInputLayout;
+    //private TextInputLayout roleTextInputLayout;
+
+    private Spinner rolesSpinner;
 
     private static String name;
     private static String username;
     private String email;
     private String phone;
     private String role;
+    private String userRole;
     private static String uid;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -62,6 +68,16 @@ public class EditUserActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         user = new User();
+
+        rolesSpinner = (Spinner) findViewById(R.id.roles_spinner);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.roles_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        rolesSpinner.setAdapter(adapter);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUserDatabaseReference = mFirebaseDatabase.getReference().child("users");
@@ -81,13 +97,13 @@ public class EditUserActivity extends AppCompatActivity {
         emailTextInputLayout = (TextInputLayout) findViewById(R.id.edit_email_wrapper);
         emailTextInputLayout.setEnabled(false);
         phoneTextInputLayout = (TextInputLayout) findViewById(R.id.edit_phone_wrapper);
-        roleTextInputLayout = (TextInputLayout) findViewById(R.id.edit_role_wrapper);
+        //roleTextInputLayout = (TextInputLayout) findViewById(R.id.edit_role_wrapper);
 
         nameTextInputLayout.getEditText().setText(name);
         idTextInputLayout.getEditText().setText(username);
         emailTextInputLayout.getEditText().setText(email);
         phoneTextInputLayout.getEditText().setText(phone);
-        roleTextInputLayout.getEditText().setText(role);
+        //roleTextInputLayout.getEditText().setText(role);
 
         Button button = (Button) findViewById(R.id.button_save_user_info);
         button.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +112,8 @@ public class EditUserActivity extends AppCompatActivity {
             updateInfo();
             }
         });
+
+        rolesSpinner.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -177,33 +195,34 @@ public class EditUserActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validateRole() {
-        String roleInput = roleTextInputLayout.getEditText().getText().toString().trim();
-
-        if (roleInput.isEmpty()) {
-            roleTextInputLayout.setError("Empty.");
-            return false;
-        } else if (roleInput.length() > 10) {
-            roleTextInputLayout.setError("Too long");
-            return false;
-        } else if (roleInput.length() < 5) {
-            roleTextInputLayout.setError("Too short");
-            return false;
-        } else {
-            roleTextInputLayout.setError(null);
-            return true;
-        }
-    }
+//    private boolean validateRole() {
+//        String roleInput = roleTextInputLayout.getEditText().getText().toString().trim();
+//
+//        if (roleInput.isEmpty()) {
+//            roleTextInputLayout.setError("Empty.");
+//            return false;
+//        } else if (roleInput.length() > 10) {
+//            roleTextInputLayout.setError("Too long");
+//            return false;
+//        } else if (roleInput.length() < 5) {
+//            roleTextInputLayout.setError("Too short");
+//            return false;
+//        } else {
+//            roleTextInputLayout.setError(null);
+//            return true;
+//        }
+//    }
 
     public boolean confirmInput() {
-        if (!validateName() | !validateID() | !validateEmail() | !validatePhone() | !validateRole()) {
+        if (!validateName() | !validateID() | !validateEmail() | !validatePhone()) {
             return false;
         } else {
             user.setName(nameTextInputLayout.getEditText().getText().toString().trim());
             user.setUsername(idTextInputLayout.getEditText().getText().toString().trim());
             user.setEmail(emailTextInputLayout.getEditText().getText().toString().trim());
             user.setPhone(phoneTextInputLayout.getEditText().getText().toString().trim());
-            user.setRole(roleTextInputLayout.getEditText().getText().toString().trim());
+            //user.setRole(roleTextInputLayout.getEditText().getText().toString().trim());
+            user.setRole(userRole);
 
             return true;
         }
@@ -219,12 +238,16 @@ public class EditUserActivity extends AppCompatActivity {
             childUpdates.put("phone", user.getPhone());
             childUpdates.put("role", user.getRole());
 
-            mUserDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Toast.makeText(EditUserActivity.this, "Account Info Saved Successfully!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (uid != null) {
+                mUserDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(EditUserActivity.this, "Account Info Saved Successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(this, "Please try again later!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -271,6 +294,17 @@ public class EditUserActivity extends AppCompatActivity {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new confirmDialogFragment();
         dialog.show(getSupportFragmentManager(), "confirmDeletion");
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        userRole = (String) parent.getItemAtPosition(position);
+        Log.v("userRole:", userRole);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 }

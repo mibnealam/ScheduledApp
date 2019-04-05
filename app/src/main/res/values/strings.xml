@@ -190,6 +190,12 @@
 
     </string-array>
 
+    <string-array name="roles_array">
+        <item>student</item>
+        <item>teacher</item>
+        <item>admin</item>
+    </string-array>
+
 
     <!--Developer Information-->
     <string name="developed_by">Designed &amp; developed by</string>
@@ -204,5 +210,6 @@
     <string name="channel_description">Controls foreground notifications</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="action_search">Search</string>
 
 </resources>

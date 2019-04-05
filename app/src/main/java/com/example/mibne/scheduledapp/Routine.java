@@ -17,6 +17,9 @@ public class Routine {
     /* Room number of the routines specific course */
     private String mRoomNo;
 
+    /* Rremarks of the routines specific course */
+    private String mRemarks;
+
     public Routine(){
     }
 
@@ -27,14 +30,16 @@ public class Routine {
      * @param startTime is the class starting time of the routines specific course
      * @param endTime is the class ending time of the routines specific course
      * @param roomNo is the room number of the routines specific course
+     * @param remarks is the remarks of the routines specific course
      */
     public Routine (String day, String courseCode, String startTime, String endTime,
-                   String roomNo){
+                   String roomNo, String remarks){
         this.mDay = day;
         this.mCourseCode = courseCode;
         this.mStartTime = startTime;
         this.mEndTime = endTime;
         this.mRoomNo = roomNo;
+        this.mRemarks = remarks;
     }
 
     /**
@@ -83,4 +88,14 @@ public class Routine {
         this.mRoomNo = roomNo;
     }
 
+    /**
+     * Returns the remarks of the routines specific routine
+     */
+    public String getRemarks() {
+        return mRemarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.mRemarks = remarks;
+    }
 }

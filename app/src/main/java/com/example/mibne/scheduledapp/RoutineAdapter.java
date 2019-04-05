@@ -7,29 +7,40 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mibne.scheduledapp.MainActivity.role;
 
-public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineAdapterViewHolder> {
-
-    private List<Routine> routineList;
+public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineAdapterViewHolder> implements Filterable {
 
     private Context context;
+
+    private List<Routine> routineList;
+    private List<Routine> routineListFiltered;
+    private RoutineAdapterListener routineAdapterListener;
 
     /**
      * Default Constructor for RoutineAdapter
      */
-    public RoutineAdapter() {
+
+    public RoutineAdapter(Context context, List<Routine> routineList, RoutineAdapterListener routineAdapterListener){
+        this.context = context;
+        this.routineAdapterListener = routineAdapterListener;
+        this.routineList = routineList;
+        this.routineListFiltered = routineList;
     }
 
 
@@ -71,7 +82,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
     public void onBindViewHolder(RoutineAdapterViewHolder routineAdapterViewHolder, final int position) {
 
         //Initialization and setting the routine data into views.
-        final Routine routine = routineList.get(position);
+        final Routine routine = routineListFiltered.get(position);
 
         routineAdapterViewHolder.mRoutineDayTextView.setText(routine.getDay().substring(0, 3).toUpperCase());
         routineAdapterViewHolder.mRoutineCourseCodeTextView.setText(routine.getCourseCode());
@@ -81,23 +92,23 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
 
         // Set an item click listener on the ListView, which sends an intent to a single Routine Activity
         // to know details about a notice
-        if (role.equals("admin")) {
-            routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("courseCode", routine.getCourseCode());
-                    bundle.putString("day", routine.getDay());
-                    bundle.putString("startTime", routine.getStartTime());
-                    bundle.putString("endTime", routine.getEndTime());
-                    bundle.putString("roomNo", routine.getRoomNo());
-                    editRoutineIntent.putExtras(bundle);
-                    context.startActivity(editRoutineIntent);
-                }
-            });
-        }
+//        if (role.equals("admin")) {
+//            routineAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    Intent editRoutineIntent = new Intent(context, EditRoutineActivity.class);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("courseCode", routine.getCourseCode());
+//                    bundle.putString("day", routine.getDay());
+//                    bundle.putString("startTime", routine.getStartTime());
+//                    bundle.putString("endTime", routine.getEndTime());
+//                    bundle.putString("roomNo", routine.getRoomNo());
+//                    editRoutineIntent.putExtras(bundle);
+//                    context.startActivity(editRoutineIntent);
+//                }
+//            });
+//        }
     }
 
 
@@ -109,8 +120,8 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
      */
     @Override
     public int getItemCount() {
-        if ( null == routineList) return 0;
-        return routineList.size();
+        if ( null == routineListFiltered) return 0;
+        return routineListFiltered.size();
     }
 
     /**
@@ -122,7 +133,40 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
      */
     public void setRoutineData(List<Routine> routineData) {
         routineList = routineData;
+        routineListFiltered = routineList;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    routineListFiltered = routineList;
+                } else {
+                    List<Routine>  filteredList = new ArrayList<>();
+                    for (Routine row : routineList) {
+                        if (row.getCourseCode().toLowerCase().contains(charString.toLowerCase())
+                                || row.getDay().toLowerCase().contains(charString.toLowerCase())
+                                || row.getRoomNo().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    routineListFiltered = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = routineListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                routineListFiltered = (ArrayList<Routine>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
 
@@ -144,6 +188,13 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
             mRoutineTimeTextView = (TextView) itemView.findViewById(R.id.routine_time);
             mRoutineRoomNoTextView = (TextView) itemView.findViewById(R.id.routine_room_no);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.list_item_routine);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    routineAdapterListener.onRoutineSelected(routineListFiltered.get(getAdapterPosition()));
+                }
+            });
         }
     }
 
@@ -172,5 +223,9 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.RoutineA
                 break;
         }
         return ContextCompat.getColor(context, dayColorResourceId);
+    }
+
+    public interface RoutineAdapterListener {
+        void onRoutineSelected(Routine routine);
     }
 }

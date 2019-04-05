@@ -2,17 +2,26 @@ package com.example.mibne.scheduledapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -24,6 +33,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,7 +60,7 @@ import java.util.List;
 
 import static android.view.View.INVISIBLE;
 
-public class ManageUsersActivity extends AppCompatActivity {
+public class ManageUsersActivity extends AppCompatActivity implements UserAdapter.UserAdapterListener {
 
     private String TAG = "ManageUsersActivity";
 
@@ -66,19 +78,40 @@ public class ManageUsersActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
 
+    private SearchView searchView;
+
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
     private ValueEventListener mValueEventListener;
 
+    private String loginEmail;
+    private String loginPassword;
+
+    private boolean isConnected;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_users);
 
-        getSupportActionBar().setTitle("Manage Users");
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        loginEmail = sharedPreferences.getString("loginEmail", null);
+        loginPassword = sharedPreferences.getString("loginPassword", null);
+
+//        getSupportActionBar().setTitle("Manage Users");
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         final Bundle userDataBundle = getIntent().getExtras();
         mUserOrganization = userDataBundle.getString("organization");
@@ -152,12 +185,44 @@ public class ManageUsersActivity extends AppCompatActivity {
          * The UserAdapter is responsible for linking our course data with the Views that
          * will end up displaying user data.
          */
-        mUserAdapter = new UserAdapter();
+        mUserAdapter = new UserAdapter(this, userList, this);
 
         mUserRecyclerView.setAdapter(mUserAdapter);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // listening to search query text change
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // filter recycler view when query submitted
+                mUserAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // filter recycler view when text is changed
+                mUserAdapter.getFilter().filter(query);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -204,7 +269,7 @@ public class ManageUsersActivity extends AppCompatActivity {
                         User user =  userDataSnapshot.getValue(User.class);
                         userList.add(user);
                     }
-                    mUserAdapter.setUserData(userList);
+                    mUserAdapter.notifyDataSetChanged();
                     mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {
@@ -318,12 +383,40 @@ public class ManageUsersActivity extends AppCompatActivity {
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(ManageUsersActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
+                                    try
+                                    {
+                                        throw task.getException();
+                                    }
+                                    // if user enters wrong email.
+                                    catch (FirebaseAuthWeakPasswordException weakPassword)
+                                    {
+                                        Log.d(TAG, "onComplete: weak_password");
+
+                                        // TODO: take your actions!
+                                    }
+                                    // if user enters wrong password.
+                                    catch (FirebaseAuthInvalidCredentialsException malformedEmail)
+                                    {
+                                        Log.d(TAG, "onComplete: malformed_email");
+
+                                        // TODO: Take your action
+                                    }
+                                    catch (FirebaseAuthUserCollisionException existEmail)
+                                    {
+                                        Log.d(TAG, "onComplete: exist_email");
+                                        Toast.makeText(ManageUsersActivity.this, "Email exists: " + email,
+                                                Toast.LENGTH_LONG).show();
+
+                                        // TODO: Take your action
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Log.d(TAG, "onComplete: " + e.getMessage());
+                                    }
                                 }
 
                                 // ...
+                                logIn();
                             }
                         });
 
@@ -343,6 +436,41 @@ public class ManageUsersActivity extends AppCompatActivity {
         }
 
         printDataToLog();
+    }
+
+    public boolean checkConnection() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if (isConnected) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+    private void logIn() {
+        if (checkConnection()) {
+                mFirebaseAuth.signInWithEmailAndPassword(loginEmail, loginPassword)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                }
+                            }
+                        });
+        } else {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.prompt_no_internet_connection, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }
     }
 
     private void printDataToLog() {
@@ -438,5 +566,19 @@ public class ManageUsersActivity extends AppCompatActivity {
     private InputStream getInputUri(Uri uri) throws IOException {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         return inputStream;
+    }
+
+    @Override
+    public void onUserSelected(User user) {
+        Intent editUserIntent = new Intent(this, EditUserActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", user.getName());
+                    bundle.putString("id", user.getUsername());
+                    bundle.putString("email", user.getEmail());
+                    bundle.putString("phone", user.getPhone());
+                    bundle.putString("role", user.getRole());
+                    bundle.putString("uid", user.getUid());
+                    editUserIntent.putExtras(bundle);
+                    startActivity(editUserIntent);
     }
 }

@@ -48,12 +48,14 @@ public class RoutineAdapterForUser extends ArrayAdapter<Routine> {
         TextView mRoutineCourseCodeTextView = (TextView) listItemView.findViewById(R.id.course_code_routine);
         TextView mRoutineTimeTextView = (TextView) listItemView.findViewById(R.id.class_time);
         TextView mRoutineRoomNoTextView = (TextView) listItemView.findViewById(R.id.class_room);
+        TextView mRoutineRemarksTextView = (TextView) listItemView.findViewById(R.id.class_remarks);
         LinearLayout linearLayout = (LinearLayout) listItemView.findViewById(R.id.list_item_user_routine);
 
 
         mRoutineCourseCodeTextView.setText(currentRoutine.getCourseCode());
         mRoutineTimeTextView.setText(currentRoutine.getStartTime().replaceAll("[A-Z ]", "") + "-" + currentRoutine.getEndTime().replaceAll("[A-Z ]", ""));
         mRoutineRoomNoTextView.setText(currentRoutine.getRoomNo());
+        mRoutineRemarksTextView.setText(currentRoutine.getRemarks());
         linearLayout.setBackgroundColor(getRoutineColor(currentRoutine.getStartTime().replaceAll("[A-Z ]", "")));
 
         // Return the list item view that is now showing the appropriate data

@@ -6,24 +6,33 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterViewHolder>{
-
-    private List<User> userList;
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterViewHolder> implements Filterable {
 
     private Context context;
+    private List<User> userList;
+    private List<User> userListFiltered;
+    private UserAdapterListener userAdapterListener;
 
     /**
      * Default Constructor for UserAdapter
      */
-    public UserAdapter() {
+    public UserAdapter(Context context, List<User> userList, UserAdapterListener userAdapterListener){
+        this.context = context;
+        this.userAdapterListener = userAdapterListener;
+        this.userList = userList;
+        this.userListFiltered = userList;
     }
 
 
@@ -40,13 +49,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
      */
     @Override
     public UserAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
+        //context = parent.getContext();
         int layoutIdForListItem = R.layout.list_item_user;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmedietly = false;
 
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmedietly);
-        return new UserAdapter.UserAdapterViewHolder(view);
+        return new UserAdapterViewHolder(view);
     }
 
     /**
@@ -60,10 +69,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
      * @param position                  The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(UserAdapterViewHolder userAdapterViewHolder, final int position) {
+    public void onBindViewHolder(UserAdapterViewHolder userAdapterViewHolder, int position) {
 
         //Initialization and setting the user data into views.
-        final User user = userList.get(position);
+        final User user = userListFiltered.get(position);
 
         userAdapterViewHolder.mUserNameTextView.setText(user.getName());
         userAdapterViewHolder.mUserIdTextView.setText(user.getUsername());
@@ -72,24 +81,24 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
 
         // Set an item click listener on the ListView, which sends an intent to a single User Activity
         // to know details about a notice
-        if (MainActivity.role.equals("admin")) {
-            userAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent editUserIntent = new Intent(context, EditUserActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("name", user.getName());
-                    bundle.putString("id", user.getUsername());
-                    bundle.putString("email", user.getEmail());
-                    bundle.putString("phone", user.getPhone());
-                    bundle.putString("role", user.getRole());
-                    bundle.putString("uid", user.getUid());
-                    editUserIntent.putExtras(bundle);
-                    context.startActivity(editUserIntent);
-                }
-            });
-        }
+//        if (MainActivity.role.equals("admin")) {
+//            userAdapterViewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    Intent editUserIntent = new Intent(context, EditUserActivity.class);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("name", user.getName());
+//                    bundle.putString("id", user.getUsername());
+//                    bundle.putString("email", user.getEmail());
+//                    bundle.putString("phone", user.getPhone());
+//                    bundle.putString("role", user.getRole());
+//                    bundle.putString("uid", user.getUid());
+//                    editUserIntent.putExtras(bundle);
+//                    context.startActivity(editUserIntent);
+//                }
+//            });
+//        }
     }
 
     /**
@@ -100,8 +109,43 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
      */
     @Override
     public int getItemCount() {
-        if ( null == userList) return 0;
-        return userList.size();
+        if (null == userListFiltered) return 0;
+        return userListFiltered.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    userListFiltered = userList;
+                } else {
+                    List<User>  filteredList = new ArrayList<>();
+                    for (User row : userList) {
+                        if (row.getUsername().toLowerCase().contains(charString.toLowerCase())
+                        || row.getName().toLowerCase().contains(charString.toLowerCase())
+                        || row.getPhone().toLowerCase().contains(charString.toLowerCase())
+                        || row.getRole().toLowerCase().contains(charString.toLowerCase())
+                        || row.getEmail().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                            Log.v("userList: ", row.getName());
+                        }
+                    }
+                    userListFiltered = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = userListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                userListFiltered = (ArrayList<User>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     /**
@@ -113,6 +157,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
      */
     public void setUserData(List<User> userData) {
         userList = userData;
+        userListFiltered = userList;
         notifyDataSetChanged();
     }
 
@@ -132,6 +177,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
             mUserIdTextView = (TextView) itemView.findViewById(R.id.user_id_text_view);
             mUserRoleTextView = (TextView) itemView.findViewById(R.id.user_role_text_view);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.list_item_user);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    userAdapterListener.onUserSelected(userListFiltered.get(getAdapterPosition()));
+                }
+            });
         }
     }
 
@@ -154,5 +206,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
                 break;
         }
         return ContextCompat.getColor(context, dayColorResourceId);
+    }
+
+    public interface UserAdapterListener {
+        void onUserSelected(User user);
     }
 }
