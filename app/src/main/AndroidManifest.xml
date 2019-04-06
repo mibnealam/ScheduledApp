@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,12 +24,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NoticeActivity"
+            android:name=".Activities.NoticeActivity"
             android:label="@string/title_activity_notice"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".Activities.MainActivity">
             <intent-filter>
                 <action android:name="com.example.mibne.scheduledapp.NoticeActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -37,53 +37,52 @@
 
         </activity>
         <activity
-            android:name=".RoutineActivity"
+            android:name=".Activities.RoutineActivity"
             android:label="@string/title_activity_routine"
             android:theme="@style/AppTheme.NoActionBar1"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".Activities.MainActivity" >
             <intent-filter>
                 <action android:name="com.example.mibne.scheduledapp.RoutineActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".UserInfoActivity"
+            android:name=".Activities.UserInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".RegistrationActivity">
+        <activity android:name=".Activities.RegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.RegistrationActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".Activities.MainActivity" />
         <activity
-            android:name=".SingleNoticeActivity"
+            android:name=".Activities.SingleNoticeActivity"
             android:label="Details"
-            android:parentActivityName=".NoticeActivity" />
-        <activity android:name=".TodayActivity" />
-        <activity android:name=".TomorrowActivity" />
-        <activity android:name=".ThisWeekActivity" />
-        <activity android:name=".AllCoursesActivity" />
-        <activity android:name=".EnrolledCoursesActivity" />
+            android:parentActivityName=".Activities.NoticeActivity" />
+        <activity android:name=".Activities.TodayActivity" />
+        <activity android:name=".Activities.TomorrowActivity" />
+        <activity android:name=".Activities.ThisWeekActivity" />
+        <activity android:name=".Activities.AllCoursesActivity" />
+        <activity android:name=".Activities.EnrolledCoursesActivity" />
         <activity
-            android:name=".CreateNoticeActivity"
+            android:name=".Activities.CreateNoticeActivity"
             android:label="Create Notice"
-            android:parentActivityName=".NoticeActivity" />
-        <activity android:name=".EditRoutineActivity" />
-        <activity android:name=".AddRoutineActivity" />
-        <activity android:name=".EditUserAccountActivity">
+            android:parentActivityName=".Activities.NoticeActivity" />
+        <activity android:name=".Activities.EditRoutineActivity" />
+        <activity android:name=".Activities.AddRoutineActivity" />
+        <activity android:name=".Activities.EditUserAccountActivity">
             <intent-filter>
                 <action android:name="android.intent.action.EditUserAccountActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateAccountActivity" />
-        <activity android:name=".ResetPasswordActivity" />
+        <activity android:name=".Activities.ResetPasswordActivity" />
 
-        <service android:name=".MyFirebaseMessagingService">
+        <service android:name=".Services.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -99,13 +98,13 @@
                 android:resource="@color/colorAccent" />
         </service>
 
-        <activity android:name=".AddUserActivity" />
+        <activity android:name=".Activities.AddUserActivity" />
         <activity
-            android:name=".ManageUsersActivity"
+            android:name=".Activities.ManageUsersActivity"
             android:label="Manage User"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar1"/>
-        <activity android:name=".EditUserActivity" />
+        <activity android:name=".Activities.EditUserActivity" />
     </application>
 
 </manifest>
