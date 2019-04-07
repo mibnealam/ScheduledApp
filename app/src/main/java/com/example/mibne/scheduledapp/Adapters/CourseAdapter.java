@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp.Adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.example.mibne.scheduledapp.Activities.MainActivity;
 import com.example.mibne.scheduledapp.Models.Course;
 import com.example.mibne.scheduledapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -111,7 +113,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
                     //Add a course into users/uid/courses object of firebase database when a course is checked
                     mDatabase.child("courses").child(course.getCourseCode()).setValue(courseList.get(courseAdapterViewHolder.getAdapterPosition()));
                     courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue("true");
-                    FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment + course.getCourseCode());
+                    FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment + course.getCourseCode()).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            courseList.get(courseAdapterViewHolder.getAdapterPosition()).setSelected(false);
+                            mDatabase.child("courses").child(course.getCourseCode()).setValue(null);
+                            courseDatabaseRef.child(course.getCourseCode()).child(uid).setValue(null);
+                        }
+                    });
                     Log.v("SubscriptionTopic: ", mUserOrganization + mUserDepartment + course.getCourseCode());
                 } else {
                     //Delete a course from users/uid/courses object of firebase database when a course is unchecked

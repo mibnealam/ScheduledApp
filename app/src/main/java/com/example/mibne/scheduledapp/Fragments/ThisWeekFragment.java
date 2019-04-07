@@ -30,6 +30,7 @@ import java.util.List;
 
 import static android.view.View.INVISIBLE;
 import static com.example.mibne.scheduledapp.Activities.MainActivity.userDataBundle;
+import static com.example.mibne.scheduledapp.Activities.RoutineActivity.sortRoutineByDay;
 
 
 /**
@@ -146,7 +147,7 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
                         Routine routine =  routineDataSnapshot.getValue(Routine.class);
                         routineList.add(routine);
                     }
-                    mRoutineAdapter.setRoutineData(routineList);
+                    mRoutineAdapter.setRoutineData(sortRoutineByDay(routineList));
                     mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
                 } else {

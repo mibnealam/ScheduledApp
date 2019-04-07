@@ -123,6 +123,7 @@ public class EnrolledCoursesFragment extends Fragment {
                         Course courses =  courseSnapshot.getValue(Course.class);
                         courseList.add(courses);
                     }
+                    mEmptyTextView.setText(null);
                     mCourseAdapter.setCourseData(courseList);
                     mCourseAdapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(INVISIBLE);

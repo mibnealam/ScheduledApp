@@ -109,7 +109,7 @@
     <string name="pref_notification_title">Notification</string>
     <string name="about_summary">This application is a simple notifier app to keep you updated.</string>
     <string name="title_version">Version</string>
-    <string name="app_version">Pre Alpha</string>
+    <string name="app_version">Alpha</string>
 
     <string name="choose_email_client">Choose email client</string>
     <string name="choose_export_option">Choose Option</string>
@@ -200,7 +200,7 @@
 
     <!--Developer Information-->
     <string name="developed_by">Designed &amp; developed by</string>
-    <string name="developer_name">Mahfuj Ibne Alam \nStudent of CSE dept.\nState University of Bangladesh</string>
+    <string name="developer_name">Mahfuj Ibne Alam \nStudent of CSE dept. Batch: 37\nState University of Bangladesh</string>
     <string name="developer_email">mibnealam@gmail.com</string>
     <string name="reach_developer">Reach Developer</string>
     <string name="find_code">Connect with Github</string>

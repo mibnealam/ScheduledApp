@@ -288,6 +288,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
         mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userList.clear();
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userDataSnapshot: dataSnapshot.getChildren()) {
                         User user =  userDataSnapshot.getValue(User.class);
