@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center">
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
@@ -35,18 +35,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_gravity="center"
-                android:layout_margin="16dp"
                 android:layout_marginBottom="18dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="18dp"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/prompt_organization"/>
                 <Spinner
                     android:id="@+id/organizations_spinner"
                     android:layout_width="fill_parent"
@@ -54,19 +47,11 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_gravity="center"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="18dp"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/prompt_department"/>
                 <Spinner
                     android:id="@+id/departments_spinner"
                     android:layout_width="fill_parent"
@@ -80,7 +65,7 @@
                 android:gravity="center_horizontal">
                 <EditText
                     android:id="@+id/user_id"
-                    android:layout_width="250dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:hint="@string/prompt_ID"
@@ -96,7 +81,7 @@
                 android:gravity="center_horizontal">
                 <EditText
                     android:id="@+id/user_phone_no"
-                    android:layout_width="250dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
                     android:hint="@string/prompt_phone"

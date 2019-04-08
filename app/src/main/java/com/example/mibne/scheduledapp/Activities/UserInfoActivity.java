@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
+import com.example.mibne.scheduledapp.Utils.Utils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,13 +31,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class UserInfoActivity extends AppCompatActivity  {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "UserInfoActivity";
 
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_USERNAME_LENGTH_LIMIT = 30;
     public static final int DEFAULT_PHONE_NO_LENGTH_LIMIT = 11;
+
+    /** URL for earthquake data from the USGS dataset */
+    private static final String USSER_REQUEST_URL =
+            "http://103.239.5.178:2020/api/index.php?Id=";
 
     private ProgressBar mProgressBar;
     private EditText mUsernameEditText;
@@ -52,12 +63,16 @@ public class UserInfoActivity extends AppCompatActivity  {
 
     private String mUsername;
 
-    private boolean usernameUpdaed = false;
-    private boolean phoheUpdated = false;
+    private boolean isValidUserName = false;
+    private boolean isValidUserPhone = false;
+    private boolean usernameUpdated = false;
+    private boolean phoneUpdated = false;
+    private boolean isValidUser = false;
 
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
     private DatabaseReference mUsersDatabaseReference;
 
     @Override
@@ -65,9 +80,13 @@ public class UserInfoActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
+        mUserOrganization ="0";
+        mUserDepartment = "Select your department";
+
         // Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+        mDatabaseReference = mFirebaseDatabase.getReference();
+        mUsersDatabaseReference = mDatabaseReference.child("users");
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -97,18 +116,20 @@ public class UserInfoActivity extends AppCompatActivity  {
 
         mUserRole = "student";
         //Get organizations
-        String[] organizationsArray = {"sub"};
-        String[] departmentsArray = {"cse"};
+        final List<String> organizationNamesList = new ArrayList<>();
+        final List<String> organizationKeysList = new ArrayList<>();
+
+        final List<String> departmentsKeysList = new ArrayList<>();
 
 
         Spinner organizationSpinner = (Spinner) findViewById(R.id.organizations_spinner);
         Spinner departmentSpinner = (Spinner) findViewById(R.id.departments_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> organizationSpinnerAdapter;
-        organizationSpinnerAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, organizationsArray);
+        final ArrayAdapter<String> organizationSpinnerAdapter;
+        organizationSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, organizationNamesList);
 
-        ArrayAdapter<CharSequence> departmentSpinnerAdapter;
-        departmentSpinnerAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, departmentsArray);
+        final ArrayAdapter<String> departmentSpinnerAdapter;
+        departmentSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, departmentsKeysList);
         // Specify the layout to use when the list of choices appears
         organizationSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         departmentSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -118,6 +139,57 @@ public class UserInfoActivity extends AppCompatActivity  {
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+        ValueEventListener mUserValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                organizationKeysList.clear();
+                organizationNamesList.clear();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        organizationNamesList.add(snapshot.getValue().toString());
+                        organizationKeysList.add(snapshot.getKey());
+                    }
+                    organizationSpinnerAdapter.notifyDataSetChanged();
+                } else {
+                    Log.v("DataOrganization", "Does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("Database Error", "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        mDatabaseReference.child("organizations").addValueEventListener(mUserValueEventListener);
+
+        final ValueEventListener departmentListener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    departmentsKeysList.clear();
+                    departmentsKeysList.add("Select your department");
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        //Organization organization = snapshot.getValue(Organization.class);
+                        //organizationList.add(organization.getName());
+                        departmentsKeysList.add(snapshot.getKey());
+                    }
+                    departmentSpinnerAdapter.notifyDataSetChanged();
+                } else {
+                    Log.v(TAG, "No snapshot of department");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                // Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
 
 
         // Enable Next button when there's information
@@ -130,7 +202,11 @@ public class UserInfoActivity extends AppCompatActivity  {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // An item was selected. You can retrieve the selected item using
-                mUserOrganization = parent.getItemAtPosition(position).toString();
+                departmentsKeysList.clear();
+                departmentSpinnerAdapter.notifyDataSetChanged();
+                mUserOrganization = organizationKeysList.get(position);
+                Log.v("SelectedOrg", mUserOrganization);
+                mDatabaseReference.child(organizationKeysList.get(position)).addListenerForSingleValueEvent(departmentListener);
             }
 
             @Override
@@ -144,6 +220,7 @@ public class UserInfoActivity extends AppCompatActivity  {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // An item was selected. You can retrieve the selected item using
                 mUserDepartment = parent.getItemAtPosition(position).toString();
+                Log.v("selectedDept:", mUserDepartment);
             }
 
             @Override
@@ -158,64 +235,33 @@ public class UserInfoActivity extends AppCompatActivity  {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Send user info on click
-                // Check for already existed userId
-                if (TextUtils.isEmpty(userId)) {
-                    createUser(mUserDepartment, mUserEmail, mUsername, mUserOrganization,
-                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString());
-                } else {
-                    updateUser(mUserDepartment, null, null, mUserOrganization,
-                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString());
-                }
-                // Clear input box
-                mUsernameEditText.setText("");
-                mUserPhoneNoEditText.setText("");
+                UserExistsAsyncTask task = new UserExistsAsyncTask();
+                task.execute(USSER_REQUEST_URL + userId);
             }
         });
-
-        if(usernameUpdaed && phoheUpdated){
-            updateUI();
-        }
     }
 
-     /**
-     * Creating new user node under 'users'
-     */
-    private void createUser(String department, String email, String name,
-                            String organization, String phone, String photoUrl, String role, String username) {
-        // TODO
-        // In real apps this userId should be fetched
-        // by implementing firebase auth
-        if (TextUtils.isEmpty(userId)) {
-            userId = uid;
-        }
-
-        User user = new User(department, email, name, organization, phone, photoUrl, role, username, userId);
-
-        mUsersDatabaseReference.child(userId).setValue(user);
-
-        addUserChangeListener();
-    }
     private void updateUser(String department, String email, String name,
-                            String organization, String phone, String photoUrl, String role, String username) {
+                            String organization, String phone, String photoUrl, String role, String username, String uid) {
         // updating the user via child nodes
-        if (!TextUtils.isEmpty(username)){
-            mUsersDatabaseReference.child(userId).child("username").setValue(username).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    usernameUpdaed = true;
-                }
-            });
-        }
+        final Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("name", name);
+        childUpdates.put("email", email);
+        childUpdates.put("organization", organization);
+        childUpdates.put("department", department);
+        childUpdates.put("pho", phone);
+        childUpdates.put("photoUrl", photoUrl);
+        childUpdates.put("username", username);
+        childUpdates.put("role", role);
+        childUpdates.put("uid", uid);
 
-        if (!TextUtils.isEmpty(phone)){
-            mUsersDatabaseReference.child(userId).child("phone").setValue(phone).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    phoheUpdated = true;
-                }
-            });
-        }
+        mUsersDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                updateUI();
+                Toast.makeText(UserInfoActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //TextWatcher for enabling next Button
@@ -229,8 +275,25 @@ public class UserInfoActivity extends AppCompatActivity  {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String userIdInput = mUsernameEditText.getText().toString().trim();
             String userPhoneInput = mUserPhoneNoEditText.getText().toString().trim();
-
-            mNextButton.setEnabled(!userIdInput.isEmpty() && !userPhoneInput.isEmpty());
+            if (userIdInput.isEmpty()) {
+                mUsernameEditText.setError("Empty field");
+                isValidUserName = false;
+            } else {
+                userId = userIdInput;
+                isValidUserName = true;
+                mUsernameEditText.setError(null);
+            }
+            if (userPhoneInput.isEmpty()) {
+                mUserPhoneNoEditText.setError("Empty field");
+                isValidUserPhone = false;
+            } else {
+                if (userPhoneInput.matches("[+]|[8]{2}|[0][1][3|5-9][0-9]{8}")) {
+                    isValidUserPhone = true;
+                    mUserPhoneNoEditText.setError(null);
+                } else {
+                    mUserPhoneNoEditText.setError("Invalid number!");
+                }
+            }
         }
 
         @Override
@@ -246,38 +309,59 @@ public class UserInfoActivity extends AppCompatActivity  {
             startActivity(intent);
             this.finish();
     }
-    /**
-     * User data change listener
-     */
-    private void addUserChangeListener() {
-        // User data change listener
-        mUsersDatabaseReference.child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-
-                if (user == null) {
-                    Log.e(TAG, "User data is null!");
-                    return;
-                }
-                updateUI();
-                Log.e(TAG, "User data is changed!");
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "Please Try Again!", Toast.LENGTH_SHORT).show();
-                // Failed to read value
-                Log.e(TAG, "Failed to read user", error.toException());
-            }
-        });
-    }
 
     private void detachDatabaseReadListener() {
 //        if (mValueEventListener != null) {
 //            mCourseDatabaseReferance.removeEventListener(mValueEventListener);
 //            mValueEventListener = null;
 //        }
+    }
+
+    private class UserExistsAsyncTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute(){
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+        /**
+         * This method is invoked (or called) on a background thread, so we can perform
+         * long-running operations like making a network request.
+         *
+         * It is NOT okay to update the UI from a background thread, so we just return an
+         * {@link boolean} object as the result.
+         */
+        @Override
+        protected Boolean doInBackground(String... urls) {
+            // Don't perform the request if there are no URLs, or the first URL is null.
+            if (urls.length < 1 || urls[0] == null) {
+                return false;
+            }
+
+            boolean result = Utils.fetchUserData(urls[0]);
+            return result;
+        }
+
+        /**
+         * This method is invoked on the main UI thread after the background work has been
+         * completed.
+         *
+         * It IS okay to modify the UI within this method. We take the {@link boolean} value
+         * (which was returned from the doInBackground() method) and update the views on the screen.
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            // If there is no result, do nothing.
+            if (result) {
+                mProgressBar.setVisibility(View.GONE);
+                if (!mUserOrganization.equals("0") && !mUserDepartment.equals("Select your department")) {
+                    updateUser(mUserDepartment, mUserEmail, mUsername, mUserOrganization,
+                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString(), uid);
+                } else {
+                    Toast.makeText(UserInfoActivity.this, "Fill up the form correctly.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(UserInfoActivity.this, "Invalid User Id.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

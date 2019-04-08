@@ -491,7 +491,7 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
             }
         }
         for (Routine routine: routineList) {
-            if (routine.getDay().equals("TuesDay")) {
+            if (routine.getDay().equals("Tuesday")) {
                 filteredList.add(routine);
             }
         }

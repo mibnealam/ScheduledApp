@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mibne.scheduledapp.Adapters.MainFragmentPagerAdapter;
+import com.example.mibne.scheduledapp.Models.Routine;
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,6 +38,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
@@ -64,6 +68,12 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ValueEventListener mUserValueEventListener;
+    private ValueEventListener mValueEventListenerForRoutine;
+
+    private DatabaseReference mRoutineDatabaseReference;
+
+    private List<String> enrolledCourses = new ArrayList<>();
+    private List<Routine> routineList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +164,25 @@ public class MainActivity extends AppCompatActivity
             Log.v("TopicSubscription", "Failed to call subscriptionToTopic() method.");
             subscribeToTopics();
         }
+
+        mValueEventListenerForRoutine = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot routineDataSnapshot : dataSnapshot.getChildren()) {
+                        Routine routine = routineDataSnapshot.getValue(Routine.class);
+                        routineList.add(routine);
+                    }
+                } else {
+                    routineList = null;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -243,14 +272,26 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.child("username").exists() && dataSnapshot.child("phone").exists()){
+                if(dataSnapshot.child("username").exists()
+                        && dataSnapshot.child("department").exists()
+                        && dataSnapshot.child("organization").exists()){
                     if(!dataSnapshot.child("courses").exists()){
-                        Log.v("test", "no course selected!");
-                        //Todo if there is no course selected.
+                        showSelectCourseToast();
+                    } else {
+                        mRoutineDatabaseReference = mFirebaseDatabase.getReference().child(dataSnapshot.child("organization").getValue().toString() + "/" + dataSnapshot.child("department").getValue().toString() + "/routines");
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            if (snapshot.getKey().equals("courses")){
+                                for (DataSnapshot snapshot1: snapshot.getChildren()){
+                                    enrolledCourses.add(snapshot1.getKey());
+                                    mRoutineDatabaseReference.orderByChild("courseCode").equalTo(snapshot1.getKey()).addValueEventListener(mValueEventListenerForRoutine);
+                                }
+                                break;
+                            }
+                        }
                     }
                 } else {
                     Intent intent = new Intent(getApplicationContext(), UserInfoActivity.class);
-                    //startActivity(intent);
+                    startActivity(intent);
                 }
 
                 if (dataSnapshot.exists()) {
@@ -297,6 +338,10 @@ public class MainActivity extends AppCompatActivity
         mUsersDatabaseReference.addValueEventListener(mUserValueEventListener);
     }
 
+    private void showSelectCourseToast() {
+        Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
+    }
+
     private void subscribeToTopics() {
         FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + "General").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -335,5 +380,9 @@ public class MainActivity extends AppCompatActivity
             mUsersDatabaseReference.removeEventListener(mUserValueEventListener);
             mUserValueEventListener = null;
         }
+    }
+
+    public List<Routine> getRoutineData() {
+        return this.routineList;
     }
 }

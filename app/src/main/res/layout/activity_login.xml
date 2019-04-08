@@ -8,6 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_gravity="center"
+    android:gravity="center"
     tools:context=".Activities.LoginActivity">
 
     <ScrollView
@@ -20,15 +22,14 @@
             android:layout_width="280dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:gravity="center"
             android:layout_gravity="center_horizontal">
-
-
             <ImageView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
                 android:paddingTop="10dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="20dp"
                 android:src="@mipmap/ic_logo"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -75,16 +76,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="16dp">
-                <!--<Button-->
-                    <!--android:id="@+id/action_create_account"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--style="?android:textAppearanceSmall"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/action_sign_up"-->
-                    <!--android:background="@android:color/transparent"-->
-                    <!--android:textColor="@color/colorAccent"-->
-                    <!--android:layout_gravity="left"-->
-                    <!--android:textAllCaps="true"/>-->
+                <Button
+                    android:id="@+id/action_sign_up_button"
+                    android:layout_width="wrap_content"
+                    style="?android:textAppearanceSmall"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_sign_up"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/colorAccent"
+                    android:layout_gravity="left"
+                    android:textAllCaps="true"/>
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -110,7 +111,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="20dp">
->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Or sign in with"/>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -118,8 +122,18 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"/>
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center">
 
-
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/action_log_in_with_google_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
                 <Button
                     android:id="@+id/forgot_password_button"
                     style="?android:textAppearanceSmall"
@@ -138,11 +152,12 @@
     </ScrollView>
     <!-- Loading indicator is only shown before the first load -->
     <ProgressBar
-        android:id="@+id/sign_in_loading_indicator"
+        android:id="@+id/loading_indicator"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
     <TextView
         android:id="@+id/snackbar"
         android:layout_width="match_parent"

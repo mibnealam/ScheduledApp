@@ -13,6 +13,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.mibne.scheduledapp.Activities.MainActivity;
+import com.example.mibne.scheduledapp.Activities.TodayActivity;
 import com.example.mibne.scheduledapp.Models.Course;
 import com.example.mibne.scheduledapp.Models.Notice;
 import com.example.mibne.scheduledapp.Adapters.NoticeAdapter;
@@ -88,6 +90,10 @@ public class TodayFragment extends Fragment {
             // No user is signed in
         }
 
+        MainActivity activity = (MainActivity) getActivity();
+        //String myDataFromActivity = activity.getRoutineData();
+        //Log.v("TodayFragmentData:", myDataFromActivity);
+
 
         mUserOrganization = userDataBundle.getString("organization");
         mUserDepartment = userDataBundle.getString("department");
@@ -151,6 +157,7 @@ public class TodayFragment extends Fragment {
                         Routine routine =  routineDataSnapshot.getValue(Routine.class);
                         mRoutineAdapter.add(routine);
                     }
+                    mRoutineAdapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(View.GONE);
                     mEmptyTextView.setVisibility(View.GONE);
                 } else {

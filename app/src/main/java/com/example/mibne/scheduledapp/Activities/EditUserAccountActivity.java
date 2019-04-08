@@ -117,11 +117,8 @@ public class EditUserAccountActivity extends AppCompatActivity {
 
         Glide.with(imageView).load(userPortraitUrl).into(imageView);
         userNameTextInputLayout.getEditText().setText(userName);
-        userNameTextInputLayout.setEnabled(false);
         userIdTextInputLayout.getEditText().setText(userId);
-        userIdTextInputLayout.setEnabled(false);
         userEmailTextInputLayout.getEditText().setText(userEmail);
-        userEmailTextInputLayout.setEnabled(false);
         userPhoneTextInputLayout.getEditText().setText(userPhone);
 
         imageView.setOnClickListener(new View.OnClickListener() {

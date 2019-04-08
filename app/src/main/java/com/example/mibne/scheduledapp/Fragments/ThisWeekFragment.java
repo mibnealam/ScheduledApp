@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.mibne.scheduledapp.Activities.EditRoutineActivity;
+import com.example.mibne.scheduledapp.Activities.MainActivity;
 import com.example.mibne.scheduledapp.Models.Course;
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.Routine;
@@ -62,7 +64,7 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRoutineDatabaseReferance;
-    private DatabaseReference mUserDatabaseReferance;
+    private DatabaseReference mUserDatabaseReference;
     private ValueEventListener mValueEventListenerForRoutine;
     private ValueEventListener mValueEventListenerForUser;
 
@@ -83,13 +85,16 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
             // No user is signed in
         }
 
+        MainActivity activity = (MainActivity) getActivity();
+        List<Routine> routineList = activity.getRoutineData();
+
         mUserOrganization = userDataBundle.getString("organization");
         mUserDepartment = userDataBundle.getString("department");
         role = userDataBundle.getString("role");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
-        mUserDatabaseReferance = mFirebaseDatabase.getReference().child("users/" + uid + "/courses");
+        mUserDatabaseReference = mFirebaseDatabase.getReference().child("users/" + uid + "/courses");
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_weekly_user_routine_list);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_weekly_user_routine_list);
@@ -181,13 +186,13 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
 
             }
         };
-        mUserDatabaseReferance.addValueEventListener(mValueEventListenerForUser);
+        mUserDatabaseReference.addValueEventListener(mValueEventListenerForUser);
     }
 
     private void detachDatabaseReadListener() {
         if (mValueEventListenerForRoutine != null) {
             mRoutineDatabaseReferance.removeEventListener(mValueEventListenerForRoutine);
-            mUserDatabaseReferance.removeEventListener(mValueEventListenerForUser);
+            mUserDatabaseReference.removeEventListener(mValueEventListenerForUser);
             mValueEventListenerForRoutine = null;
         }
     }

@@ -3,6 +3,7 @@ package com.example.mibne.scheduledapp.Fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.INVISIBLE;
 
 
@@ -78,6 +80,8 @@ public class AllCoursesFragment extends Fragment {
     private DatabaseReference mCourseDatabaseReferance;
     private ValueEventListener mValueEventListener;
 
+    private SharedPreferences sharedPreferences;
+
     public AllCoursesFragment() {
         // Required empty public constructor
     }
@@ -87,11 +91,12 @@ public class AllCoursesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.course_list, container, false);
 
-        Bundle bundle = getActivity().getIntent().getExtras();
+        sharedPreferences = getActivity().getSharedPreferences("userPrefs",MODE_PRIVATE);
 
-        mUserOrganization = bundle.getString("organization");
-        mUserDepartment = bundle.getString("department");
-        role = bundle.getString("role");
+        //final Bundle mNoticeTypeBundle = getIntent().getExtras();
+        mUserOrganization = sharedPreferences.getString("organization", null);
+        mUserDepartment = sharedPreferences.getString("department", null);
+        role = sharedPreferences.getString("role", "student");
 
 
         FloatingActionButton fab = rootView.findViewById(R.id.fab);
