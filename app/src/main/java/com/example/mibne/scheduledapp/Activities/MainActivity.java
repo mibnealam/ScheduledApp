@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity
     TextView navUserName;
     ImageView navUserPortrait;
     LinearLayout navUserContainer;
+    private ProgressBar mProgressBar;
+    private TextView mEmptyTextView;
 
     SharedPreferences sharedPreferences;
 
@@ -85,6 +88,9 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        findViewById(R.id.content_main).setVisibility(View.GONE);
+        mEmptyTextView = (TextView) findViewById(R.id.empty_view);
 
 
 
@@ -118,19 +124,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        // Find the view pager that will allow the user to swipe between fragments
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-
-        // Create an adapter that knows which fragment should be shown on each page
-        MainFragmentPagerAdapter adapter = new MainFragmentPagerAdapter(this, getSupportFragmentManager());
-
-        // Set the adapter onto the view pager
-        viewPager.setAdapter(adapter);
-
-        // Give the TabLayout the ViewPager
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -173,8 +167,21 @@ public class MainActivity extends AppCompatActivity
                         Routine routine = routineDataSnapshot.getValue(Routine.class);
                         routineList.add(routine);
                     }
-                } else {
-                    routineList = null;
+                    // Find the view pager that will allow the user to swipe between fragments
+                    ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+
+                    // Create an adapter that knows which fragment should be shown on each page
+                    MainFragmentPagerAdapter adapter = new MainFragmentPagerAdapter(MainActivity.this, getSupportFragmentManager());
+
+                    // Set the adapter onto the view pager
+                    viewPager.setAdapter(adapter);
+
+                    // Give the TabLayout the ViewPager
+                    TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+                    tabLayout.setupWithViewPager(viewPager);
+                    findViewById(R.id.content_main).setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    mEmptyTextView.setText(null);
                 }
             }
 
@@ -183,20 +190,34 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
+        Log.v("ActivityLifecycle:", "onCreate");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.v("ActivityLifecycle:", "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v("ActivityLifecycle:", "onResume");
+        enrolledCourses.clear();
+        routineList.clear();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.v("ActivityLifecycle:", "onPauseMainActivity");
+        Log.v("ActivityLifecycle:", "RoutineList" + routineList.toString());
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
+        enrolledCourses.clear();
+        routineList.clear();
         detachDatabaseReadListener();
     }
     long back_pressed;
@@ -283,10 +304,13 @@ public class MainActivity extends AppCompatActivity
                             if (snapshot.getKey().equals("courses")){
                                 for (DataSnapshot snapshot1: snapshot.getChildren()){
                                     enrolledCourses.add(snapshot1.getKey());
-                                    mRoutineDatabaseReference.orderByChild("courseCode").equalTo(snapshot1.getKey()).addValueEventListener(mValueEventListenerForRoutine);
                                 }
                                 break;
                             }
+                        }
+                        routineList.clear();
+                        for (String courseCode: enrolledCourses) {
+                            mRoutineDatabaseReference.orderByChild("courseCode").equalTo(courseCode).addListenerForSingleValueEvent(mValueEventListenerForRoutine);
                         }
                     }
                 } else {
@@ -300,7 +324,12 @@ public class MainActivity extends AppCompatActivity
                     // pass them through required activity and fragments
                     navUserId.setText(dataSnapshot.child("username").getValue().toString());
                     navUserName.setText(dataSnapshot.child("name").getValue().toString());
-                    Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
+                    try {
+                        Glide.with(navUserPortrait).load(dataSnapshot.child("photoUrl").getValue()).into(navUserPortrait);
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
                     //Get Post object and use the values to update the UI
                     User user = dataSnapshot.getValue(User.class);
 
@@ -339,6 +368,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showSelectCourseToast() {
+        mProgressBar.setVisibility(View.GONE);
+        mEmptyTextView.setText(R.string.prompt_no_selected_course);
+        findViewById(R.id.content_main).setVisibility(View.GONE);
         Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
     }
 
@@ -376,10 +408,10 @@ public class MainActivity extends AppCompatActivity
 
 
     private void detachDatabaseReadListener() {
-        if (mUserValueEventListener != null) {
-            mUsersDatabaseReference.removeEventListener(mUserValueEventListener);
-            mUserValueEventListener = null;
-        }
+//        if (mUserValueEventListener != null) {
+//            mUsersDatabaseReference.removeEventListener(mUserValueEventListener);
+//            mUserValueEventListener = null;
+//        }
     }
 
     public List<Routine> getRoutineData() {

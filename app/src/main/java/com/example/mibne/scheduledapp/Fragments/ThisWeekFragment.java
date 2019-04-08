@@ -48,7 +48,6 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
 
     private String TAG = "ThisWeekFragment";
 
-    private String uid;
 
     private List<Routine> routineList = new ArrayList<>();
 
@@ -57,16 +56,7 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
 
-    private String mUserDepartment;
-    private String mUserOrganization;
     private String role;
-
-    // Firebase instance variables
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mRoutineDatabaseReferance;
-    private DatabaseReference mUserDatabaseReference;
-    private ValueEventListener mValueEventListenerForRoutine;
-    private ValueEventListener mValueEventListenerForUser;
 
     public ThisWeekFragment() {
         // Required empty public constructor
@@ -77,27 +67,17 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_this_week, container, false);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            uid = user.getUid();
-        } else {
-            // No user is signed in
-        }
-
-        MainActivity activity = (MainActivity) getActivity();
-        List<Routine> routineList = activity.getRoutineData();
-
-        mUserOrganization = userDataBundle.getString("organization");
-        mUserDepartment = userDataBundle.getString("department");
-        role = userDataBundle.getString("role");
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
-        mUserDatabaseReference = mFirebaseDatabase.getReference().child("users/" + uid + "/courses");
-
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_weekly_user_routine_list);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_weekly_user_routine_list);
+
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity.getRoutineData() != null && !activity.getRoutineData().isEmpty()) {
+            routineList = sortRoutineByDay(activity.getRoutineData());
+        } else {
+            mEmptyTextView.setText(R.string.prompt_no_class_this_week);
+        }
+
+        role = userDataBundle.getString("role");
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
@@ -122,81 +102,10 @@ public class ThisWeekFragment extends Fragment implements RoutineAdapter.Routine
         mRoutineRecyclerView.setAdapter(mRoutineAdapter);
 
         // Initialize progress bar
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mProgressBar.setVisibility(ProgressBar.GONE);
 
         return rootView;
     }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        routineList.clear();
-        attachDatabaseReadListener();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        detachDatabaseReadListener();
-        routineList.clear();
-    }
-
-
-    private void attachDatabaseReadListener() {
-        mValueEventListenerForRoutine = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
-                        Routine routine =  routineDataSnapshot.getValue(Routine.class);
-                        routineList.add(routine);
-                    }
-                    mRoutineAdapter.setRoutineData(sortRoutineByDay(routineList));
-                    mEmptyTextView.setVisibility(View.GONE);
-                    mProgressBar.setVisibility(INVISIBLE);
-                } else {
-                    mProgressBar.setVisibility(INVISIBLE);
-                    mEmptyTextView.setText(R.string.prompt_no_routine);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        mValueEventListenerForUser = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
-                        Course course =  routineDataSnapshot.getValue(Course.class);
-                        mRoutineDatabaseReferance.orderByChild("courseCode").equalTo(course.getCourseCode()).addValueEventListener(mValueEventListenerForRoutine);
-                    }
-
-                } else {
-                    mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_this_week);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        mUserDatabaseReference.addValueEventListener(mValueEventListenerForUser);
-    }
-
-    private void detachDatabaseReadListener() {
-        if (mValueEventListenerForRoutine != null) {
-            mRoutineDatabaseReferance.removeEventListener(mValueEventListenerForRoutine);
-            mUserDatabaseReference.removeEventListener(mValueEventListenerForUser);
-            mValueEventListenerForRoutine = null;
-        }
-    }
-
     @Override
     public void onRoutineSelected(Routine routine) {
         if (role.equals("admin")) {

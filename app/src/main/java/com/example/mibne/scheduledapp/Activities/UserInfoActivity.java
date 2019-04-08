@@ -100,10 +100,23 @@ public class UserInfoActivity extends AppCompatActivity  {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // Name, email address, and profile photo Url
-            mUsername = user.getDisplayName();
+            try {
+                if (user.getDisplayName().isEmpty()) {
+                    mUsername = user.getDisplayName();
+                } else {
+                    mUsername = "Anonymous";
+                }
+            } catch (Exception e) {
+                mUsername = "Anonymous";
+            }
             mUserEmail = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
-            mPhotoUrl = photoUrl.toString();
+            try {
+                Uri photoUrl = user.getPhotoUrl();
+                mPhotoUrl = photoUrl.toString();
+            } catch (Exception e) {
+                mPhotoUrl = "";
+            }
+
 
             // Check if user's email is verified
             boolean emailVerified = user.isEmailVerified();
@@ -249,7 +262,7 @@ public class UserInfoActivity extends AppCompatActivity  {
         childUpdates.put("email", email);
         childUpdates.put("organization", organization);
         childUpdates.put("department", department);
-        childUpdates.put("pho", phone);
+        childUpdates.put("phone", phone);
         childUpdates.put("photoUrl", photoUrl);
         childUpdates.put("username", username);
         childUpdates.put("role", role);

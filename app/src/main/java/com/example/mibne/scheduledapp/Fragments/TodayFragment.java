@@ -49,28 +49,12 @@ public class TodayFragment extends Fragment {
 
     private String TAG = "TodayFragment";
 
-    private String uid;
+    private List<Routine> routineList = new ArrayList<>();
 
-    private List<Notice> noticeList = new ArrayList<>();
-
-    private List<String> courseList = new ArrayList<>();
-
-    private RecyclerView mNoticeRecyclerView;
     private ListView mRoutineListView;
-    private NoticeAdapter mNoticeAdapter;
     private RoutineAdapterForUser mRoutineAdapter;
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
-
-    private String mUserDepartment;
-    private String mUserOrganization;
-
-    // Firebase instance variables
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mRoutineDatabaseReferance;
-    private DatabaseReference mUserDatabaseReferance;
-    private ValueEventListener mValueEventListenerForRoutine;
-    private ValueEventListener mValueEventListenerForUser;
 
 
     public TodayFragment() {
@@ -82,35 +66,17 @@ public class TodayFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_today, container, false);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            uid = user.getUid();
-        } else {
-            // No user is signed in
-        }
-
-        MainActivity activity = (MainActivity) getActivity();
-        //String myDataFromActivity = activity.getRoutineData();
-        //Log.v("TodayFragmentData:", myDataFromActivity);
-
-
-        mUserOrganization = userDataBundle.getString("organization");
-        mUserDepartment = userDataBundle.getString("department");
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
-        mUserDatabaseReferance = mFirebaseDatabase.getReference().child("users/" + uid + "/courses");
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_today);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_no_class);
 
+        getRoutine();
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
         mRoutineListView = (ListView) rootView.findViewById(R.id.list_view_routine_with_category);
 
-        mRoutineAdapter = new RoutineAdapterForUser(getContext(), new ArrayList<Routine>());
+        mRoutineAdapter = new RoutineAdapterForUser(getContext(), routineList);
 
         mRoutineListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -124,87 +90,40 @@ public class TodayFragment extends Fragment {
          */
         mRoutineListView.setAdapter(mRoutineAdapter);
 
+        if (!routineList.isEmpty()){
+            mRoutineAdapter.notifyDataSetChanged();
+        }
+
 
         // Initialize progress bar
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        attachDatabaseReadListener();
+        mProgressBar.setVisibility(View.GONE);
+       // attachDatabaseReadListener();
 
         return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        noticeList.clear();
-        courseList.clear();
-        //attachDatabaseReadListener();
+    private void getRoutine() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+        Calendar calendar = Calendar.getInstance();
+        final String dayOfTheWeek = sdf.format(calendar.getTime());
+
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity.getRoutineData() != null && !activity.getRoutineData().isEmpty()) {
+            for (Routine routine: activity.getRoutineData()){
+                if (routine.getDay().equals(dayOfTheWeek)){
+                    routineList.add(routine);
+                }
+            }
+            if (routineList.isEmpty()) {
+                mEmptyTextView.setText(R.string.prompt_no_class_today);
+            }
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        detachDatabaseReadListener();
-        noticeList.clear();
-        courseList.clear();
-    }
-
-    private void attachDatabaseReadListener() {
-        mValueEventListenerForRoutine = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
-                        Routine routine =  routineDataSnapshot.getValue(Routine.class);
-                        mRoutineAdapter.add(routine);
-                    }
-                    mRoutineAdapter.notifyDataSetChanged();
-                    mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setVisibility(View.GONE);
-                } else {
-                    mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_today);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
-        Calendar calendar = Calendar.getInstance();
-        final String dayOfTheWeek = sdf.format(calendar.getTime());
-        Log.v(TAG, dayOfTheWeek);
-
-        mValueEventListenerForUser = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot routineDataSnapshot: dataSnapshot.getChildren()) {
-                        Course course =  routineDataSnapshot.getValue(Course.class);
-                        mRoutineDatabaseReferance.orderByKey().equalTo(dayOfTheWeek + "-" + course.getCourseCode()).addValueEventListener(mValueEventListenerForRoutine);
-                    }
-
-                } else {
-                    mProgressBar.setVisibility(View.GONE);
-                    mEmptyTextView.setText(R.string.prompt_no_class_today);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        mUserDatabaseReferance.addValueEventListener(mValueEventListenerForUser);
-
-    }
-    private void detachDatabaseReadListener() {
-        if (mValueEventListenerForRoutine != null && mValueEventListenerForUser != null) {
-            mRoutineDatabaseReferance.removeEventListener(mValueEventListenerForRoutine);
-            mUserDatabaseReferance.removeEventListener(mValueEventListenerForUser);
-            mValueEventListenerForUser = null;
-            mValueEventListenerForRoutine = null;
-        }
+        Log.v("ActivityLifecycle:", "onPauseTodayFragment");
+        routineList.clear();
     }
 }

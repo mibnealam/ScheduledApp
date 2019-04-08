@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             textInputLayout.setError(null);
             return true;
         } else {
-            textInputLayout.setError(" ");
+            textInputLayout.setError("Invalid email");
             return false;
         }
     }
