@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -77,6 +78,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.action_sign_up_button).setOnClickListener((View.OnClickListener) this);
         findViewById(R.id.action_log_in_with_google_button).setOnClickListener((View.OnClickListener) this);
         findViewById(R.id.forgot_password_button).setOnClickListener((View.OnClickListener) this);
+
+        hideKeyboard();
     }
 
     @Override
@@ -196,7 +199,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                Toast.makeText(this, "Failed to sign in.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to sign in." + e.getMessage(), Toast.LENGTH_LONG).show();
                 scrollView.setVisibility(View.VISIBLE);
                 loadingIndicator.setVisibility(View.GONE);
             }
@@ -296,6 +299,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
             default:
                 break;
+        }
+    }
+
+    private void hideKeyboard(){
+        try {
+            InputMethodManager inputManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (Exception e) {
         }
     }
 }
