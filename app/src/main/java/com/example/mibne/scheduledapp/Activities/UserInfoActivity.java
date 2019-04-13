@@ -26,6 +26,7 @@ import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
 import com.example.mibne.scheduledapp.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -262,6 +263,7 @@ public class UserInfoActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (isValidUserId(userIdList, mUsernameEditText.getText().toString())) {
+                    mProgressBar.setVisibility(View.VISIBLE);
                     UserExistsAsyncTask task = new UserExistsAsyncTask();
                     task.execute(USSER_REQUEST_URL + userId);
                 } else {
@@ -306,12 +308,7 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsersDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if (subscribeToTopics()) {
-                    Toast.makeText(UserInfoActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
-                    updateUI();
-                } else {
-                    Toast.makeText(UserInfoActivity.this, "You are not subscribed to notifications.\nPlease try again later.", Toast.LENGTH_LONG).show();
-                }
+                subscribeToTopics();
             }
         });
     }
@@ -430,38 +427,40 @@ public class UserInfoActivity extends AppCompatActivity  {
         }
     }
 
-    private boolean subscribeToTopics() {
-        final boolean[] isSubscribedToOrg = new boolean[1];
-        final boolean[] isSubscribedToDept = new boolean[1];
+    private void subscribeToTopics() {
         FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + "General")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
-                    Log.v("TopicSubscription: ", mUserOrganization + "General" );
-                } else {
-                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
-                    isSubscribedToOrg[0] = true;
-                }
-            }
-        });
-        FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
-                    Log.v("TopicSubscription: ", mUserOrganization + mUserDepartment );
-                } else {
-                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
-                    isSubscribedToDept[0] = true;
-                }
-            }
-        });
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                            sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                        Log.v("NotifictionFailure", "Success > " + mUserOrganization+"General");
+                        FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                                        Log.v("NotifictionFailure", "Success > " + mUserOrganization+mUserDepartment);
+                                        Toast.makeText(UserInfoActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+                                        mProgressBar.setVisibility(View.GONE);
+                                        updateUI();
 
-        if (isSubscribedToOrg[0] && isSubscribedToDept[0]) {
-            return true;
-        } else return false;
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.v("NotifictionFailure", e.getMessage());
+                                sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                                Toast.makeText(UserInfoActivity.this, "You are not subscribed to notifications properly.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.v("NotifictionFailure", e.getMessage());
+                sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
+                Toast.makeText(UserInfoActivity.this, "You are not subscribed to notifications properly.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

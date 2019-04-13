@@ -15,10 +15,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.mibne.scheduledapp.Fragments.NotificationOptionsDialogueFragment;
 import com.example.mibne.scheduledapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -107,72 +110,64 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             final SwitchPreference notificationStatePref = (SwitchPreference) findPreference(getString(R.string.key_pref_notifications));
             notificationStatePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                boolean isSelfSubscriptionEnabled = false;
-                boolean isGeneralSubscriptionEnabled = false;
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (notificationStatePref.isChecked()){
-                        FirebaseMessaging.getInstance().unsubscribeFromTopic(userBundle.getString("organization") + "General").addOnCompleteListener(new OnCompleteListener<Void>() {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(userBundle.getString("organization") + "General")
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
+                                        Log.v("NotifictionFailure", "Success > " + userBundle.getString("organization")+"General");
+                                        FirebaseMessaging.getInstance().unsubscribeFromTopic(userBundle.getString("organization") + userBundle.getString("department"))
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                                                        Log.v("NotifictionFailure", "Success > " + userBundle.getString("organization")+userBundle.getString("department"));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.v("NotifictionFailure", e.getMessage());
+                                                sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                                            }
+                                        });
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                isGeneralSubscriptionEnabled = true;
-                                if (!task.isSuccessful()) {
-                                    isGeneralSubscriptionEnabled = false;
-                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", true).apply();
-                                } else {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", false).apply();
-                                }
-                            }
-                        });
-                        FirebaseMessaging.getInstance().unsubscribeFromTopic(userBundle.getString("organization") + userBundle.getString("department")).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (!task.isSuccessful()) {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
-                                } else {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
-                                }
-                                if (isGeneralSubscriptionEnabled) {
-                                    Log.v(TAG, "Un-subscribes from all notifications");
-                                    notificationStatePref.setChecked(false);
-                                    //notificationPref.setEnabled(false);
-                                }
+                            public void onFailure(@NonNull Exception e) {
+                                Log.v("NotifictionFailure", e.getMessage());
+                                sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
                             }
                         });
                     } else {
-                        FirebaseMessaging.getInstance().subscribeToTopic("Self").addOnCompleteListener(new OnCompleteListener<Void>() {
+                        FirebaseMessaging.getInstance().subscribeToTopic(userBundle.getString("organization") + "General")
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                                        Log.v("NotifictionFailure", "Success > " + userBundle.getString("organization")+"General");
+                                        FirebaseMessaging.getInstance().subscribeToTopic(userBundle.getString("organization") + userBundle.getString("department"))
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                                                        Log.v("NotifictionFailure", "Success > " + userBundle.getString("organization")+userBundle.getString("department"));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.v("NotifictionFailure", e.getMessage());
+                                                sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                                            }
+                                        });
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                isSelfSubscriptionEnabled = true;
-                                if (!task.isSuccessful()) {
-                                    isSelfSubscriptionEnabled = false;
-                                }
-                            }
-                        });
-                        FirebaseMessaging.getInstance().subscribeToTopic(userBundle.getString("organization") + "General").addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                isGeneralSubscriptionEnabled = true;
-                                if (!task.isSuccessful()) {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", false).apply();
-                                    isGeneralSubscriptionEnabled = false;
-                                } else {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
-                                }
-                            }
-                        });
-                        FirebaseMessaging.getInstance().subscribeToTopic(userBundle.getString("organization") + userBundle.getString("department")).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (!task.isSuccessful()) {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
-                                } else {
-                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
-                                }
-                                if (isSelfSubscriptionEnabled && isGeneralSubscriptionEnabled) {
-                                    Log.v(TAG, "Subscribed to all notifications");
-                                    notificationStatePref.setChecked(true);
-                                }
+                            public void onFailure(@NonNull Exception e) {
+                                Log.v("NotifictionFailure", e.getMessage());
+                                sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
                             }
                         });
                     }
