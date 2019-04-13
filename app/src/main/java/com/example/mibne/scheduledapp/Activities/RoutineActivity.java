@@ -128,6 +128,11 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
                 checkFilePermissions();
                 break;
 
+            case "super" :
+                floatingActionsMenu.setVisibility(View.VISIBLE);
+                checkFilePermissions();
+                break;
+
                 default:
                     floatingActionsMenu.setVisibility(View.GONE);
                     break;
@@ -460,7 +465,7 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
 
     @Override
     public void onRoutineSelected(Routine routine) {
-        if (role.equals("admin")) {
+        if (role.equals("admin") || role.equals("super")) {
             Intent editRoutineIntent = new Intent(this, EditRoutineActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("courseCode", routine.getCourseCode());

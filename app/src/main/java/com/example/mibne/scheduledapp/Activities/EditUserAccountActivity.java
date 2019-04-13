@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.mibne.scheduledapp.Activities.AddUserActivity.validatePhone;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.validateEmail;
+
 public class EditUserAccountActivity extends AppCompatActivity {
 
     private String TAG = "EditUserAccountActivity";
@@ -134,6 +137,7 @@ public class EditUserAccountActivity extends AppCompatActivity {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 updateInfo();
             }
         });
@@ -240,32 +244,8 @@ public class EditUserAccountActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validateUserEmail() {
-        String userEmailInput = userEmailTextInputLayout.getEditText().getText().toString().trim();
-
-        if (userEmailInput.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")) {
-            userEmailTextInputLayout.setError(null);
-            return true;
-        } else {
-            userEmailTextInputLayout.setError("Invalid email!");
-            return false;
-        }
-    }
-
-    private boolean validateUserPhone() {
-        String userPhoneInput = userPhoneTextInputLayout.getEditText().getText().toString().trim();
-
-        if (userPhoneInput.matches("[+]|[8]{2}|[0][1][3|5-9][0-9]{8}")) {
-            userPhoneTextInputLayout.setError(null);
-            return true;
-        } else {
-            userPhoneTextInputLayout.setError("Invalid number!");
-            return false;
-        }
-    }
-
     public boolean confirmInput() {
-        if (!validateUserName() | !validateUserId() | !validateUserEmail() | !validateUserPhone()) {
+        if (!validateUserName() | !validateUserId() | !validateEmail(userEmailTextInputLayout) | !validatePhone(userPhoneTextInputLayout)) {
             return false;
         } else {
             user.setName(userNameTextInputLayout.getEditText().getText().toString().trim());
@@ -296,6 +276,7 @@ public class EditUserAccountActivity extends AppCompatActivity {
                                 mUserDatabaseReferance.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        progressBar.setVisibility(View.GONE);
                                         Toast.makeText(EditUserAccountActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
                                     }
                                 });

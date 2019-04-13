@@ -292,7 +292,12 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userDataSnapshot: dataSnapshot.getChildren()) {
                         User user =  userDataSnapshot.getValue(User.class);
-                        if (user.getDepartment().equals(mUserDepartment)) {
+                        if (user.getDepartment().equals(mUserDepartment) && !role.equals("super")
+                        && !user.getRole().equals("super")) {
+                            userList.add(user);
+                        }
+
+                        if (role.equals("super") && user.getRole().equals("admin")) {
                             userList.add(user);
                         }
                     }

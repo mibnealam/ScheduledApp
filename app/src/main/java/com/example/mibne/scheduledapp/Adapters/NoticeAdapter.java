@@ -17,6 +17,9 @@ import com.example.mibne.scheduledapp.Models.Notice;
 import com.example.mibne.scheduledapp.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -119,6 +122,11 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.NoticeAdap
      */
     public void setNoticeData(List<Notice> noticeData) {
         noticeList = noticeData;
+        Collections.sort(noticeList, new Comparator<Notice>() {
+            public int compare(Notice o1, Notice o2) {
+                return o1.getNoticeDate().compareTo(o2.getNoticeDate());
+            }
+        });
         notifyDataSetChanged();
     }
 

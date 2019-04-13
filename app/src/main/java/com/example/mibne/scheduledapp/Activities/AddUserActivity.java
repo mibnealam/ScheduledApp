@@ -183,7 +183,7 @@ public class AddUserActivity extends AppCompatActivity implements AdapterView.On
     public static boolean validatePhone(TextInputLayout textInputLayout) {
         String phoneInput = textInputLayout.getEditText().getText().toString().trim();
 
-        if (phoneInput.matches("[+]|[8]{2}|[0][1][3|5-9][0-9]{8}")) {
+        if (phoneInput.matches("[+]|[8]{2}|[0][1][1-9][0-9]{8}")) {
             textInputLayout.setError(null);
             return true;
         } else {

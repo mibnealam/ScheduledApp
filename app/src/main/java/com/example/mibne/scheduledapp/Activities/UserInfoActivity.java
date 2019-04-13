@@ -3,6 +3,8 @@ package com.example.mibne.scheduledapp.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -94,6 +96,7 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUserPhoneNoEditText = (EditText) findViewById(R.id.user_phone_no);
         mNextButton = (Button) findViewById(R.id.next_button);
 
+        final List<String> userIdList = new ArrayList<>();
         /**
          * Get Users info
          */
@@ -101,13 +104,13 @@ public class UserInfoActivity extends AppCompatActivity  {
         if (user != null) {
             // Name, email address, and profile photo Url
             try {
-                if (user.getDisplayName().isEmpty()) {
+                if (!user.getDisplayName().isEmpty()) {
                     mUsername = user.getDisplayName();
                 } else {
-                    mUsername = "Anonymous";
+                    mUsername = ANONYMOUS;
                 }
             } catch (Exception e) {
-                mUsername = "Anonymous";
+                mUsername = ANONYMOUS;
             }
             mUserEmail = user.getEmail();
             try {
@@ -186,9 +189,11 @@ public class UserInfoActivity extends AppCompatActivity  {
                     departmentsKeysList.clear();
                     departmentsKeysList.add("Select your department");
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        if (!snapshot.getKey().equals("notices")) {
+                            departmentsKeysList.add(snapshot.getKey());
+                        }
                         //Organization organization = snapshot.getValue(Organization.class);
                         //organizationList.add(organization.getName());
-                        departmentsKeysList.add(snapshot.getKey());
                     }
                     departmentSpinnerAdapter.notifyDataSetChanged();
                 } else {
@@ -248,10 +253,32 @@ public class UserInfoActivity extends AppCompatActivity  {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserExistsAsyncTask task = new UserExistsAsyncTask();
-                task.execute(USSER_REQUEST_URL + userId);
+                if (isValidUserId(userIdList, mUsernameEditText.getText().toString())) {
+                    UserExistsAsyncTask task = new UserExistsAsyncTask();
+                    task.execute(USSER_REQUEST_URL + userId);
+                } else {
+                    Toast.makeText(UserInfoActivity.this, "Already Registered", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        userIdList.add(user.getUsername());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mUsersDatabaseReference.addListenerForSingleValueEvent(valueEventListener);
     }
 
     private void updateUser(String department, String email, String name,
@@ -300,7 +327,7 @@ public class UserInfoActivity extends AppCompatActivity  {
                 mUserPhoneNoEditText.setError("Empty field");
                 isValidUserPhone = false;
             } else {
-                if (userPhoneInput.matches("[+]|[8]{2}|[0][1][3|5-9][0-9]{8}")) {
+                if (userPhoneInput.matches("[+]|[8]{2}|[0][1][1-9][0-9]{8}")) {
                     isValidUserPhone = true;
                     mUserPhoneNoEditText.setError(null);
                 } else {
@@ -330,6 +357,15 @@ public class UserInfoActivity extends AppCompatActivity  {
 //        }
     }
 
+
+    private boolean isValidUserId (List<String> list, String userId) {
+        for (String s: list) {
+            if (s.equals(userId)) {
+                return false;
+            }
+        }
+        return true;
+    }
     private class UserExistsAsyncTask extends AsyncTask<String, Void, Boolean> {
 
         @Override
@@ -366,14 +402,18 @@ public class UserInfoActivity extends AppCompatActivity  {
             // If there is no result, do nothing.
             if (result) {
                 mProgressBar.setVisibility(View.GONE);
-                if (!mUserOrganization.equals("0") && !mUserDepartment.equals("Select your department")) {
+                if (!mUserOrganization.equals("0")
+                        && !mUserDepartment.equals("Select your department")){
                     updateUser(mUserDepartment, mUserEmail, mUsername, mUserOrganization,
-                            mUserPhoneNoEditText.getText().toString(), mPhotoUrl, mUserRole, mUsernameEditText.getText().toString(), uid);
+                            mUserPhoneNoEditText.getText().toString(),
+                            mPhotoUrl, mUserRole, mUsernameEditText.getText().toString(), uid);
                 } else {
-                    Toast.makeText(UserInfoActivity.this, "Fill up the form correctly.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserInfoActivity.this,
+                            "Fill up the form correctly.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(UserInfoActivity.this, "Invalid User Id.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserInfoActivity.this,
+                        "Invalid User Id.", Toast.LENGTH_SHORT).show();
             }
         }
     }

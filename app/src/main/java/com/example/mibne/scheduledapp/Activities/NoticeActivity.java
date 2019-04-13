@@ -76,7 +76,7 @@ public class NoticeActivity extends AppCompatActivity {
 
         FloatingActionButton fabNotice = findViewById(R.id.fab_notice);
 
-        if (role.equals("admin")) {
+        if (role.equals("admin") || role.equals("super")) {
             fabNotice.setVisibility(View.VISIBLE);
         } else {
             fabNotice.setVisibility(View.GONE);
@@ -168,8 +168,8 @@ public class NoticeActivity extends AppCompatActivity {
 
             }
         };
-        rootRef.child(mUserOrganization).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
-        rootRef.child(mUserOrganization).child(mUserDepartment).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);
+        rootRef.child(mUserOrganization).child("notices").orderByChild("noticeType").equalTo(mNoticeType).limitToLast(100).addValueEventListener(mValueEventListener);
+        rootRef.child(mUserOrganization).child(mUserDepartment).child("notices").orderByChild("noticeType").equalTo(mNoticeType).limitToLast(400).addValueEventListener(mValueEventListener);
         //Todo fetch notices from sub/cse/courses/courseCode/notices if uid exists
         //rootRef.child("sub").child("cse").child("courses").child("notices").orderByChild(uid).equalTo(uid).addValueEventListener(mValueEventListener);
         rootRef.child(mUserOrganization).child(mUserDepartment).child(mUserBatch).child("notices").orderByChild("noticeType").equalTo(mNoticeType).addValueEventListener(mValueEventListener);

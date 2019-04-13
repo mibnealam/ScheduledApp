@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity
                     User user = dataSnapshot.getValue(User.class);
 
                     role = user.getRole();
-                    if (role.equals("admin")) {
+                    if (role.equals("admin") || role.equals("super")) {
                         nav_Menu.findItem(R.id.nav_manage_users).setVisible(true);
                     }
 

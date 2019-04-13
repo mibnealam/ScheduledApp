@@ -185,10 +185,8 @@
     </string-array>
 
     <string-array name="export_array">
-
-        <item>Export as PDF</item>
+        <!--<item>Export as PDF</item>-->
         <item>Export to Calendar</item>
-
     </string-array>
 
     <string-array name="roles_array">

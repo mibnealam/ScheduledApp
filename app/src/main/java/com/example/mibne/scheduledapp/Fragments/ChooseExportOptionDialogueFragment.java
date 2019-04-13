@@ -28,10 +28,10 @@ public class ChooseExportOptionDialogueFragment extends DialogFragment {
                         // The 'which' argument contains the index position
                         // of the selected item
                         switch (which) {
+//                            case 0 :
+//                                exportAsPdf();
+//                                break;
                             case 0 :
-                                exportAsPdf();
-                                break;
-                            case 1 :
                                 exportToCalendar();
                                 break;
                                 default:

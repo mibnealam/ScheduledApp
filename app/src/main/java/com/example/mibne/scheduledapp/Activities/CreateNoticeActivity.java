@@ -43,13 +43,11 @@ public class CreateNoticeActivity extends AppCompatActivity {
     private TextInputLayout noticeTitleEditText;
     private TextView buttonDatePicker;
     private TextInputLayout noticeDescriptionEditText;
-    private TextInputLayout noticeToEditText;
     private TextInputLayout noticeFromEditText;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mNoticeDatabaseReference;
-    private DatabaseReference mUserDatabaseReference;
 
     private Notice notice;
 
@@ -88,7 +86,6 @@ public class CreateNoticeActivity extends AppCompatActivity {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mNoticeDatabaseReference = mFirebaseDatabase.getReference();
-        mUserDatabaseReference = mFirebaseDatabase.getReference().child("users");
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner_notice_priority);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -105,9 +102,6 @@ public class CreateNoticeActivity extends AppCompatActivity {
 
         noticeTitleEditText = (TextInputLayout) findViewById(R.id.notice_title_wrapper);
         noticeDescriptionEditText = (TextInputLayout) findViewById(R.id.notice_description_wrapper);
-        noticeToEditText = (TextInputLayout) findViewById(R.id.notice_to_wrapper);
-        noticeToEditText.getEditText().setText(mUserDepartment);
-        noticeToEditText.setEnabled(false);
         noticeFromEditText = (TextInputLayout) findViewById(R.id.notice_from_wrapper);
 
 
@@ -179,24 +173,6 @@ public class CreateNoticeActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validateNoticeTo() {
-        String noticeToInput = noticeToEditText.getEditText().getText().toString().trim();
-
-        if (noticeToInput.isEmpty()) {
-            noticeToEditText.setError("Field can't be empty");
-            return false;
-        } else if (noticeToInput.length() > 60) {
-            noticeToEditText.setError("Too long");
-            return false;
-        } else if (noticeToInput.length() < 2) {
-            noticeToEditText.setError("Too short");
-            return false;
-        } else {
-            noticeToEditText.setError(null);
-            return true;
-        }
-    }
-
     private boolean validateNoticeFrom() {
         String noticeFromInput = noticeFromEditText.getEditText().getText().toString().trim();
 
@@ -217,7 +193,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean confirmInput() {
-        if (!validateNoticeTitle() | !validateNoticeDescription() | !validateNoticeFrom() | !validateNoticeDeadline() | !validateNoticeTo()) {
+        if (!validateNoticeTitle() | !validateNoticeDescription() | !validateNoticeFrom() | !validateNoticeDeadline()) {
             return false;
         } else {
             notice.setNoticeTitle(noticeTitleEditText.getEditText().getText().toString());
@@ -228,7 +204,7 @@ public class CreateNoticeActivity extends AppCompatActivity {
             notice.setNoticePriority(noticePriority);
             notice.setNoticeType(noticeType);
 
-            noticeTo = noticeToEditText.getEditText().getText().toString().trim();
+            noticeTo = mUserDepartment;
 
             return true;
         }
@@ -275,9 +251,8 @@ public class CreateNoticeActivity extends AppCompatActivity {
                         Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
                     }
                 });
-            } else if (noticeTo.matches("[0-9]{2}")) {
-                //Sends notice to a batch of users department
-                mNoticeDatabaseReference.child(mUserOrganization).child(mUserDepartment).child("batches").child(noticeTo).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+            } else if (noticeTo.matches("[a-zA-Z]*") && role.equals("super")) {
+                mNoticeDatabaseReference.child(mUserOrganization).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
@@ -289,52 +264,8 @@ public class CreateNoticeActivity extends AppCompatActivity {
                         Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
                     }
                 });
-            }  else if (noticeTo.matches("[A-Za-z]{3}-[0-9]{4}")) {
-                //Sends notice to a course of users department
-                mNoticeDatabaseReference.child(mUserOrganization).child(mUserDepartment).child("courses").child(noticeTo.toUpperCase()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
-                    }
-                });
-            } else if (noticeTo.matches("[uUpP][gG][0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}")) {
-                //Sends notice to a user
-                mUserDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot data: dataSnapshot.getChildren()){
-                            if (data.child("username").getValue().equals(noticeTo)) {
-                                mUserDatabaseReference.child(data.getKey()).child("notices").push().setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(CreateNoticeActivity.this, "Notice created successfully!", Toast.LENGTH_LONG).show();
-                                        finish();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(CreateNoticeActivity.this, "Failed to create Notice!", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getApplicationContext(), "User " + noticeTo + "does not exist.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-            } else {
+            }
+            else {
                 Toast.makeText(getApplicationContext(), "Wrong input To!", Toast.LENGTH_SHORT).show();
             }
         }
