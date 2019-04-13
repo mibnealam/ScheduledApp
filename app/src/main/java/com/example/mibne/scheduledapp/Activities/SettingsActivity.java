@@ -2,6 +2,7 @@ package com.example.mibne.scheduledapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static String TAG = "SettingsActivity";
+    private static SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
     }
 
     @Override
@@ -102,22 +105,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             });
 
-//            final Preference notificationPref = (Preference) findPreference(getString(R.string.key_pref_notification_targets));
-//            notificationPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//                @Override
-//                public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                    android.app.FragmentManager fragmentManager = getFragmentManager();
-//                    //openDialog(fragmentManager);
-//                    return true;
-//                }
-//            });
-
             final SwitchPreference notificationStatePref = (SwitchPreference) findPreference(getString(R.string.key_pref_notifications));
             notificationStatePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 boolean isSelfSubscriptionEnabled = false;
                 boolean isGeneralSubscriptionEnabled = false;
-//                boolean isDepartmentSubscriptionEnabled = false;
-//                boolean isCourseSubscriptionEnabled = false;
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (notificationStatePref.isChecked()){
@@ -127,6 +118,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                 isGeneralSubscriptionEnabled = true;
                                 if (!task.isSuccessful()) {
                                     isGeneralSubscriptionEnabled = false;
+                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", true).apply();
+                                } else {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", false).apply();
                                 }
                             }
                         });
@@ -134,6 +128,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (!task.isSuccessful()) {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                                } else {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
                                 }
                                 if (isGeneralSubscriptionEnabled) {
                                     Log.v(TAG, "Un-subscribes from all notifications");
@@ -142,27 +139,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                 }
                             }
                         });
-//                        FirebaseMessaging.getInstance().unsubscribeFromTopic("Course").addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                isCourseSubscriptionEnabled = true;
-//                                if (!task.isSuccessful()) {
-//                                    isCourseSubscriptionEnabled = false;
-//                                }
-//                            }
-//                        });
-//                        FirebaseMessaging.getInstance().unsubscribeFromTopic("Routine").addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                if (!task.isSuccessful()) {
-//                                }
-//                                if (isGeneralSubscriptionEnabled && isDepartmentSubscriptionEnabled && isCourseSubscriptionEnabled) {
-//                                    Log.v(TAG, "Un-subscribes from all notifications");
-//                                    notificationStatePref.setChecked(false);
-//                                    //notificationPref.setEnabled(false);
-//                                }
-//                            }
-//                        });
                     } else {
                         FirebaseMessaging.getInstance().subscribeToTopic("Self").addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -178,7 +154,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 isGeneralSubscriptionEnabled = true;
                                 if (!task.isSuccessful()) {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToOrg", false).apply();
                                     isGeneralSubscriptionEnabled = false;
+                                } else {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
                                 }
                             }
                         });
@@ -186,39 +165,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (!task.isSuccessful()) {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                                } else {
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
                                 }
                                 if (isSelfSubscriptionEnabled && isGeneralSubscriptionEnabled) {
                                     Log.v(TAG, "Subscribed to all notifications");
                                     notificationStatePref.setChecked(true);
-                                    //notificationPref.setEnabled(true);
                                 }
                             }
                         });
-//                        FirebaseMessaging.getInstance().subscribeToTopic("Course").addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                isCourseSubscriptionEnabled = true;
-//                                if (!task.isSuccessful()) {
-//                                    isCourseSubscriptionEnabled = false;
-//                                }
-//                            }
-//                        });
-//                        FirebaseMessaging.getInstance().subscribeToTopic("Routine").addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                if (!task.isSuccessful()) {
-//                                }
-//                                if (isSelfSubscriptionEnabled && isGeneralSubscriptionEnabled && isDepartmentSubscriptionEnabled && isCourseSubscriptionEnabled) {
-//                                    Log.v(TAG, "Subscribed to all notifications");
-//                                    notificationStatePref.setChecked(true);
-//                                    //notificationPref.setEnabled(true);
-//                                }
-//                            }
-//                        });
                     }
                     return true;
                 }
             });
+
+            if (sharedPreferences.getBoolean("isSubscribedToGeneral", false) && sharedPreferences.getBoolean("isSubscribedToDept", false)){
+                notificationStatePref.setChecked(true);
+            } else {
+                notificationStatePref.setChecked(false);
+            }
         }
     }
 

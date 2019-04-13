@@ -150,15 +150,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        if (sharedPreferences.getBoolean("isSubscribedToGeneral", false)
-                && sharedPreferences.getBoolean("isSubscribedToDept", false)) {
-            Log.v("TopicSubscription", "Calling to subscriptionToTopic() method.");
-            subscribeToTopics();
-        } else {
-            Log.v("TopicSubscription", "Failed to call subscriptionToTopic() method.");
-            subscribeToTopics();
-        }
-
         mValueEventListenerForRoutine = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -372,34 +363,6 @@ public class MainActivity extends AppCompatActivity
         mEmptyTextView.setText(R.string.prompt_no_selected_course);
         findViewById(R.id.content_main).setVisibility(View.GONE);
         Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
-    }
-
-    private void subscribeToTopics() {
-        FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + "General").addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
-                    Log.v("TopicSubscription: ", userDataBundle.getString("organization") + "General" );
-                } else {
-                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
-                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
-                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
-                }
-            }
-        });
-        FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + userDataBundle.getString("department")).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
-                    Log.v("TopicSubscription: ", userDataBundle.getString("organization") + userDataBundle.getString("department") );
-                } else {
-                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
-                    Log.v("TopicSubscription: ", "Unsuccessful: " + userDataBundle.getString("organization") + userDataBundle.getString("department") );
-                }
-            }
-        });
     }
 
     private void onSignedOutCleanup() {

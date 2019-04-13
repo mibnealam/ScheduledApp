@@ -1,6 +1,7 @@
 package com.example.mibne.scheduledapp.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -24,7 +25,9 @@ import android.widget.Toast;
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
 import com.example.mibne.scheduledapp.Utils.Utils;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +75,8 @@ public class UserInfoActivity extends AppCompatActivity  {
     private boolean phoneUpdated = false;
     private boolean isValidUser = false;
 
+    SharedPreferences sharedPreferences;
+
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -81,6 +87,8 @@ public class UserInfoActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
 
         mUserOrganization ="0";
         mUserDepartment = "Select your department";
@@ -298,8 +306,12 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsersDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                updateUI();
-                Toast.makeText(UserInfoActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+                if (subscribeToTopics()) {
+                    Toast.makeText(UserInfoActivity.this, "Account Info Updated Successfully!", Toast.LENGTH_SHORT).show();
+                    updateUI();
+                } else {
+                    Toast.makeText(UserInfoActivity.this, "You are not subscribed to notifications.\nPlease try again later.", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -416,5 +428,40 @@ public class UserInfoActivity extends AppCompatActivity  {
                         "Invalid User Id.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean subscribeToTopics() {
+        final boolean[] isSubscribedToOrg = new boolean[1];
+        final boolean[] isSubscribedToDept = new boolean[1];
+        FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + "General")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
+                    Log.v("TopicSubscription: ", mUserOrganization + "General" );
+                } else {
+                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                    isSubscribedToOrg[0] = true;
+                }
+            }
+        });
+        FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                    Log.v("TopicSubscription: ", mUserOrganization + mUserDepartment );
+                } else {
+                    sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                    isSubscribedToDept[0] = true;
+                }
+            }
+        });
+
+        if (isSubscribedToOrg[0] && isSubscribedToDept[0]) {
+            return true;
+        } else return false;
     }
 }
