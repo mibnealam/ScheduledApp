@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mibne.scheduledapp.Models.Course;
 import com.example.mibne.scheduledapp.Adapters.CourseAdapter;
@@ -31,21 +32,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import jxl.Cell;
+import jxl.CellType;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.INVISIBLE;
@@ -164,7 +162,12 @@ public class AllCoursesFragment extends Fragment {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                readExcelData(uri);
+                try {
+                    readExcelData(uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -230,108 +233,108 @@ public class AllCoursesFragment extends Fragment {
         // Filter to show only xls files, using the xls MIME data type.
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
-        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        intent.setType("application/vnd.ms-excel");
 
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
-    /**
-     *reads the excel file columns then rows. Stores data as ExcelUploadData object
-     * @return
-     */
-    private void readExcelData(Uri uri) {
-        Log.d(TAG, "readExcelData: Reading Excel File.");
+//    /**
+//     *reads the excel file columns then rows. Stores data as ExcelUploadData object
+//     * @return
+//     */
+//    private void readExcelData(Uri uri) {
+//        Log.d(TAG, "readExcelData: Reading Excel File.");
+//
+//        try {
+//            InputStream inputStream = getInputUri(uri);
+//            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+//            XSSFSheet sheet = workbook.getSheetAt(0);
+//            int rowsCount = sheet.getPhysicalNumberOfRows();
+//            FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+//            StringBuilder sb = new StringBuilder();
+//
+//            //outer loop, loops through rows
+//            for (int r = 1; r < rowsCount; r++) {
+//                Row row = sheet.getRow(r);
+//                int cellsCount = row.getPhysicalNumberOfCells();
+//                //inner loop, loops through columns
+//                for (int c = 0; c < cellsCount; c++) {
+//                    //handles if there are too many columns on the excel sheet.
+//                    if(c>3){
+//                        Log.e(TAG, "readExcelData: ERROR. Excel File Format is incorrect! " );
+//                        //toastMessage("ERROR: Excel File Format is incorrect!");
+//                        break;
+//                    }else{
+//                        String value = getCellAsString(row, c, formulaEvaluator);
+//                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
+//                        Log.d(TAG, "readExcelData: Data from row: " + cellInfo);
+//                        sb.append(value + ",");
+//                    }
+//                }
+//                sb.append(":");
+//            }
+//            Log.d(TAG, "readExcelData: STRINGBUILDER: " + sb.toString());
+//
+//            parseStringBuilder(sb);
+//
+//        }catch (FileNotFoundException e) {
+//            Log.e(TAG, "readExcelData: FileNotFoundException. " + e.getMessage() );
+//        } catch (IOException e) {
+//            Log.e(TAG, "readExcelData: Error reading inputstream. " + e.getMessage() );
+//        }
+//    }
+//    /**
+//     * Method for parsing imported data and storing in ArrayList<Course>
+//     */
+//    public void parseStringBuilder(StringBuilder mStringBuilder){
+//        Log.d(TAG, "parseStringBuilder: Started parsing.");
+//
+//        // splits the sb into rows.
+//        String[] rows = mStringBuilder.toString().split(":");
+//
+//        //Add to the ArrayList<Course> row by row
+//        for(int i=0; i<rows.length; i++) {
+//            //Split the columns of the rows
+//            String[] columns = rows[i].split(",");
+//
+//            //use try catch to make sure there are no "" that try to parse into doubles.
+//            try{
+//                String courseCode = (columns[0]);
+//                String courseName = (columns[1]);
+//                String courseCredit = (columns[2]);
+//
+//                String cellInfo = "(courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")";
+//                Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
+//
+//                //add the the uploadData ArrayList
+//                uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
+//                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        mEmptyTextView.setVisibility(View.GONE);
+//                    }
+//                });
+//
+//            }catch (NumberFormatException e){
+//
+//                Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
+//
+//            }
+//        }
+//
+//        printDataToLog();
+//    }
 
-        try {
-            InputStream inputStream = getInputUri(uri);
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            int rowsCount = sheet.getPhysicalNumberOfRows();
-            FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-            StringBuilder sb = new StringBuilder();
-
-            //outer loop, loops through rows
-            for (int r = 1; r < rowsCount; r++) {
-                Row row = sheet.getRow(r);
-                int cellsCount = row.getPhysicalNumberOfCells();
-                //inner loop, loops through columns
-                for (int c = 0; c < cellsCount; c++) {
-                    //handles if there are too many columns on the excel sheet.
-                    if(c>3){
-                        Log.e(TAG, "readExcelData: ERROR. Excel File Format is incorrect! " );
-                        //toastMessage("ERROR: Excel File Format is incorrect!");
-                        break;
-                    }else{
-                        String value = getCellAsString(row, c, formulaEvaluator);
-                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
-                        Log.d(TAG, "readExcelData: Data from row: " + cellInfo);
-                        sb.append(value + ",");
-                    }
-                }
-                sb.append(":");
-            }
-            Log.d(TAG, "readExcelData: STRINGBUILDER: " + sb.toString());
-
-            parseStringBuilder(sb);
-
-        }catch (FileNotFoundException e) {
-            Log.e(TAG, "readExcelData: FileNotFoundException. " + e.getMessage() );
-        } catch (IOException e) {
-            Log.e(TAG, "readExcelData: Error reading inputstream. " + e.getMessage() );
-        }
-    }
-    /**
-     * Method for parsing imported data and storing in ArrayList<Course>
-     */
-    public void parseStringBuilder(StringBuilder mStringBuilder){
-        Log.d(TAG, "parseStringBuilder: Started parsing.");
-
-        // splits the sb into rows.
-        String[] rows = mStringBuilder.toString().split(":");
-
-        //Add to the ArrayList<Course> row by row
-        for(int i=0; i<rows.length; i++) {
-            //Split the columns of the rows
-            String[] columns = rows[i].split(",");
-
-            //use try catch to make sure there are no "" that try to parse into doubles.
-            try{
-                String courseCode = (columns[0]);
-                String courseName = (columns[1]);
-                String courseCredit = (columns[2]);
-
-                String cellInfo = "(courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")";
-                Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
-
-                //add the the uploadData ArrayList
-                uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
-                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mEmptyTextView.setVisibility(View.GONE);
-                    }
-                });
-
-            }catch (NumberFormatException e){
-
-                Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
-
-            }
-        }
-
-        printDataToLog();
-    }
-
-    private void printDataToLog() {
-        Log.d(TAG, "printDataToLog: Printing data to log...");
-
-        for(int i = 0; i< uploadCourseList.size(); i++){
-            String courseCode = uploadCourseList.get(i).getCourseCode();
-            String courseName = uploadCourseList.get(i).getCourseName();
-            String courseCredit = uploadCourseList.get(i).getCourseCredit();
-            Log.d(TAG, "printDataToLog: (courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")");
-        }
-    }
+//    private void printDataToLog() {
+//        Log.d(TAG, "printDataToLog: Printing data to log...");
+//
+//        for(int i = 0; i< uploadCourseList.size(); i++){
+//            String courseCode = uploadCourseList.get(i).getCourseCode();
+//            String courseName = uploadCourseList.get(i).getCourseName();
+//            String courseCredit = uploadCourseList.get(i).getCourseCredit();
+//            Log.d(TAG, "printDataToLog: (courseCode,courseName,courseCredit): (" + courseCode + "," + courseName + "," + courseCredit + ")");
+//        }
+//    }
 
     /**
      * Returns the cell as a string from the excel file
@@ -340,37 +343,37 @@ public class AllCoursesFragment extends Fragment {
      * @param formulaEvaluator
      * @return
      */
-    private String getCellAsString(Row row, int c, FormulaEvaluator formulaEvaluator) {
-        String value = "";
-        try {
-            Cell cell = row.getCell(c);
-            CellValue cellValue = formulaEvaluator.evaluate(cell);
-            switch (cellValue.getCellType()) {
-                case Cell.CELL_TYPE_BOOLEAN:
-                    value = ""+cellValue.getBooleanValue();
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    double numericValue = cellValue.getNumberValue();
-                    if(HSSFDateUtil.isCellDateFormatted(cell)) {
-                        double date = cellValue.getNumberValue();
-                        SimpleDateFormat formatter =
-                                new SimpleDateFormat("MM/dd/yy");
-                        value = formatter.format(HSSFDateUtil.getJavaDate(date));
-                    } else {
-                        value = ""+numericValue;
-                    }
-                    break;
-                case Cell.CELL_TYPE_STRING:
-                    value = ""+cellValue.getStringValue();
-                    break;
-                default:
-            }
-        } catch (NullPointerException e) {
-
-            Log.e(TAG, "getCellAsString: NullPointerException: " + e.getMessage() );
-        }
-        return value;
-    }
+//    private String getCellAsString(Row row, int c, FormulaEvaluator formulaEvaluator) {
+//        String value = "";
+//        try {
+//            Cell cell = row.getCell(c);
+//            CellValue cellValue = formulaEvaluator.evaluate(cell);
+//            switch (cellValue.getCellType()) {
+//                case Cell.CELL_TYPE_BOOLEAN:
+//                    value = ""+cellValue.getBooleanValue();
+//                    break;
+//                case Cell.CELL_TYPE_NUMERIC:
+//                    double numericValue = cellValue.getNumberValue();
+//                    if(HSSFDateUtil.isCellDateFormatted(cell)) {
+//                        double date = cellValue.getNumberValue();
+//                        SimpleDateFormat formatter =
+//                                new SimpleDateFormat("MM/dd/yy");
+//                        value = formatter.format(HSSFDateUtil.getJavaDate(date));
+//                    } else {
+//                        value = ""+numericValue;
+//                    }
+//                    break;
+//                case Cell.CELL_TYPE_STRING:
+//                    value = ""+cellValue.getStringValue();
+//                    break;
+//                default:
+//            }
+//        } catch (NullPointerException e) {
+//
+//            Log.e(TAG, "getCellAsString: NullPointerException: " + e.getMessage() );
+//        }
+//        return value;
+//    }
 
 
     /**
@@ -393,5 +396,75 @@ public class AllCoursesFragment extends Fragment {
     private InputStream getInputUri(Uri uri) throws IOException {
         InputStream inputStream = getActivity().getApplicationContext().getContentResolver().openInputStream(uri);
         return inputStream;
+    }
+
+    public void readExcelData(Uri uri) throws IOException  {
+        //File inputWorkbook = new File();
+        Workbook w;
+        try {
+            InputStream inputStream = getInputUri(uri);
+            w = Workbook.getWorkbook(inputStream);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(0);
+            // Loop over first 10 column and lines
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int j = 1; j < sheet.getRows(); j++) {
+                for (int i = 0; i < sheet.getColumns(); i++) {
+                    Cell cell = sheet.getCell(i, j);
+                    CellType type = cell.getType();
+                    if (type == CellType.LABEL) {
+                        stringBuilder.append(cell.getContents() + ",");
+                    }
+                    if (type == CellType.NUMBER) {
+                        stringBuilder.append(String.valueOf(cell.getContents()) + ",");
+                    }
+
+                }
+                stringBuilder.append(":");
+            }
+            parseStringBuilder(stringBuilder);
+            Log.v("TestData", stringBuilder.toString());
+        } catch (BiffException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method for parsing imported data and storing in ArrayList<XYValue>
+     */
+    public void parseStringBuilder(StringBuilder mStringBuilder){
+        Log.d(TAG, "parseStringBuilder: Started parsing.");
+
+        // splits the sb into rows.
+        String[] rows = mStringBuilder.toString().split(":");
+
+        //Add to the ArrayList<XYValue> row by row
+        for(int i=0; i<rows.length; i++) {
+            //Split the columns of the rows
+            String[] columns = rows[i].split(",");
+
+            //use try catch to make sure there are no "" that try to parse into doubles.
+            try{
+                String courseCode = (columns[0]);
+                String courseName = (columns[1]);
+                String courseCredit = (columns[2]);
+
+                String cellInfo = "(courseCode,courseName): (" + courseCode + "," + courseName + "," + courseCredit + ")";
+                Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
+
+                uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
+                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        mEmptyTextView.setVisibility(View.GONE);
+                    }
+                });
+
+            }catch (NumberFormatException e){
+
+                Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
+
+            }
+        }
     }
 }

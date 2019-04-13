@@ -56,10 +56,10 @@ public class RoutineAdapterForUser extends ArrayAdapter<Routine> {
 
 
         mRoutineCourseCodeTextView.setText(currentRoutine.getCourseCode());
-        mRoutineTimeTextView.setText(currentRoutine.getStartTime().replaceAll("[A-Z ]", "") + "-" + currentRoutine.getEndTime().replaceAll("[A-Z ]", ""));
+        mRoutineTimeTextView.setText(currentRoutine.getStartTime() + "-" + currentRoutine.getEndTime());
         mRoutineRoomNoTextView.setText(currentRoutine.getRoomNo());
         mRoutineRemarksTextView.setText(currentRoutine.getRemarks());
-        linearLayout.setBackgroundColor(getRoutineColor(currentRoutine.getStartTime().replaceAll("[a-zA-Z .]", "")));
+        linearLayout.setBackgroundColor(getRoutineColor(currentRoutine.getStartTime().replaceAll("[a-zA-Z .:0]", "")));
 
         // Return the list item view that is now showing the appropriate data
         return listItemView;
@@ -75,17 +75,17 @@ public class RoutineAdapterForUser extends ArrayAdapter<Routine> {
         Log.v("PassedTime: ", time);
 
         switch (time) {
-            case "0800" : dayColorResourceId = R.color.credit1;
+            case "8" : dayColorResourceId = R.color.credit1;
                 break;
-            case "0930" : dayColorResourceId = R.color.credit2;
+            case "93" : dayColorResourceId = R.color.credit2;
                 break;
-            case "1100" : dayColorResourceId = R.color.credit3;
+            case "11" : dayColorResourceId = R.color.credit3;
                 break;
-            case "1230" : dayColorResourceId = R.color.credit4;
+            case "123" : dayColorResourceId = R.color.credit4;
                 break;
-            case "0200" : dayColorResourceId = R.color.credit5;
+            case "2" : dayColorResourceId = R.color.credit5;
                 break;
-            case "0330" : dayColorResourceId = R.color.credit6;
+            case "33" : dayColorResourceId = R.color.credit6;
                 break;
             default: dayColorResourceId = R.color.blue_gray;
                 break;

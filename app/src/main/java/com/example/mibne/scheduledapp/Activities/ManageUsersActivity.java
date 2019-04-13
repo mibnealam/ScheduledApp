@@ -36,7 +36,6 @@ import com.example.mibne.scheduledapp.Models.User;
 import com.example.mibne.scheduledapp.Adapters.UserAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,20 +49,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 import static android.view.View.INVISIBLE;
 
@@ -278,7 +272,12 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
-                readExcelData(uri);
+                try {
+                    readExcelData(uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -325,48 +324,26 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
         }
     }
 
-    /**
-     *reads the excel file columns then rows. Stores data as ExcelUploadData object
-     * @return
-     */
-    private void readExcelData(Uri uri) {
-        Log.d(TAG, "readExcelData: Reading Excel File.");
+    public void readExcelData(Uri uri) throws IOException  {
+        Workbook w;
         try {
             InputStream inputStream = getInputUri(uri);
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            int rowsCount = sheet.getPhysicalNumberOfRows();
-            FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-            StringBuilder sb = new StringBuilder();
+            w = Workbook.getWorkbook(inputStream);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(0);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int j = 1; j < sheet.getRows(); j++) {
+                for (int i = 0; i < sheet.getColumns(); i++) {
+                    jxl.Cell cell = sheet.getCell(i, j);
+                    stringBuilder.append(cell.getContents() + ",");
 
-            //outer loop, loops through rows
-            for (int r = 1; r < rowsCount; r++) {
-                Row row = sheet.getRow(r);
-                int cellsCount = row.getPhysicalNumberOfCells();
-                //inner loop, loops through columns
-                for (int c = 0; c < cellsCount; c++) {
-                    //handles if there are too many columns on the excel sheet.
-                    if(c>7){
-                        Log.e(TAG, "readExcelData: ERROR. Excel File Format is incorrect! " );
-                        //toastMessage("ERROR: Excel File Format is incorrect!");
-                        break;
-                    }else{
-                        String value = getCellAsString(row, c, formulaEvaluator);
-                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
-                        Log.d(TAG, "readExcelData: Data from row: " + cellInfo);
-                        sb.append(value + ",");
-                    }
                 }
-                sb.append(":");
+                stringBuilder.append(":");
             }
-            Log.d(TAG, "readExcelData: STRINGBUILDER: " + sb.toString());
-
-            parseStringBuilder(sb);
-
-        }catch (FileNotFoundException e) {
-            Log.e(TAG, "readExcelData: FileNotFoundException. " + e.getMessage() );
-        } catch (IOException e) {
-            Log.e(TAG, "readExcelData: Error reading inputstream. " + e.getMessage() );
+            Log.v("TestData", stringBuilder.toString());
+            parseStringBuilder(stringBuilder);
+        } catch (BiffException e) {
+            e.printStackTrace();
         }
     }
 
@@ -378,6 +355,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
 
         // splits the sb into rows.
         String[] rows = mStringBuilder.toString().split(":");
+        Log.v("TestData", String.valueOf(rows.length));
 
         //Add to the ArrayList<XYValue> row by row
         for(int i=0; i<rows.length; i++) {
@@ -393,10 +371,9 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                 final String phone = (columns[4]);
                 final String role = (columns[5]);
 
-                String cellInfo = "(cell_info): (" + username + "," + name + "," + email + "," + name + "," + phone + "," + role + "," + mUserDepartment + "," + mUserOrganization + ")";
+                String cellInfo = "(cell_info): (" + username + "," + name + "," + email + "," + name + "," + phone + "," + role  + ")";
                 Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
 
-                //add the the uploadData ArrayList
                 uploadUserList.add(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, "_"));
 
                 mFirebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -452,17 +429,15 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                             }
                         });
 
-                Log.v(TAG, uploadUserList.toString());
-
             }catch (NumberFormatException e){
 
                 Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
 
             }
         }
-
-        printDataToLog();
     }
+
+
 
     public boolean checkConnection() {
         ConnectivityManager cm =
@@ -497,57 +472,6 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.prompt_no_internet_connection, Snackbar.LENGTH_LONG);
             snackbar.show();
         }
-    }
-
-    private void printDataToLog() {
-        Log.d(TAG, "printDataToLog: Printing data to log...");
-
-        for(int i = 0; i< uploadUserList.size(); i++){
-            String username = uploadUserList.get(i).getUsername();
-            String email = uploadUserList.get(i).getEmail();
-            String phone = uploadUserList.get(i).getPhone();
-            String name = uploadUserList.get(i).getName();
-            Log.d(TAG, "printDataToLog: (id,email,phone,name): (" + username + "," + email + "," + phone + "," + name + ")");
-        }
-    }
-
-    /**
-     * Returns the cell as a string from the excel file
-     * @param row
-     * @param c
-     * @param formulaEvaluator
-     * @return
-     */
-    private String getCellAsString(Row row, int c, FormulaEvaluator formulaEvaluator) {
-        String value = "";
-        try {
-            Cell cell = row.getCell(c);
-            CellValue cellValue = formulaEvaluator.evaluate(cell);
-            switch (cellValue.getCellType()) {
-                case Cell.CELL_TYPE_BOOLEAN:
-                    value = ""+cellValue.getBooleanValue();
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    int numericValue = (int) cellValue.getNumberValue();
-                    if(HSSFDateUtil.isCellDateFormatted(cell)) {
-                        double date = cellValue.getNumberValue();
-                        SimpleDateFormat formatter =
-                                new SimpleDateFormat("hh.mm a");
-                        value = formatter.format(HSSFDateUtil.getJavaDate(date));
-                    } else {
-                        value = ""+numericValue;
-                    }
-                    break;
-                case Cell.CELL_TYPE_STRING:
-                    value = ""+cellValue.getStringValue();
-                    break;
-                default:
-            }
-        } catch (NullPointerException e) {
-
-            Log.e(TAG, "getCellAsString: NullPointerException: " + e.getMessage() );
-        }
-        return value;
     }
 
     /**
