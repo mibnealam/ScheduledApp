@@ -26,14 +26,14 @@
         android:id="@+id/recycler_view_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="60dp"
         android:dividerHeight="16dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
         tools:listitem="@layout/list_item_user"
-        android:paddingBottom="96dp"
+        android:paddingBottom="70dp"
         android:clipToPadding="false"/>
 
 
