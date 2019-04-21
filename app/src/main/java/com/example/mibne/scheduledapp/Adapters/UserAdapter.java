@@ -77,7 +77,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
 
         userAdapterViewHolder.mUserNameTextView.setText(user.getName());
         userAdapterViewHolder.mUserIdTextView.setText(user.getUsername());
-        userAdapterViewHolder.mUserRoleTextView.setText(user.getRole());
+        userAdapterViewHolder.mUserDeptTextView.setText(user.getDepartment());
+        //userAdapterViewHolder.mUserRoleTextView.setText(user.getRole());
         userAdapterViewHolder.linearLayout.setBackgroundColor(getUserColor(user.getRole()));
 
         // Set an item click listener on the ListView, which sends an intent to a single User Activity
@@ -169,14 +170,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
 
         public final TextView mUserNameTextView;
         public final TextView mUserIdTextView;
-        public final TextView mUserRoleTextView;
+        //public final TextView mUserRoleTextView;
+        public final TextView mUserDeptTextView;
         public final LinearLayout linearLayout;
 
         public UserAdapterViewHolder(View itemView) {
             super(itemView);
             mUserNameTextView = (TextView) itemView.findViewById(R.id.user_name_text_view);
             mUserIdTextView = (TextView) itemView.findViewById(R.id.user_id_text_view);
-            mUserRoleTextView = (TextView) itemView.findViewById(R.id.user_role_text_view);
+            mUserDeptTextView = (TextView) itemView.findViewById(R.id.user_dept_text_view);
+            //mUserRoleTextView = (TextView) itemView.findViewById(R.id.user_role_text_view);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.list_item_user);
 
             itemView.setOnClickListener(new View.OnClickListener() {

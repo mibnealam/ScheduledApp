@@ -12,6 +12,7 @@
         android:dividerHeight="16dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:layout_marginBottom="16dp"
         android:stackFromBottom="false"
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"

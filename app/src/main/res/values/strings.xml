@@ -189,10 +189,16 @@
         <item>Export to Calendar</item>
     </string-array>
 
-    <string-array name="roles_array">
+    <string-array name="roles_array_executive">
+        <item>student</item>
+        <item>teacher</item>
+    </string-array>
+
+    <string-array name="roles_array_super">
         <item>student</item>
         <item>teacher</item>
         <item>admin</item>
+        <item>super</item>
     </string-array>
 
 

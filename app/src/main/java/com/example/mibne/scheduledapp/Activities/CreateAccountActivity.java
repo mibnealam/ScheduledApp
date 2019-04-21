@@ -62,11 +62,15 @@ public class CreateAccountActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(CreateAccountActivity.this,
+                                    "Account created successfully!",
+                                    Toast.LENGTH_SHORT).show();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(CreateAccountActivity.this, "Authentication failed.",
+                            Toast.makeText(CreateAccountActivity.this,
+                                    "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
@@ -75,7 +79,8 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     public boolean confirmInput() {
-        if (!validateEmail(userEmailTextInputLayout) | !confirmPasswords(userPasswordTextInputLayout, confirmUserPasswordTextInputLayout)) {
+        if (!validateEmail(userEmailTextInputLayout) |
+                !confirmPasswords(userPasswordTextInputLayout, confirmUserPasswordTextInputLayout)) {
             return false;
         } else {
             email = userEmailTextInputLayout.getEditText().getText().toString().trim();
@@ -85,7 +90,8 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     // [START validateUserPassword]
-    public static boolean confirmPasswords(TextInputLayout password, TextInputLayout passwordConfirmation) {
+    public static boolean confirmPasswords(TextInputLayout password,
+                                           TextInputLayout passwordConfirmation) {
         String userPasswordInput1 = password.getEditText().getText().toString().trim();
         String userPasswordInput2 = passwordConfirmation.getEditText().getText().toString().trim();
         if (userPasswordInput1.length() < 6) {

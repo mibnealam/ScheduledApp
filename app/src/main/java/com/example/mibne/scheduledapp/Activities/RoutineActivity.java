@@ -20,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -54,23 +54,15 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
     private List<Routine> routineList = new ArrayList<>();
     private List<Routine> uploadRoutineList = new ArrayList<>();
 
-    private LinearLayout mRoutineUserView;
-    private RecyclerView mRoutineRecyclerView;
     private RoutineAdapter mRoutineAdapter;
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
 
-    private String mUserDepartment;
-    private String mUserOrganization;
     private String role;
-
-    private SearchView searchView;
 
     // Firebase instance variables
     private DatabaseReference mRoutineDatabaseReferance;
     private ValueEventListener mValueEventListener;
-
-    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -81,12 +73,12 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
 
-        mUserOrganization = sharedPreferences.getString("organization", null);
-        mUserDepartment = sharedPreferences.getString("department", null);
+        String mUserOrganization = sharedPreferences.getString("organization", null);
+        String mUserDepartment = sharedPreferences.getString("department", null);
         role = sharedPreferences.getString("role", "student");
 
 
@@ -113,11 +105,6 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
         });
 
         switch (role) {
-//            case "teacher" :
-//                floatingActionsMenu.setVisibility(View.VISIBLE);
-//                floatingActionButtonUploadRoutine.setVisibility(View.GONE);
-//                checkFilePermissions();
-//                break;
             case "admin" :
                 floatingActionsMenu.setVisibility(View.VISIBLE);
                 checkFilePermissions();
@@ -138,14 +125,13 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
         mRoutineDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/routines");
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_routine_list);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view_routine_list);
-        mRoutineUserView = (LinearLayout) findViewById(R.id.user_view_routine);
 
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mRoutineRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_routine);
+        RecyclerView mRoutineRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_routine);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -166,9 +152,6 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        mRoutineUserView.setVisibility(INVISIBLE);
-
     }
 
     @Override
@@ -178,7 +161,7 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.action_search)
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getComponentName()));

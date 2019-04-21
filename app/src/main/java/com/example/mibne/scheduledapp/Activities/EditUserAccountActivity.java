@@ -144,16 +144,21 @@ public class EditUserAccountActivity extends AppCompatActivity {
         passwordResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 FirebaseAuth auth = FirebaseAuth.getInstance();
 
                 auth.sendPasswordResetEmail(userEmail)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+                                progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "Email sent.");
                                     Toast.makeText(EditUserAccountActivity.this, "A password reset email is sent.", Toast.LENGTH_SHORT).show();
                                     FirebaseAuth.getInstance().signOut();
+                                    finish();
+                                } else {
+                                    Toast.makeText(EditUserAccountActivity.this, "Task unsuccessful", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });

@@ -19,7 +19,7 @@
         android:transcriptMode="alwaysScroll"
         tools:listitem="@layout/list_item_full_routine"
         android:paddingBottom="96dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false" />
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
@@ -46,5 +46,6 @@
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_edit_black_24dp"
         android:tint="@color/white"
-        android:layout_margin="16dp" />
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"/>
 </RelativeLayout>

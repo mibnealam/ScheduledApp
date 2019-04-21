@@ -13,7 +13,7 @@
         android:divider="@android:color/transparent"
         android:transcriptMode="alwaysScroll"
         tools:listitem="@layout/list_item_course"
-        android:paddingBottom="96dp"
+        android:paddingBottom="76dp"
         android:clipToPadding="false"/>
 
     <!-- Empty view is only visible when the list has no items. -->
@@ -40,6 +40,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_add_white_24dp"
-        android:layout_margin="16dp" />
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"/>
 
 </RelativeLayout>

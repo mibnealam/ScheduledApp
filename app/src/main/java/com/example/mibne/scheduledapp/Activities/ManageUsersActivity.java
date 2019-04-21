@@ -60,6 +60,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import static android.view.View.INVISIBLE;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
 
 public class ManageUsersActivity extends AppCompatActivity implements UserAdapter.UserAdapterListener {
 
@@ -160,6 +161,10 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                 checkFilePermissions();
                 break;
             case "admin" :
+                floatingActionsMenu.setVisibility(View.VISIBLE);
+                checkFilePermissions();
+                break;
+            case "super" :
                 floatingActionsMenu.setVisibility(View.VISIBLE);
                 checkFilePermissions();
                 break;
@@ -274,6 +279,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                 uri = resultData.getData();
                 try {
                     readExcelData(uri);
+                    mProgressBar.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
@@ -292,11 +298,11 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                     for (DataSnapshot userDataSnapshot: dataSnapshot.getChildren()) {
                         User user =  userDataSnapshot.getValue(User.class);
                         if (user.getDepartment().equals(mUserDepartment) && !role.equals("super")
-                        && !user.getRole().equals("super")) {
+                        && !user.getRole().equals("super") && !user.getRole().equals("admin")) {
                             userList.add(user);
                         }
 
-                        if (role.equals("super") && user.getRole().equals("admin")) {
+                        if (role.equals("super")) {
                             userList.add(user);
                         }
                     }
@@ -385,7 +391,9 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                                     Log.d(TAG, "createUserWithEmail:success");
                                     FirebaseUser user = mFirebaseAuth.getCurrentUser();
                                     mUsersDatabaseReference.child(user.getUid())
-                                            .setValue(new User(mUserDepartment, email, name, mUserOrganization, phone, "", role, username, user.getUid()));
+                                            .setValue(new User(mUserDepartment, email
+                                                    , name, mUserOrganization, phone
+                                                    , "", role, username, user.getUid()));
                                     //updateUI(user);
                                     FirebaseAuth.getInstance().signOut();
 
@@ -437,24 +445,8 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
         }
     }
 
-
-
-    public boolean checkConnection() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        if (isConnected) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-    private void logIn() {
-        if (checkConnection()) {
+    public void logIn() {
+        if (checkConnection(this)) {
                 mFirebaseAuth.signInWithEmailAndPassword(loginEmail, loginPassword)
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -462,6 +454,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
+                                    mProgressBar.setVisibility(View.GONE);
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -469,7 +462,8 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                             }
                         });
         } else {
-            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.prompt_no_internet_connection, Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content)
+                    , R.string.prompt_no_internet_connection, Snackbar.LENGTH_LONG);
             snackbar.show();
         }
     }
@@ -490,7 +484,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
         // Filter to show only xls files, using the xls MIME data type.
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
-        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        intent.setType("application/vnd.ms-excel");
 
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
@@ -502,11 +496,15 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
 
     private void checkFilePermissions() {
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (ContextCompat.checkSelfPermission(this
+                    , Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, 1001); //Any number
+                    this.requestPermissions(new String[]{Manifest
+                            .permission.WRITE_EXTERNAL_STORAGE
+                                    , Manifest.permission.READ_EXTERNAL_STORAGE}
+                            , 1001); //Any number
                 }
             }
         }else{
@@ -528,6 +526,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                     bundle.putString("phone", user.getPhone());
                     bundle.putString("role", user.getRole());
                     bundle.putString("uid", user.getUid());
+                    bundle.putString("department", user.getDepartment());
                     editUserIntent.putExtras(bundle);
                     startActivity(editUserIntent);
     }

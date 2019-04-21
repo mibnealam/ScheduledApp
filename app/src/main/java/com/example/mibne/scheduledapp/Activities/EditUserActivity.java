@@ -3,8 +3,10 @@ package com.example.mibne.scheduledapp.Activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.TestLooperManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -23,19 +25,31 @@ import android.widget.Toast;
 
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.example.mibne.scheduledapp.Activities.AddUserActivity.validateID;
 import static com.example.mibne.scheduledapp.Activities.AddUserActivity.validatePhone;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
 import static com.example.mibne.scheduledapp.Activities.LoginActivity.validateEmail;
 
 public class EditUserActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+
+    private String TAG = "EditUserActivity";
 
     private static Activity activity;
 
@@ -56,14 +70,46 @@ public class EditUserActivity extends AppCompatActivity implements AdapterView.O
     private String role;
     private String userRole;
     private static String uid;
+    private String mUserDepartment;
 
+    private String mUserRole;
+    private String mUserOrganization;
+
+    private SharedPreferences sharedPreferences;
+
+    private FirebaseAuth mFirebaseAuth;
     private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
     private static DatabaseReference mUserDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
+
+        Bundle bundle = getIntent().getExtras();
+
+
+        name = bundle.getString("name");
+        username = bundle.getString("id");
+        email = bundle.getString("email");
+        phone = bundle.getString("phone");
+        role = bundle.getString("role");
+        uid = bundle.getString("uid");
+        mUserDepartment = bundle.getString("department");
+
+        final List<String> departmentsKeysList = new ArrayList<>();
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference();
+        mUserDatabaseReference = mFirebaseDatabase.getReference().child("users");
+
+        sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
+
+        //final Bundle mNoticeTypeBundle = getIntent().getExtras();
+        mUserRole = sharedPreferences.getString("role", "student");
+        mUserOrganization = sharedPreferences.getString("organization", null);
 
         activity = this;
 
@@ -75,26 +121,88 @@ public class EditUserActivity extends AppCompatActivity implements AdapterView.O
 
         rolesSpinner = (Spinner) findViewById(R.id.roles_spinner);
 
+        final Spinner departmentSpinner = (Spinner) findViewById(R.id.departments_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.roles_array, android.R.layout.simple_spinner_item);
+
+        final ArrayAdapter<String> departmentSpinnerAdapter;
+        departmentSpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, departmentsKeysList);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        departmentSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        rolesSpinner.setAdapter(adapter);
+        departmentSpinner.setAdapter(departmentSpinnerAdapter);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUserDatabaseReference = mFirebaseDatabase.getReference().child("users");
+        final ValueEventListener departmentListener = new ValueEventListener() {
 
-        Bundle bundle = getIntent().getExtras();
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    departmentsKeysList.clear();
+                    departmentsKeysList.add("Select department");
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        if (!snapshot.getKey().equals("notices")) {
+                            departmentsKeysList.add(snapshot.getKey());
+                        }
+                        //Organization organization = snapshot.getValue(Organization.class);
+                        //organizationList.add(organization.getName());
+                    }
+                    departmentSpinnerAdapter.notifyDataSetChanged();
+                    for (String s: departmentsKeysList) {
+                        if (s.equals(mUserDepartment)) {
+                            departmentSpinner.setSelection(departmentsKeysList.indexOf(s));
+                            departmentSpinnerAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } else {
+                    Log.v(TAG, "No snapshot of department");
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                // Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
 
-        name = bundle.getString("name");
-        username = bundle.getString("id");
-        email = bundle.getString("email");
-        phone = bundle.getString("phone");
-        role = bundle.getString("role");
-        uid = bundle.getString("uid");
+        findViewById(R.id.container_department).setVisibility(View.GONE);
+        if (mUserRole.equals("super")) {
+            mDatabaseReference.child(mUserOrganization).addListenerForSingleValueEvent(departmentListener);
+            findViewById(R.id.container_department).setVisibility(View.VISIBLE);
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.roles_array_super, android.R.layout.simple_spinner_item);
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            rolesSpinner.setAdapter(adapter);
+        } else {
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.roles_array_executive, android.R.layout.simple_spinner_item);
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            rolesSpinner.setAdapter(adapter);
+        }
+
+        departmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // An item was selected. You can retrieve the selected item using
+                user.setDepartment(parent.getItemAtPosition(position).toString());
+                mUserDepartment = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+       // departmentsKeysList.
+        //Log.v("Department", user.getDepartment());
+        departmentSpinner.setSelection(departmentsKeysList.indexOf(mUserDepartment));
+        departmentSpinnerAdapter.notifyDataSetChanged();
 
         nameTextInputLayout = (TextInputLayout) findViewById(R.id.edit_name_wrapper);
         idTextInputLayout = (TextInputLayout) findViewById(R.id.edit_id_wrapper);
@@ -158,7 +266,8 @@ public class EditUserActivity extends AppCompatActivity implements AdapterView.O
     }
 
     public boolean confirmInput() {
-        if (!validateName(nameTextInputLayout) | !validateID(idTextInputLayout) | !validateEmail(emailTextInputLayout) | !validatePhone(phoneTextInputLayout)) {
+        if (!validateName(nameTextInputLayout) | !validateID(idTextInputLayout)
+                | !validateEmail(emailTextInputLayout) | !validatePhone(phoneTextInputLayout)) {
             return false;
         } else {
             user.setName(nameTextInputLayout.getEditText().getText().toString().trim());
@@ -166,6 +275,7 @@ public class EditUserActivity extends AppCompatActivity implements AdapterView.O
             user.setEmail(emailTextInputLayout.getEditText().getText().toString().trim());
             user.setPhone(phoneTextInputLayout.getEditText().getText().toString().trim());
             user.setRole(userRole);
+            user.setDepartment(mUserDepartment);
 
             return true;
         }
@@ -180,6 +290,7 @@ public class EditUserActivity extends AppCompatActivity implements AdapterView.O
             childUpdates.put("email", user.getEmail());
             childUpdates.put("phone", user.getPhone());
             childUpdates.put("role", user.getRole());
+            childUpdates.put("department", user.getDepartment());
 
             if (uid != null) {
                 mUserDatabaseReference.child(uid).updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {

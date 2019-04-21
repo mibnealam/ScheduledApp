@@ -13,6 +13,7 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -88,6 +89,8 @@ public class UserInfoActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
 
@@ -291,6 +294,16 @@ public class UserInfoActivity extends AppCompatActivity  {
         mUsersDatabaseReference.addListenerForSingleValueEvent(valueEventListener);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(this, "You are signed out.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void updateUser(String department, String email, String name,
                             String organization, String phone, String photoUrl, String role, String username, String uid) {
         // updating the user via child nodes
@@ -353,6 +366,7 @@ public class UserInfoActivity extends AppCompatActivity  {
 
     // [START updateUI]
     private void updateUI() {
+        mProgressBar.setVisibility(View.GONE);
         Toast.makeText(this, "Please Select Course From\nSettings > Registration", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -417,10 +431,12 @@ public class UserInfoActivity extends AppCompatActivity  {
                             mUserPhoneNoEditText.getText().toString(),
                             mPhotoUrl, mUserRole, mUsernameEditText.getText().toString(), uid);
                 } else {
+                    mProgressBar.setVisibility(View.GONE);
                     Toast.makeText(UserInfoActivity.this,
                             "Fill up the form correctly.", Toast.LENGTH_SHORT).show();
                 }
             } else {
+                mProgressBar.setVisibility(View.GONE);
                 Toast.makeText(UserInfoActivity.this,
                         "Invalid User Id.", Toast.LENGTH_SHORT).show();
             }
