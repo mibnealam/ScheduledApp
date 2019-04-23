@@ -45,6 +45,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import static android.view.View.INVISIBLE;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
 
 public class RoutineActivity extends AppCompatActivity implements RoutineAdapter.RoutineAdapterListener {
 
@@ -70,6 +71,8 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routine);
 
+        findViewById(R.id.no_internet).setVisibility(View.GONE);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,7 +92,11 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
         floatingActionButtonUploadRoutine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                performFileSearch();
+                if (checkConnection(RoutineActivity.this)) {
+                    performFileSearch();
+                } else {
+                    Toast.makeText(RoutineActivity.this, R.string.prompt_no_internet_connection, Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -190,7 +197,12 @@ public class RoutineActivity extends AppCompatActivity implements RoutineAdapter
     public void onStart() {
         super.onStart();
         routineList.clear();
-        attachDatabaseReadListener();
+        if (checkConnection(RoutineActivity.this)) {
+            attachDatabaseReadListener();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            findViewById(R.id.no_internet).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

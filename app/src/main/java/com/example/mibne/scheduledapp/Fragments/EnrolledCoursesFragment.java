@@ -1,5 +1,6 @@
 package com.example.mibne.scheduledapp.Fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.view.View.INVISIBLE;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
 
 
 /**
@@ -48,6 +51,7 @@ public class EnrolledCoursesFragment extends Fragment {
     private CourseAdapter mCourseAdapter;
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
+    private LinearLayout mNoInternetView;
 
     // Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -60,6 +64,7 @@ public class EnrolledCoursesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,6 +86,8 @@ public class EnrolledCoursesFragment extends Fragment {
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_course_list);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_course_list);
+        mNoInternetView = (LinearLayout) rootView.findViewById(R.id.no_internet);
+        mNoInternetView.setVisibility(View.GONE);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -108,7 +115,12 @@ public class EnrolledCoursesFragment extends Fragment {
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        attachDatabaseReadListener();
+        if (checkConnection(getContext())) {
+            attachDatabaseReadListener();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            mNoInternetView.setVisibility(View.VISIBLE);
+        }
 
         return rootView;
     }
@@ -127,6 +139,7 @@ public class EnrolledCoursesFragment extends Fragment {
                     mCourseAdapter.setCourseData(courseList);
                     mCourseAdapter.notifyDataSetChanged();
                     mProgressBar.setVisibility(INVISIBLE);
+                    mNoInternetView.setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
                     mEmptyTextView.setText(R.string.prompt_no_selected_course);

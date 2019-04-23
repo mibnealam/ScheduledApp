@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,7 @@ import jxl.read.biff.BiffException;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.INVISIBLE;
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
 
 
 /**
@@ -68,6 +70,7 @@ public class AllCoursesFragment extends Fragment {
     private CourseAdapter mCourseAdapter;
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
+    private LinearLayout mNoInternetView;
 
     private String mUserDepartment;
     private String mUserOrganization;
@@ -118,6 +121,8 @@ public class AllCoursesFragment extends Fragment {
         mCourseDatabaseReferance = mFirebaseDatabase.getReference().child(mUserOrganization + "/" + mUserDepartment + "/courses");
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_course_list);
         mEmptyTextView = (TextView) rootView.findViewById(R.id.empty_view_course_list);
+        mNoInternetView = (LinearLayout) rootView.findViewById(R.id.no_internet);
+        mNoInternetView.setVisibility(View.GONE);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -176,7 +181,12 @@ public class AllCoursesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         courseList.clear();
-        attachDatabaseReadListener();
+        if (checkConnection(getContext())) {
+            attachDatabaseReadListener();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            mNoInternetView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -197,6 +207,7 @@ public class AllCoursesFragment extends Fragment {
                     }
                     mCourseAdapter.setCourseData(courseList);
                     mProgressBar.setVisibility(INVISIBLE);
+                    mNoInternetView.setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
                     mEmptyTextView.setText(R.string.prompt_no_course);

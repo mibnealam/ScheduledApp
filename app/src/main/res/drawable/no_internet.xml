@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="598dp"
+    android:height="360dp"
+    android:viewportWidth="598"
+    android:viewportHeight="360">
+
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M222.222,155.665l31.113,31.113a10,10,0,0,1,0,14.142l-1.415,1.415a10,10,0,0,1-14.142,0l-31.113-31.113a10,10,0,0,1,0-14.142l1.415-1.415A10,10,0,0,1,222.222,155.665Z" />
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M251.92,155.665l1.415,1.415a10,10,0,0,1,0,14.142l-31.113,31.113a10,10,0,0,1-14.142,0l-1.415-1.415a10,10,0,0,1,0-14.142l31.113-31.113A10,10,0,0,1,251.92,155.665Z" />
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M359.941,155.665l31.112,31.113a10,10,0,0,1,0,14.142l-1.414,1.415a10,10,0,0,1-14.142,0l-31.113-31.113a10,10,0,0,1,0-14.142l1.414-1.415A10,10,0,0,1,359.941,155.665Z" />
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M389.639,155.665l1.414,1.415a10,10,0,0,1,0,14.142l-31.112,31.113a10,10,0,0,1-14.143,0l-1.414-1.415a10,10,0,0,1,0-14.142L375.5,155.665A10,10,0,0,1,389.639,155.665Z" />
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M108,133C118,69.145,168.062,20.979,227.589,13.866,278.214,7.817,329.4,32.16,359,77c24.64-13.312,54.338-13.127,78,1,20.251,12.09,33.535,32.857,37,56,57.075-0.444,104.371,44.614,107,100,2.523,53.161-36.806,101.131-91,109H121A105.261,105.261,0,0,1,108,133Z" />
+    <path
+        android:fillType="evenOdd"
+        android:strokeColor="#000"
+        android:strokeWidth="20"
+        android:pathData="M216,279a91.118,91.118,0,0,1,139-1.682" />
+</vector>

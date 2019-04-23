@@ -99,6 +99,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_users);
+        findViewById(R.id.no_internet).setVisibility(View.GONE);
 
         sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
 
@@ -252,7 +253,12 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
     public void onStart() {
         super.onStart();
         userList.clear();
-        attachDatabaseReadListener();
+        if (checkConnection(ManageUsersActivity.this)) {
+            attachDatabaseReadListener();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            findViewById(R.id.no_internet).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -309,6 +315,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                     mUserAdapter.notifyDataSetChanged();
                     mEmptyTextView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(INVISIBLE);
+                    findViewById(R.id.no_internet).setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(INVISIBLE);
                     mEmptyTextView.setText(R.string.prompt_no_user);

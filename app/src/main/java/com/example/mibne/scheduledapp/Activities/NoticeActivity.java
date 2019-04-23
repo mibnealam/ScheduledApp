@@ -24,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
+
 public class NoticeActivity extends AppCompatActivity {
 
     public static final String TAG = NoticeActivity.class.getName();
@@ -55,6 +57,8 @@ public class NoticeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
+
+        findViewById(R.id.no_internet).setVisibility(View.GONE);
 
         sharedPreferences = getSharedPreferences("userPrefs",MODE_PRIVATE);
 
@@ -129,7 +133,12 @@ public class NoticeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         noticeList.clear();
-        attachDatabaseReadListener();
+        if (checkConnection(NoticeActivity.this)) {
+            attachDatabaseReadListener();
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            findViewById(R.id.no_internet).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -151,6 +160,7 @@ public class NoticeActivity extends AppCompatActivity {
                     mNoticeAdapter.setNoticeData(noticeList);
                     mProgressBar.setVisibility(View.GONE);
                     mEmptyTextView.setVisibility(View.GONE);
+                    findViewById(R.id.no_internet).setVisibility(View.GONE);
                 } else {
                     mProgressBar.setVisibility(View.GONE);
                     switch (mNoticeType) {

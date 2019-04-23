@@ -35,6 +35,8 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
+
 
 public class CreateNoticeActivity extends AppCompatActivity {
 
@@ -226,7 +228,11 @@ public class CreateNoticeActivity extends AppCompatActivity {
             finish();
             return true;
             case R.id.send_notice:
-                sendNotice();
+                if (checkConnection(CreateNoticeActivity.this)) {
+                    sendNotice();
+                } else {
+                    Toast.makeText(this, R.string.prompt_no_internet_connection, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

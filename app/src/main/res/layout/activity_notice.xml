@@ -38,6 +38,30 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
+    <LinearLayout
+        android:id="@+id/no_internet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:src="@drawable/no_internet"
+            android:tint="@color/colorAccent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/prompt_no_internet_connection"
+            android:textColor="@color/colorAccent"
+            android:textAllCaps="true"
+            android:textSize="18dp" />
+    </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_notice"
         android:layout_width="wrap_content"

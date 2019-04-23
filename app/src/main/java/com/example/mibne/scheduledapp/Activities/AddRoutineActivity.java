@@ -27,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
+
 public class AddRoutineActivity extends AppCompatActivity {
 
 
@@ -99,7 +101,11 @@ public class AddRoutineActivity extends AppCompatActivity {
         addClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRoutineData();
+                if (checkConnection(AddRoutineActivity.this)) {
+                    sendRoutineData();
+                } else {
+                    Toast.makeText(AddRoutineActivity.this, R.string.prompt_no_internet_connection, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -43,6 +43,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mibne.scheduledapp.Activities.LoginActivity.checkConnection;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     LinearLayout navUserContainer;
     private ProgressBar mProgressBar;
     private TextView mEmptyTextView;
+    private LinearLayout mNoInternetView;
 
     SharedPreferences sharedPreferences;
 
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity
 
         findViewById(R.id.content_main).setVisibility(View.GONE);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view);
+        mNoInternetView = (LinearLayout) findViewById(R.id.no_internet);
+        mNoInternetView.setVisibility(View.GONE);
 
 
 
@@ -135,7 +140,13 @@ public class MainActivity extends AppCompatActivity
                     Log.v("test", "User is signed in");
                     uid = user.getUid();
                     mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users/" + uid);
-                    onSignedInInitialize();
+                    if (checkConnection(MainActivity.this)) {
+                        onSignedInInitialize();
+                    } else {
+                        mProgressBar.setVisibility(View.GONE);
+                        mNoInternetView.setVisibility(View.VISIBLE);
+                        findViewById(R.id.content_main).setVisibility(View.GONE);
+                    }
                 } else {
                     // User is signed out
                     Log.v("test", "User is signed out");
@@ -171,6 +182,7 @@ public class MainActivity extends AppCompatActivity
                     TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
                     tabLayout.setupWithViewPager(viewPager);
                     findViewById(R.id.content_main).setVisibility(View.VISIBLE);
+                    mNoInternetView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(View.GONE);
                     mEmptyTextView.setText(null);
                 }
