@@ -30,6 +30,8 @@ import com.example.mibne.scheduledapp.Models.Routine;
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity
     private String uid;
     public static String role;
 
+    private String RESULT_URL = "";
+
     //Firebase instance variables
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private ValueEventListener mUserValueEventListener;
     private ValueEventListener mValueEventListenerForRoutine;
 
+    private DatabaseReference rootRef;
     private DatabaseReference mRoutineDatabaseReference;
 
     private List<String> enrolledCourses = new ArrayList<>();
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
+        rootRef = mFirebaseDatabase.getReference();
 
         findViewById(R.id.content_main).setVisibility(View.GONE);
         mEmptyTextView = (TextView) findViewById(R.id.empty_view);
@@ -161,6 +167,22 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        ValueEventListener urlRequestValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    RESULT_URL = dataSnapshot.getValue().toString();
+                    Log.v("RESULT_URL", dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        rootRef.child("RESULT_URL").addListenerForSingleValueEvent(urlRequestValueEventListener);
+
         mValueEventListenerForRoutine = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -193,7 +215,37 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
-        Log.v("ActivityLifecycle:", "onCreate");
+
+        if (sharedPreferences.getBoolean("isSubscriptionSet", false)) {
+            FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + "General")
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
+                            Log.v("NotificationFailure", "Success > " + userDataBundle.getString("organization")+"General");
+                            FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + userDataBundle.getString("department"))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            sharedPreferences.edit().putBoolean("isSubscribedToDept", true).apply();
+                                            Log.v("NotificationFailure", "Success > " + userDataBundle.getString("organization")+userDataBundle.getString("department"));
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.v("NotificationFailure", e.getMessage());
+                                    sharedPreferences.edit().putBoolean("isSubscribedToDept", false).apply();
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.v("NotificationFailure", e.getMessage());
+                    sharedPreferences.edit().putBoolean("isSubscribedToGeneral", false).apply();
+                }
+            });
+        }
     }
 
     @Override
@@ -271,8 +323,12 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         }
         else if (id == R.id.nav_result) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://103.239.5.178:2020/apps/"));
-            startActivity(intent);
+            if (!RESULT_URL.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(RESULT_URL));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Sorry! Try again later.", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (id == R.id.nav_manage_users) {
             Intent intent = new Intent(getApplicationContext(), ManageUsersActivity.class);

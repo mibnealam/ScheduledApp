@@ -201,6 +201,7 @@ public class AllCoursesFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    courseList.clear();
                     for (DataSnapshot courseSnapshot: dataSnapshot.getChildren()) {
                         Course courses =  courseSnapshot.getValue(Course.class);
                         courseList.add(courses);

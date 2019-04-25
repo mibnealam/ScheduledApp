@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,10 +24,8 @@ import android.widget.Toast;
 import com.example.mibne.scheduledapp.R;
 import com.example.mibne.scheduledapp.Models.User;
 import com.example.mibne.scheduledapp.Utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,7 +49,7 @@ public class UserInfoActivity extends AppCompatActivity  {
     public static final int DEFAULT_PHONE_NO_LENGTH_LIMIT = 11;
 
     /** URL for earthquake data from the USGS dataset */
-    private static final String USSER_REQUEST_URL =
+    private static String USER_REQUEST_URL =
             "http://103.239.5.178:2020/api/index.php?Id=";
 
     private ProgressBar mProgressBar;
@@ -101,6 +97,22 @@ public class UserInfoActivity extends AppCompatActivity  {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference();
         mUsersDatabaseReference = mDatabaseReference.child("users");
+
+        ValueEventListener urlRequestValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    USER_REQUEST_URL = dataSnapshot.getValue().toString();
+                    Log.v("TEST_URL", dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        mDatabaseReference.child("USER_REQUEST_URL").addListenerForSingleValueEvent(urlRequestValueEventListener);
 
         // Initialize references to views
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -268,7 +280,7 @@ public class UserInfoActivity extends AppCompatActivity  {
                 if (isValidUserId(userIdList, mUsernameEditText.getText().toString())) {
                     mProgressBar.setVisibility(View.VISIBLE);
                     UserExistsAsyncTask task = new UserExistsAsyncTask();
-                    task.execute(USSER_REQUEST_URL + userId);
+                    task.execute(USER_REQUEST_URL + userId);
                 } else {
                     Toast.makeText(UserInfoActivity.this, "Already Registered", Toast.LENGTH_SHORT).show();
                 }
@@ -448,6 +460,7 @@ public class UserInfoActivity extends AppCompatActivity  {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        sharedPreferences.edit().putBoolean("isSubscriptionSet", true).apply();
                             sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
                         Log.v("NotifictionFailure", "Success > " + mUserOrganization+"General");
                         FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + mUserDepartment)

@@ -146,6 +146,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        sharedPreferences.edit().putBoolean("isSubscriptionSet", true).apply();
                                         sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
                                         Log.v("NotifictionFailure", "Success > " + userBundle.getString("organization")+"General");
                                         FirebaseMessaging.getInstance().subscribeToTopic(userBundle.getString("organization") + userBundle.getString("department"))

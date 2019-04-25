@@ -285,7 +285,6 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                 uri = resultData.getData();
                 try {
                     readExcelData(uri);
-                    mProgressBar.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
@@ -364,6 +363,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
      * Method for parsing imported data and storing in ArrayList<XYValue>
      */
     public void parseStringBuilder(StringBuilder mStringBuilder){
+        mProgressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "parseStringBuilder: Started parsing.");
 
         // splits the sb into rows.
@@ -443,6 +443,7 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                                 logIn();
                             }
                         });
+                mProgressBar.setVisibility(View.GONE);
 
             }catch (NumberFormatException e){
 
@@ -461,7 +462,6 @@ public class ManageUsersActivity extends AppCompatActivity implements UserAdapte
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
-                                    mProgressBar.setVisibility(View.GONE);
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
