@@ -436,7 +436,6 @@ public class UserInfoActivity extends AppCompatActivity  {
         protected void onPostExecute(Boolean result) {
             // If there is no result, do nothing.
             if (result) {
-                mProgressBar.setVisibility(View.GONE);
                 if (!mUserOrganization.equals("0")
                         && !mUserDepartment.equals("Select your department")){
                     updateUser(mUserDepartment, mUserEmail, mUsername, mUserOrganization,
@@ -456,6 +455,7 @@ public class UserInfoActivity extends AppCompatActivity  {
     }
 
     private void subscribeToTopics() {
+        mProgressBar.setVisibility(View.VISIBLE);
         FirebaseMessaging.getInstance().subscribeToTopic(mUserOrganization + "General")
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

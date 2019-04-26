@@ -220,7 +220,7 @@ public class AllCoursesFragment extends Fragment {
 
             }
         };
-        mCourseDatabaseReferance.addValueEventListener(mValueEventListener);
+        mCourseDatabaseReferance.addListenerForSingleValueEvent(mValueEventListener);
     }
     private void detachDatabaseReadListener() {
         if (mValueEventListener != null) {
