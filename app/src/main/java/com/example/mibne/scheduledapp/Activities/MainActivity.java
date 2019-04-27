@@ -216,11 +216,12 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        if (sharedPreferences.getBoolean("isSubscriptionSet", false)) {
+        if (!sharedPreferences.getBoolean("isSubscriptionSet", false)) {
             FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + "General")
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            sharedPreferences.edit().putBoolean("isSubscriptionSet", true).apply();
                             sharedPreferences.edit().putBoolean("isSubscribedToGeneral", true).apply();
                             Log.v("NotificationFailure", "Success > " + userDataBundle.getString("organization")+"General");
                             FirebaseMessaging.getInstance().subscribeToTopic(userDataBundle.getString("organization") + userDataBundle.getString("department"))
