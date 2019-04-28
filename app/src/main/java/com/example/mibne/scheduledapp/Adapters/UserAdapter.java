@@ -130,6 +130,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
                         || row.getName().toLowerCase().contains(charString.toLowerCase())
                         || row.getPhone().toLowerCase().contains(charString.toLowerCase())
                         || row.getRole().toLowerCase().contains(charString.toLowerCase())
+                        || row.getDepartment().toLowerCase().contains(charString.toLowerCase())
                         || row.getEmail().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(row);
                             Log.v("userList: ", row.getName());
