@@ -326,8 +326,8 @@ public class AllCoursesFragment extends Fragment {
                 String cellInfo = "(courseCode,courseName): (" + courseCode + "," + courseName + "," + courseCredit + ")";
                 Log.d(TAG, "ParseStringBuilder: Data from row: " + cellInfo);
 
-                uploadCourseList.add(new Course(courseCredit,courseCode,courseName));
-                mCourseDatabaseReferance.child(courseCode).setValue(new Course(courseCredit,courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                uploadCourseList.add(new Course(fixCourseCredit(courseCredit),courseCode,courseName));
+                mCourseDatabaseReferance.child(courseCode).setValue(new Course(fixCourseCredit(courseCredit),courseCode,courseName)).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         mEmptyTextView.setVisibility(View.GONE);
@@ -339,6 +339,16 @@ public class AllCoursesFragment extends Fragment {
                 Log.e(TAG, "parseStringBuilder: NumberFormatException: " + e.getMessage());
 
             }
+        }
+    }
+
+    private String fixCourseCredit (String courseCredit) {
+        switch (courseCredit) {
+            case "1" : return courseCredit + ".0";
+            case "2" : return courseCredit + ".0";
+            case "3" : return courseCredit + ".0";
+            case "4" : return courseCredit + ".0";
+            default: return  courseCredit;
         }
     }
 }

@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Scheduled App</string>
+    <string name="app_name">SUB Notice</string>
     <string name="app_email">contact.scheduledapp@gmail.com</string>
 
     <!-- Strings for Login and Sign up page -->
-    <string name="welcome_text">Welcome to Scheduled App!</string>
+    <string name="welcome_text">Welcome to SUB Notice!</string>
     <string name="walkthrough_text">Just few more info!</string>
 
     <string name="prompt_ID">ID</string>
@@ -204,7 +204,7 @@
 
     <!--Developer Information-->
     <string name="developed_by">Designed &amp; developed by</string>
-    <string name="developer_name">Mahfuj Ibne Alam \nStudent of CSE dept. Batch: 37\nState University of Bangladesh</string>
+    <string name="developer_name">Mahfuj Ibne Alam \nStudent of dept of CSE. Batch: 37\nState University of Bangladesh</string>
     <string name="developer_email">mibnealam@gmail.com</string>
     <string name="reach_developer">Reach Developer</string>
     <string name="find_code">Connect with Github</string>

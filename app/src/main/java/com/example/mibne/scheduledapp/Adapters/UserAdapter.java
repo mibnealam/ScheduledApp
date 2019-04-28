@@ -200,9 +200,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserAdapterVie
         int dayColorResourceId;
 
         switch (day) {
-            case "student" : dayColorResourceId = R.color.credit1;
+            case "student" : dayColorResourceId = R.color.credit2;
                 break;
-            case "teacher" : dayColorResourceId = R.color.credit2;
+            case "teacher" : dayColorResourceId = R.color.credit3;
                 break;
             case "admin" : dayColorResourceId = R.color.credit4;
                 break;

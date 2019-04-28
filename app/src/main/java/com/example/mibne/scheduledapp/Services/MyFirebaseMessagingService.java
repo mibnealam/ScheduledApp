@@ -151,7 +151,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = Uri.parse( "android.resource://com.example.mibne.scheduledapp/" + R.raw.pull_out );
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_logo)
+                        .setSmallIcon(R.mipmap.ic_logo)
                         .setContentTitle(remoteMessage.getNotification().getTitle())
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri, RingtoneManager.TYPE_NOTIFICATION)
